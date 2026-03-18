@@ -1,0 +1,57 @@
+# Netlify 설정
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/api/kyc"
+  to = "/.netlify/functions/kyc"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/members"
+  to = "/.netlify/functions/members"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/stores"
+  to = "/.netlify/functions/stores"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/create-store"
+  to = "/.netlify/functions/create-store"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/usage-prices"
+  to = "/.netlify/functions/usage-prices"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/store-login"
+  to = "/.netlify/functions/store-login"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/store-prices"
+  to = "/.netlify/functions/store-prices"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/store-suspend"
+  to = "/.netlify/functions/store-suspend"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/store-delete"
+  to = "/.netlify/functions/store-delete"
+  status = 200
+  force = true

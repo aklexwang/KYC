@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KYC 고객확인 QR 코드</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+            margin: 0;
+            padding: 24px;
+            min-height: 100vh;
+            background: #f5f5f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 4px 24px rgba(0,0,0,.08);
+            max-width: 360px;
+        }
+        h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 8px 0;
+        }
+        .sub {
+            font-size: 14px;
+            color: #6e6e73;
+            margin-bottom: 24px;
+        }
+        .qr-wrap {
+            padding: 16px;
+            background: #fff;
+            border: 1px solid #e5e5ea;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .qr-wrap img {
+            display: block;
+            width: 200px;
+            height: 200px;
+        }
+        .url {
+            font-size: 12px;
+            color: #8e8e93;
+            word-break: break-all;
+            margin-bottom: 24px;
+        }
+        .btn-print {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #1A2F4A;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-print:hover { background: #152840; }
+        .btn-print:active { transform: scale(0.98); }
+        @media print {
+            body { background: #fff; }
+            .card { box-shadow: none; }
+            .btn-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>가맹점별 KYC QR 코드</h1>
+        <p class="sub">가맹점 ID를 입력하면 해당 가맹점 전용 QR이 생성됩니다. 스캔 시 가맹점이 자동 구분됩니다.</p>
+        <div class="field" style="margin-bottom:20px; text-align:left;">
+            <label for="storeId" style="display:block; font-size:13px; font-weight:600; margin-bottom:6px;">가맹점 ID *</label>
+            <input type="text" id="storeId" placeholder="예: STORE_001, 강남점" style="width:100%; padding:12px 14px; border:1px solid #e5e5ea; border-radius:8px; font-size:15px;">
+        </div>
+        <div class="qr-wrap">
+            <img id="qrImg" src="" alt="KYC 시작 QR 코드" width="200" height="200">
+        </div>
+        <p class="url" id="qrUrl"></p>
+        <button type="button" class="btn-print" onclick="window.print()">인쇄하기</button>
+    </div>
+    <script>
+        var baseUrl = 'https://kyckorea.netlify.app/?start=1';
+        var qrApi = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=';
+        function updateQR() {
+            var storeId = (document.getElementById('storeId').value || '').trim();
+            var kycUrl = storeId ? baseUrl + '&store=' + encodeURIComponent(storeId) : baseUrl;
+            document.getElementById('qrImg').src = qrApi + encodeURIComponent(kycUrl);
+            document.getElementById('qrUrl').textContent = kycUrl;
+        }
+        document.getElementById('storeId').addEventListener('input', updateQR);
+        document.getElementById('storeId').addEventListener('change', updateQR);
+        updateQR();
+    </script>
+</body>
+</html>

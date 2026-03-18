@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>고객확인제도</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=DM+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html {
+            -webkit-text-size-adjust: 100%;
+            overflow-x: hidden;
+        }
+        html, body { height: 100%; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+            background: #E5E5EA;
+            color: #1a1a1a;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        .wrap {
+            width: 100%;
+            max-width: 428px;
+            min-width: 0;
+            height: 100vh;
+            height: 100dvh;
+            max-height: 100vh;
+            max-height: 100dvh;
+            margin: 0 auto;
+            padding-top: env(safe-area-inset-top);
+            border: 1px solid #C6C6C8;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(0,0,0,.06);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        @media (min-width: 429px) {
+            body { padding: 12px 16px 12px; }
+            .wrap { border-radius: 20px; max-height: calc(100vh - 24px); height: calc(100vh - 24px); height: calc(100dvh - 24px); max-height: calc(100dvh - 24px); }
+        }
+        @media (max-width: 360px) {
+            .wrap { border-radius: 0; border-left: none; border-right: none; }
+            .view-consent .view-body, .view-basicinfo .view-body, .view-identity .view-body,
+            .view-steps .view-body, .view-account-verify .view-body { padding-left: 16px; padding-right: 16px; }
+            .step-item { padding: 10px 4px 8px; }
+            .step-num { width: 32px; height: 32px; font-size: 12px; }
+            .basicinfo-title { font-size: 18px; }
+        }
+        .wrap--company { padding-top: 0; }
+        .wrap--company { background: #E8ECF0; border-color: transparent; box-shadow: none; }
+        .view { display: none; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
+        .view--active { display: flex; }
+        .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none; }
+        .scroll-area::-webkit-scrollbar { display: none; }
+
+        /* ===== 공통 네비 ===== */
+        .nav-bar { height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 0.5px solid #E5E5EA; padding: 0 env(safe-area-inset-right) 0 0; }
+        .nav-bar--transparent { border-bottom: none; }
+        .nav-back { position: absolute; left: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; padding: 0; }
+        .nav-back svg { width: 24px; height: 24px; }
+        .nav-title { font-size: 17px; font-weight: 600; color: #000; }
+        .view--company .nav-back { left: 12px; top: env(safe-area-inset-top); background: rgba(255,255,255,0.15); border-radius: 50%; }
+        .view--company .nav-back svg { stroke: white; }
+
+        /* ===== 1. 동의 화면 ===== */
+        .view-consent .view-body { padding: 0 clamp(16px, 4vw, 20px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+        .heading { font-size: 22px; font-weight: 700; color: #1a1a1a; margin: 24px 0 8px 0; line-height: 1.3; }
+        .subtext { font-size: 15px; color: #4a4a4a; margin-bottom: 28px; line-height: 1.45; }
+        .card-illustration { width: 100%; max-width: 280px; margin: 0 auto 32px; position: relative; }
+        .card-box { background: #E8E8ED; border-radius: 12px; padding: 24px 20px; min-height: 140px; display: flex; align-items: flex-start; gap: 16px; }
+        .card-avatar { width: 48px; height: 48px; border-radius: 50%; background: #1A237E; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .card-avatar svg { width: 28px; height: 28px; }
+        .card-lines { flex: 1; padding-top: 6px; }
+        .card-line { height: 8px; background: #C7C7CC; border-radius: 4px; margin-bottom: 10px; }
+        .card-line:nth-child(1) { width: 70%; }
+        .card-line:nth-child(2) { width: 50%; }
+        .card-line:nth-child(3) { width: 60%; }
+        .shield-badge { position: absolute; bottom: -8px; right: 12px; width: 56px; height: 56px; background: #FF9500; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(255,149,0,.4); }
+        .shield-badge svg { width: 28px; height: 28px; }
+        .agree-list { margin-bottom: 20px; }
+        .agree-item { display: flex; align-items: center; padding: 14px 0; border-bottom: 0.5px solid #E5E5EA; cursor: pointer; }
+        .agree-item:first-child { padding-top: 0; }
+        .agree-item:last-child { border-bottom: none; }
+        .agree-item:active { opacity: 0.7; }
+        .checkbox { width: 22px; height: 22px; border-radius: 4px; border: 2px solid #C7C7CC; margin-right: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .agree-item.checked .checkbox { background: #1A237E; border-color: #1A237E; }
+        .agree-item .checkbox svg { display: none; }
+        .agree-item.checked .checkbox svg { display: block; }
+        .checkbox svg { width: 14px; height: 14px; }
+        .agree-label { font-size: 16px; color: #1a1a1a; }
+        .agree-item.agree-all .agree-label { font-weight: 600; }
+        .required { color: #FF3B30; font-weight: 500; }
+        .disclaimer { font-size: 12px; color: #8E8E93; line-height: 1.5; margin-bottom: 12px; }
+        .disclaimer:last-of-type { margin-bottom: 28px; }
+        .btn-start { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: auto; }
+        .btn-start:active { opacity: 0.9; }
+        .btn-start:disabled { background: #C7C7CC; cursor: not-allowed; }
+
+        /* ===== 2. KYC 회사 화면 ===== */
+        .view-company .view-body { padding: 0; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+        .hero { flex-shrink: 0; position: relative; background: linear-gradient(135deg, #1A3A5B 0%, #0F2744 100%); padding: clamp(32px, 10vw, 48px) clamp(16px, 5vw, 24px) clamp(40px, 12vw, 56px); overflow: hidden; }
+        .hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 32px; background: #E8ECF0; border-radius: 24px 24px 0 0; }
+        .hero-inner { position: relative; z-index: 1; }
+        .hero-title { font-size: 28px; font-weight: 800; letter-spacing: 0.08em; color: #fff; text-align: center; margin: 0 0 6px 0; text-transform: uppercase; font-family: 'Inter', sans-serif; }
+        .hero-tagline { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.9); text-align: center; margin: 0; letter-spacing: 0.02em; }
+        .circle { position: absolute; border-radius: 50%; }
+        .circle-1 { width: 80px; height: 80px; background: rgba(90,200,250,0.25); top: 16px; left: 10%; }
+        .circle-2 { width: 48px; height: 48px; border: 2px solid rgba(255,255,255,0.4); top: 40px; right: 15%; }
+        .circle-3 { width: 32px; height: 32px; background: rgba(255,255,255,0.15); top: 24px; right: 8%; }
+        .circle-4 { width: 56px; height: 56px; border: 2px solid rgba(90,200,250,0.5); bottom: 24px; left: 8%; }
+        .circle-5 { width: 24px; height: 24px; background: rgba(255,255,255,0.2); bottom: 40px; right: 12%; }
+        .view-company .scroll-area { display: flex; justify-content: center; align-items: center; padding: clamp(12px, 4vw, 20px); min-height: 0; }
+        .phone-screen {
+            width: min(300px, 85vw); max-width: 300px; height: min(400px, 75vmin); max-height: 400px; margin: 0 auto;
+            background: #fff; border-radius: 24px; overflow: hidden; flex-shrink: 0;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow:
+                0 1px 0 rgba(255,255,255,0.8) inset,
+                0 2px 4px rgba(0,0,0,0.04),
+                0 4px 8px rgba(0,0,0,0.06),
+                0 8px 16px rgba(0,0,0,0.08),
+                0 16px 32px rgba(26,58,91,0.12),
+                0 24px 48px rgba(0,0,0,0.06);
+        }
+        .phone-top-bar { height: 6px; background: linear-gradient(90deg, #1A3A5B, #0F2744); }
+        .phone-content { padding: clamp(60px, 18vw, 80px) clamp(16px, 5vw, 28px) clamp(32px, 10vw, 48px); text-align: center; }
+        .kyc-icon-wrap {
+            width: 180px; height: 180px; margin: 0 auto 40px;
+            background: linear-gradient(152deg, #1A3A5B 0%, #152a45 40%, #0d2137 100%);
+            border-radius: 28px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 20px 40px rgba(26,58,91,0.4), 0 0 0 1px rgba(255,255,255,0.06) inset;
+            animation: kyc-icon-pulse 2.8s ease-in-out infinite;
+            overflow: hidden;
+            position: relative;
+        }
+        .kyc-icon-wrap svg,
+        .kyc-icon-wrap img {
+            width: 100%; height: 100%; object-fit: contain;
+            filter: drop-shadow(0 2px 8px rgba(0,122,255,0.25));
+        }
+        .kyc-icon-wrap svg {
+            animation: kyc-icon-rotate 8s linear infinite;
+        }
+        .kyc-icon-wrap .scan-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(90,200,250,0.3) 20%,
+                rgba(90,200,250,0.95) 50%,
+                rgba(90,200,250,0.3) 80%,
+                transparent 100%);
+            box-shadow: 0 0 12px 2px rgba(90,200,250,0.6);
+            animation: kyc-scan-line 2.2s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 2;
+        }
+        @keyframes kyc-scan-line {
+            0% { top: 0; opacity: 1; }
+            100% { top: 100%; opacity: 1; }
+        }
+        @keyframes kyc-icon-pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 20px 40px rgba(26,58,91,0.4), 0 0 0 1px rgba(255,255,255,0.06) inset, 0 0 0 0 rgba(90,200,250,0.2); }
+            50% { transform: scale(1.04); box-shadow: 0 24px 48px rgba(26,58,91,0.45), 0 0 0 1px rgba(255,255,255,0.08) inset, 0 0 28px 4px rgba(90,200,250,0.25); }
+        }
+        @keyframes kyc-icon-rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .kyc-label {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 36px; font-weight: 700; letter-spacing: 0.18em; margin: 0 0 12px 0;
+            color: #1a1a2e;
+            text-transform: uppercase;
+            text-shadow:
+                0 1px 0 rgba(255,255,255,0.9),
+                0 2px 2px rgba(0,0,0,0.08),
+                0 4px 4px rgba(0,0,0,0.06),
+                0 6px 8px rgba(0,0,0,0.04),
+                2px 3px 0 rgba(0,0,0,0.12),
+                3px 5px 4px rgba(0,0,0,0.1),
+                4px 7px 8px rgba(0,0,0,0.06);
+        }
+        .kyc-sublabel { font-size: 13px; font-weight: 600; color: #8E8E93; letter-spacing: 0.2em; margin: 0 0 56px 0; }
+        .phone-footer { position: relative; height: 144px; margin-top: 48px; }
+        .phone-footer svg { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; }
+        .btn-company-start { flex-shrink: 0; display: block; width: calc(100% - clamp(24px, 6vw, 40px)); margin: 0 clamp(12px, 4vw, 20px); margin-bottom: calc(24px + env(safe-area-inset-bottom)); padding: 18px; background: #1A2F4A; color: #fff; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 2px 8px rgba(26,47,74,0.25); }
+        .btn-company-start:active { transform: scale(0.98); }
+        .view-company .nav-bar { position: absolute; top: 0; left: 0; right: 0; padding-top: env(safe-area-inset-top); border: none; background: transparent; }
+
+        /* ===== 3. 기본정보 입력 화면 ===== */
+        .view-basicinfo .view-body { padding: 0 clamp(16px, 4vw, 20px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+        .step-indicator { display: flex; gap: 8px; padding: 16px 0 20px; }
+        .step-item { flex: 1; text-align: center; background: #F2F2F7; border-radius: 12px; padding: 14px 8px 12px; }
+        .step-item.active { background: #FF9500; }
+        .step-num { width: 36px; height: 36px; margin: 0 auto 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; background: #F2F2F7; color: #5c5c5c; border: 2px solid #FF9500; }
+        .step-item.active .step-num { background: #fff; color: #FF9500; border-color: #fff; }
+        .step-item.active .step-num svg { width: 18px; height: 18px; }
+        .step-label { font-size: clamp(10px, 2.8vw, 12px); font-weight: 600; color: #5c5c5c; }
+        .step-item.active .step-label { color: #fff; }
+        .basicinfo-title { font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 0 0 20px 0; }
+        .basicinfo-field { margin-bottom: 16px; }
+        .basicinfo-field label { display: block; font-size: 14px; color: #1a1a1a; margin-bottom: 6px; }
+        .basicinfo-field label .required { color: #FF9500; margin-left: 2px; }
+        .basicinfo-field-hint { font-size: 12px; color: #8E8E93; margin: -2px 0 8px 0; line-height: 1.4; }
+        .basicinfo-ssn-bubble { display: none; position: relative; margin-top: 10px; padding: 12px 14px; background: #F2F2F7; border-radius: 10px; align-items: flex-start; gap: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.08); border: 1px solid #E5E5EA; }
+        .basicinfo-ssn-bubble.show { display: flex; }
+        .basicinfo-ssn-bubble::before { content: ''; position: absolute; top: -7px; left: 20px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 8px solid #E5E5EA; }
+        .basicinfo-ssn-bubble::after { content: ''; position: absolute; top: -6px; left: 21px; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 7px solid #F2F2F7; }
+        .basicinfo-ssn-bubble-icon { width: 24px; height: 24px; flex-shrink: 0; background: #FF9500; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: 700; }
+        .basicinfo-ssn-bubble-text { font-size: 13px; font-weight: 500; color: #1a1a1a; line-height: 1.5; }
+        .basicinfo-field input[type="text"] { width: 100%; padding: 12px 14px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 16px; font-family: inherit; }
+        .basicinfo-field input::placeholder { color: #C7C7CC; }
+        .basicinfo-select { width: 100%; padding: 12px 14px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 16px; font-family: inherit; color: #1a1a1a; background: #fff; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238E8E93' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+        .basicinfo-row { display: flex; gap: 10px; }
+        .basicinfo-row .basicinfo-field { flex: 1; }
+        .radio-group { display: flex; gap: 16px; margin-top: 8px; }
+        .radio-group label { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #1a1a1a; cursor: pointer; margin: 0; }
+        .radio-group input { width: 18px; height: 18px; accent-color: #1A2F4A; }
+        .view-basicinfo .basicinfo-field label .required { color: #FF9500; }
+        .phone-verify-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .phone-verify-row input { flex: 1; min-width: 0; }
+        .btn-sms-send { flex-shrink: 0; padding: 12px 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
+        .btn-sms-send:disabled { background: #C7C7CC; cursor: not-allowed; }
+        .sms-code-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E5EA; }
+        .sms-code-section.hidden { display: none; }
+        .sms-verified.hidden { display: none; }
+        .basicinfo-info-card { margin-top: 16px; margin-bottom: 16px; padding: 20px 18px; background: #F2F2F7; border-radius: 14px; border-left: 4px solid #1A2F4A; }
+        .basicinfo-info-card .info-card-title { font-size: 14px; font-weight: 700; color: #1a1a1a; margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px; }
+        .basicinfo-info-card .info-card-title svg { flex-shrink: 0; width: 20px; height: 20px; stroke: #1A2F4A; }
+        .basicinfo-info-card .info-card-list { font-size: 13px; color: #5c5c5c; line-height: 1.6; margin: 0; padding-left: 0; list-style: none; }
+        .basicinfo-info-card .info-card-list li { padding-left: 0; margin-bottom: 6px; position: relative; padding-left: 16px; }
+        .basicinfo-info-card .info-card-list li::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 5px; height: 5px; border-radius: 50%; background: #8E8E93; }
+        .basicinfo-info-card .info-card-list li:last-child { margin-bottom: 0; }
+        .sms-code-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+        .sms-code-row input { flex: 1; min-width: 0; max-width: 220px; letter-spacing: 6px; text-align: center; font-size: clamp(16px, 4.5vw, 20px); font-weight: 600; padding: 12px 16px; }
+        .btn-sms-verify { padding: 12px 20px; background: #1A2F4A; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
+        .sms-timer { font-size: 13px; color: #8E8E93; margin-top: 6px; }
+        .sms-timer.expired { color: #FF3B30; }
+        .sms-verified { font-size: 14px; color: #34C759; font-weight: 600; margin-top: 8px; }
+        .btn-next { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: auto; }
+        .btn-next:active { opacity: 0.9; }
+        .btn-next:disabled { background: #C7C7CC; cursor: not-allowed; }
+        .btn-next--prompt {
+            animation: btn-prompt-pulse 1.8s ease-in-out infinite;
+        }
+        .btn-next--prompt:not(:disabled) {
+            box-shadow: 0 4px 16px rgba(26, 47, 74, 0.35);
+        }
+        @keyframes btn-prompt-pulse {
+            0%, 100% { box-shadow: 0 4px 16px rgba(26, 47, 74, 0.35); transform: scale(1); }
+            50% { box-shadow: 0 6px 24px rgba(26, 47, 74, 0.5); transform: scale(1.02); }
+        }
+        .btn-next--scanning {
+            position: relative;
+            overflow: hidden;
+            animation: scanning-glow 2s ease-in-out infinite;
+        }
+        .btn-next--scanning:disabled {
+            background: linear-gradient(135deg, #1A2F4A 0%, #243B5A 50%, #1A2F4A 100%);
+            background-size: 200% 200%;
+            animation: scanning-glow 2s ease-in-out infinite, scanning-bg 3s ease-in-out infinite;
+        }
+        .btn-next--scanning::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,.08) 45%, rgba(255,255,255,.2) 50%, rgba(255,255,255,.08) 55%, transparent 100%);
+            background-size: 200% 100%;
+            animation: scan-shine 1.5s ease-in-out infinite;
+            pointer-events: none;
+        }
+        .btn-next--scanning::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+            animation: scan 1.2s ease-in-out infinite;
+        }
+        @keyframes scan {
+            0% { left: -50%; }
+            100% { left: 120%; }
+        }
+        @keyframes scan-shine {
+            0%, 100% { background-position: 200% 0; }
+            50% { background-position: -100% 0; }
+        }
+        @keyframes scanning-glow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,.15), 0 4px 12px rgba(0,0,0,.2); }
+            50% { box-shadow: 0 0 20px 2px rgba(255,255,255,.12), 0 4px 16px rgba(0,0,0,.25); }
+        }
+        @keyframes scanning-bg {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* 신분증 인증 화면 (step 2) */
+        .view-identity .view-body { padding: 0 clamp(16px, 4vw, 20px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+        .view-identity .basicinfo-title { font-size: clamp(13px, 3.5vw, 17px); line-height: 1.35; }
+        .view-identity .step-item.step-done .step-num { background: #FF9500; color: #fff; border-color: #FF9500; }
+        .view-identity .step-item.step-done .step-num svg { stroke: #fff; }
+        .view-identity .step-item.step-done .step-label { color: #5c5c5c; }
+        .identity-desc { font-size: 15px; color: #8E8E93; margin: 0 0 20px 0; line-height: 1.5; }
+        .identity-upload { margin-bottom: 20px; }
+        .identity-upload label { display: block; font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+        .identity-upload input[type="file"] { display: none; }
+        .identity-upload .upload-btn { display: inline-block; padding: 12px 20px; background: #F2F2F7; color: #1A2F4A; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .identity-upload .upload-btn:active { opacity: 0.8; }
+        .identity-preview { width: 100%; max-width: 200px; height: 120px; margin-top: 10px; border-radius: 8px; object-fit: cover; border: 1px solid #E5E5EA; }
+        .identity-preview.hidden { display: none; }
+        .identity-preview--in-wrap { margin-top: 0; border: none; display: block; }
+        .identity-id-error-msg { font-size: 14px; font-weight: 600; color: #FF3B30; text-align: center; margin: 12px 0 0 0; line-height: 1.5; display: none; }
+        .identity-id-error-msg.show { display: block; }
+        .identity-upload-row { display: flex; align-items: flex-start; gap: 12px; margin-top: 0; flex-wrap: wrap; }
+        .identity-upload-row .upload-btn { margin-top: 0; flex-shrink: 0; }
+        .identity-upload-row .id-preview-scan-wrap { margin-top: 0; margin-left: 0; flex-shrink: 0; }
+        .id-preview-scan-wrap { position: relative; display: inline-block; margin-top: 10px; border-radius: 10px; overflow: hidden; border: 2px solid #007AFF; box-shadow: 0 0 16px rgba(0,122,255,0.35); max-width: 200px; }
+        #idDocumentPreviewWrap { margin-left: 1cm; }
+        #faceSelfiePreviewWrap { margin-left: 1cm; }
+        .id-preview-scan-wrap.hidden { display: none; }
+        .id-preview-scan-wrap.scan-done { border-color: #000; box-shadow: 0 0 0 0 transparent; }
+        .id-preview-scan-wrap.scan-done .id-scan-line { display: none; }
+        .id-preview-scan-wrap .identity-preview--in-wrap { width: 100%; max-width: 100%; height: 120px; border-radius: 8px; }
+        .id-scan-line { position: absolute; left: 0; right: 0; height: 24px; pointer-events: none; background: linear-gradient(180deg, transparent 0%, rgba(0,122,255,0.15) 20%, rgba(0,122,255,0.5) 50%, rgba(0,122,255,0.15) 80%, transparent 100%); animation: id-scan 2s ease-in-out 2; box-shadow: 0 0 12px rgba(0,122,255,0.4); }
+        @keyframes id-scan { 0% { top: 0; opacity: 1; } 100% { top: 100%; opacity: 1; } }
+        .view-identity .btn-next { margin-top: auto; }
+        .identity-verified-msg { font-size: 14px; font-weight: 600; margin-bottom: 16px; text-align: center; font-family: 'Inter', -apple-system, sans-serif; line-height: 1.5; }
+        .identity-verified-msg.ok { color: #34C759; }
+        .identity-verified-msg.fail { color: #FF3B30; }
+        .identity-verified-msg.hidden { display: none; }
+        /* AI 배지: 성공(60% 이상, 테스트) / 실패(60% 미만) */
+        .identity-verified-msg .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 14px 14px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+        }
+        .identity-verified-msg .ai-badge.success {
+            background-color: #021a0a;
+            border: 1px solid #00e676;
+            color: #69f0ae;
+            box-shadow: 0 0 8px rgba(0, 230, 118, 0.3);
+        }
+        .identity-verified-msg .ai-badge.success .value {
+            font-weight: bold;
+            color: #00e676;
+        }
+        .identity-verified-msg .ai-badge.success .status {
+            font-size: 12px;
+            opacity: 0.8;
+            letter-spacing: 0.5px;
+        }
+        .identity-verified-msg .ai-badge.warning {
+            background-color: #1a1005;
+            border: 1px solid #ff9800;
+            color: #ffb74d;
+            box-shadow: 0 0 8px rgba(255, 152, 0, 0.3);
+        }
+        .identity-verified-msg .ai-badge.warning .value {
+            font-weight: bold;
+            color: #ff5722;
+        }
+        .identity-verified-msg .ai-badge.warning .status {
+            font-size: 12px;
+            opacity: 0.8;
+            letter-spacing: 0.5px;
+        }
+
+        /* 신분증 인증 결과: 비교 이미지 + 일치율 + 진행 바 */
+        .identity-result-box {
+            display: none;
+            margin-top: 24px;
+            padding: 20px 16px;
+            background: #F9F9FB;
+            border: 1px solid #E5E5EA;
+            border-radius: 14px;
+        }
+        .identity-result-box.show { display: block; }
+        .identity-result-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 16px 0;
+            text-align: center;
+        }
+        .identity-result-compare {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .identity-result-face {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #E5E5EA;
+            background: #E8E8ED;
+        }
+        .identity-result-eq {
+            font-size: 20px;
+            font-weight: 700;
+            color: #8E8E93;
+        }
+        .identity-result-similarity-wrap {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .identity-result-similarity-label {
+            font-size: 13px;
+            color: #8E8E93;
+            margin-right: 6px;
+        }
+        .identity-result-similarity-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1A2F4A;
+        }
+        .identity-result-similarity-value.pass { color: #34C759; }
+        .identity-result-similarity-value.fail { color: #FF3B30; }
+        .identity-result-bar-wrap {
+            height: 10px;
+            background: #E5E5EA;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .identity-result-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.4s ease;
+        }
+        .identity-result-bar-fill.pass { background: #34C759; }
+        .identity-result-bar-fill.fail { background: #FF9500; }
+
+        /* ===== 5. 인증 단계 화면 ===== */
+        .view-steps .view-body { padding: 0 clamp(12px, 4vw, 16px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+        .large-title { font-size: 34px; font-weight: 700; margin: 8px 0 4px 0; }
+        .subtitle { font-size: 15px; color: #8E8E93; margin-bottom: 24px; }
+        .group { margin-bottom: 24px; }
+        .group-title { font-size: 13px; color: #8E8E93; padding: 8px 16px 6px; }
+        .group-inner { background: #fff; border-radius: 10px; overflow: hidden; }
+        .row { display: flex; align-items: center; min-height: 44px; padding: 12px 16px; background: #fff; border: none; width: 100%; font-family: inherit; font-size: 17px; color: #1A2F4A; text-align: left; cursor: pointer; appearance: none; }
+        .row:active { background: #F2F2F7; }
+        .row:not(:last-child) { border-bottom: 0.5px solid #C6C6C8; }
+        .row.primary { color: #fff; background: #1A2F4A; justify-content: center; font-weight: 500; }
+        .row.primary:active { background: #152840; }
+        .row.primary:not(:last-child) { border-bottom: none; }
+        .field-group .group-inner { padding: 0 16px; }
+        .field-row { display: flex; align-items: center; min-height: 44px; border-bottom: 0.5px solid #C6C6C8; }
+        .field-row:last-child { border-bottom: none; }
+        .field-row label { font-size: 17px; flex: 0 0 min(90px, 22vw); }
+        .field-row input { flex: 1; border: none; font-size: 17px; padding: 12px 0; background: transparent; font-family: inherit; }
+        .field-row input::placeholder { color: #C7C7CC; }
+        .field-row input:focus { outline: none; }
+        .btn-complete { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: 8px; }
+        .btn-complete:active { opacity: 0.9; }
+        .footer { flex-shrink: 0; font-size: 13px; color: #8E8E93; text-align: center; padding: 16px; }
+        /* 계좌인증 전용 */
+        .account-header { margin-bottom: 24px; }
+        .account-header .line1 { font-size: 17px; color: #8E8E93; margin: 0 0 4px 0; }
+        .account-header .line2 { font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 0; }
+        .field-row .required { color: #FF3B30; margin-left: 2px; }
+        .field-row select { flex: 1; border: none; font-size: 17px; background: transparent; font-family: inherit; color: #1a1a1a; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238E8E93' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 28px; }
+        .account-consent { position: relative; display: flex; align-items: center; padding: 14px 0; cursor: pointer; }
+        .account-consent-input { position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; margin: 0; opacity: 0; cursor: pointer; z-index: 1; }
+        .account-consent .checkbox { width: 22px; height: 22px; border-radius: 4px; border: 2px solid #C7C7CC; margin-right: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+        .account-consent input:checked ~ .checkbox { background: #1A2F4A; border-color: #1A2F4A; }
+        .account-consent .checkbox svg { display: none; stroke: white; }
+        .account-consent input:checked ~ .checkbox svg { display: block; }
+        .account-consent span { font-size: 15px; color: #1a1a1a; }
+        .info-box { border: 1px solid #E5E5EA; border-radius: 10px; padding: 16px; margin: 16px 0 24px 0; background: #F9F9FB; }
+        .info-box h4 { font-size: 13px; color: #8E8E93; margin: 0 0 10px 0; font-weight: 600; }
+        .info-box ul { margin: 0; padding-left: 16px; font-size: 13px; color: #5c5c5c; line-height: 1.6; }
+        .info-box ul + h4 { margin-top: 16px; }
+        .view-steps .step-item.step-done .step-num { background: #FF9500; color: #fff; border-color: #FF9500; }
+        .view-steps .step-item.step-done .step-num svg { stroke: #fff; }
+        .view-steps .step-item.step-done .step-label { color: #5c5c5c; }
+        .view-steps .field-row label { flex: 0 0 min(90px, 24vw); }
+        .btn-onwon { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: auto; }
+        .btn-onwon:active { opacity: 0.9; }
+        /* 1원 인증 확인 화면 (사진 스타일) */
+        .view-account-verify .view-body { padding: 0 clamp(16px, 4vw, 20px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+        .view-account-verify .step-item.step-done .step-num { background: #FF9500; color: #fff; border-color: #FF9500; }
+        .view-account-verify .step-item.step-done .step-num svg { stroke: #fff; }
+        .view-account-verify .step-item.step-done .step-label { color: #5c5c5c; }
+        .onwon-title1 { font-size: 17px; color: #1a1a1a; margin: 24px 0 6px 0; text-align: center; }
+        .onwon-title2 { font-size: 16px; font-weight: 700; color: #1a1a1a; margin: 0 0 24px 0; text-align: center; }
+        .onwon-title2 .highlight { color: #007AFF; }
+        .onwon-bank-section { margin-bottom: 20px; }
+        .onwon-bank-section h3 { font-size: 15px; font-weight: 600; color: #1a1a1a; margin: 0 0 12px 0; }
+        .onwon-bank-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: 15px; color: #5c5c5c; }
+        .onwon-bank-row .value { color: #1a1a1a; font-weight: 500; }
+        .onwon-code-block { background: #f8f8f8; border-radius: 12px; padding: 20px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
+        .onwon-code-box { width: clamp(44px, 14vw, 52px); height: 56px; background: #FFE082; border: none; border-radius: 8px; font-size: clamp(20px, 5.5vw, 24px); font-weight: 700; color: #1a1a1a; text-align: center; font-family: inherit; }
+        .onwon-code-box::placeholder { color: #1a1a1a; opacity: 0.5; }
+        .onwon-code-box:focus { outline: none; box-shadow: 0 0 0 2px #007AFF; }
+        .onwon-code-suffix { font-size: 14px; color: #5c5c5c; margin-left: 4px; }
+        .onwon-deposit-row { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; color: #1a1a1a; }
+        .onwon-deposit-row .amount { color: #007AFF; font-weight: 600; }
+        .onwon-code-row { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+        .onwon-code-row label { font-size: 15px; font-weight: 600; color: #1a1a1a; flex: 0 0 70px; }
+        .onwon-code-row input { flex: 1; padding: 14px 16px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 17px; font-family: inherit; }
+        .onwon-timer { font-size: 15px; color: #8E8E93; flex-shrink: 0; }
+        .btn-account-verify { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: auto; }
+        .btn-account-verify:active { opacity: 0.9; }
+
+        /* ===== 5. 완료 화면 ===== */
+        .view-complete .view-body { padding: env(safe-area-inset-top) 24px 32px; display: flex; flex-direction: column; justify-content: center; align-items: center; flex: 1; text-align: center; }
+        .complete-badge { font-size: 13px; font-weight: 600; color: #007AFF; letter-spacing: 0.05em; margin: 0 0 16px 0; }
+        .view-complete .complete-kyc-icon { width: 88px; height: 88px; margin: 0 auto 24px; background: linear-gradient(152deg, #1A3A5B 0%, #152a45 40%, #0d2137 100%); border-radius: 22px; display: flex; align-items: center; justify-content: center; box-shadow: 0 16px 32px rgba(26,58,91,0.35); animation: kyc-icon-pulse 2.8s ease-in-out infinite; }
+        .view-complete .complete-kyc-icon svg { width: 48px; height: 48px; animation: kyc-icon-rotate 8s linear infinite; filter: drop-shadow(0 2px 6px rgba(0,122,255,0.3)); }
+        .icon-wrap { width: 80px; height: 80px; margin: 0 auto 24px; background: #34C759; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .icon-wrap svg { width: 44px; height: 44px; }
+        .complete-title { font-size: 22px; font-weight: 700; margin: 0 0 8px 0; }
+        .complete-desc { font-size: 15px; color: #8E8E93; margin-bottom: 40px; line-height: 1.5; }
+        .btn-done { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; }
+        /* 이용정지 화면 */
+        .view-suspended .view-body { padding: 24px 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; flex: 1; text-align: center; }
+        .suspended-icon { width: 64px; height: 64px; margin: 0 auto 20px; background: #FF3B30; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .suspended-icon svg { width: 32px; height: 32px; stroke: white; }
+        .suspended-title { font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 0 0 12px 0; }
+        .suspended-desc { font-size: 15px; color: #8E8E93; line-height: 1.5; margin-bottom: 32px; }
+        .btn-done:active { opacity: 0.9; }
+
+        /* 잘못된 인증번호 모달 - 스마트 스타일 */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 9999; align-items: center; justify-content: center; padding: clamp(12px, 4vw, 20px); box-sizing: border-box; }
+        .modal-overlay.show { display: flex; }
+        .modal-box { width: 100%; max-width: 320px; background: #fff; border-radius: 20px; padding: 28px 24px; box-shadow: 0 24px 48px rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.06); text-align: center; }
+        .modal-box .modal-icon { width: 48px; height: 48px; margin: 0 auto 20px; background: rgba(255,59,48,.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .modal-box .modal-icon svg { width: 24px; height: 24px; stroke: #FF3B30; stroke-width: 2.5; }
+        .modal-box .modal-msg { font-size: 17px; font-weight: 600; color: #1a1a1a; margin-bottom: 10px; letter-spacing: -0.02em; }
+        .modal-box .modal-remain { font-size: 14px; color: #FF9500; font-weight: 600; margin-bottom: 14px; letter-spacing: -0.01em; }
+        .modal-box .modal-warn { font-size: 13px; color: #8E8E93; line-height: 1.5; margin-bottom: 24px; letter-spacing: -0.01em; }
+        .modal-box .modal-btn { display: block; width: 100%; padding: 14px 20px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; letter-spacing: -0.02em; transition: background .2s ease, transform .1s ease; }
+        .modal-box .modal-btn:hover { background: #152840; }
+        .modal-box .modal-btn:active { transform: scale(0.98); }
+        .modal-box--info { background: #F5F0E8; text-align: left; }
+        .modal-box--info .modal-title { font-size: 14px; color: #5c5c5c; margin: 0 0 12px 0; }
+        .modal-box--info .modal-msg { margin-bottom: 20px; line-height: 1.5; color: #1a1a1a; font-size: 15px; }
+        .modal-box--info .modal-footer { text-align: right; }
+        .modal-box--info .modal-btn { background: #2E7D32; color: #fff; border: 2px solid #4CAF50; border-radius: 8px; padding: 10px 20px; font-size: 15px; margin: 0; display: inline-block; }
+        .modal-box--info .modal-btn:active { opacity: 0.9; }
+
+        /* 신분증 촬영 와꾸 (카메라 + 가이드 프레임) */
+        .id-capture-overlay { position: fixed; inset: 0; z-index: 10000; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .id-capture-overlay.hidden { display: none !important; }
+        .id-capture-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        .id-capture-frame { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(85vw, 320px); aspect-ratio: 1.58; border: 3px dashed rgba(255,255,255,0.9); border-radius: 8px; background: transparent; box-shadow: 0 0 0 9999px rgba(0,0,0,0.45); pointer-events: none; }
+        .id-capture-hint { position: absolute; bottom: 100px; left: 20px; right: 20px; text-align: center; color: #fff; font-size: 15px; font-weight: 600; text-shadow: 0 1px 4px rgba(0,0,0,0.5); margin: 0; }
+        .id-capture-actions { position: absolute; bottom: calc(24px + env(safe-area-inset-bottom)); left: 20px; right: 20px; display: flex; gap: 12px; justify-content: center; }
+        .id-capture-cancel { padding: 14px 24px; background: rgba(255,255,255,0.25); color: #fff; border: 1px solid rgba(255,255,255,0.5); border-radius: 12px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; }
+        .id-capture-shot { padding: 14px 32px; background: #007AFF; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; }
+        .id-capture-cancel:active, .id-capture-shot:active { opacity: 0.9; }
+
+        /* 테스트 인증 모달: 앱 알림처럼 상단 고정, 원래 스타일 */
+        #testAuthModal.modal-overlay { align-items: flex-start; justify-content: center; padding-top: calc(env(safe-area-inset-top) + 12px); padding-left: 16px; padding-right: 16px; }
+        #testAuthModal .modal-box--sms { width: 100%; max-width: 340px; background: transparent; box-shadow: none; padding: 0; }
+        #testAuthModal .modal-msg-bubble { background: #2C2C2E; border-radius: 16px; padding: 20px 18px; margin: 0; box-shadow: 0 4px 20px rgba(0,0,0,.35); text-align: center; }
+        #testAuthModal .modal-msg-bubble .modal-msg { font-size: 15px; color: #fff; margin: 0 0 12px 0; line-height: 1.5; font-weight: 400; }
+        #testAuthModal .modal-msg-bubble .modal-msg:last-of-type { margin-bottom: 0; }
+        #testAuthModal .modal-msg-bubble .modal-msg-sender { font-size: 14px; color: rgba(255,255,255,0.95); margin-bottom: 14px; }
+        #testAuthModal .modal-msg-bubble .modal-msg-bank-row { display: flex; align-items: center; gap: 6px; }
+        #testAuthModal .modal-msg-bubble .modal-bank-icon { display: inline-flex; width: 1em; height: 1em; flex-shrink: 0; color: rgba(255,255,255,0.95); }
+        #testAuthModal .modal-msg-bubble .modal-msg-verification { font-size: 15px; color: #fff; margin-bottom: 14px; }
+        #testAuthModal .modal-msg-bubble .modal-msg-code { font-size: 15px; font-weight: 500; color: #fff; margin-bottom: 14px; }
+        #testAuthModal .modal-msg-bubble .modal-msg-disclaimer { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.5; margin-bottom: 6px; }
+        #testAuthModal .modal-msg-bubble .modal-msg-disclaimer:last-of-type { margin-bottom: 0; }
+    </style>
+</head>
+<body>
+    <div class="wrap wrap--company" id="wrap">
+        <!-- 1. 동의 화면 -->
+        <div id="view-consent" class="view view-consent">
+            <nav class="nav-bar">
+                <button type="button" class="nav-back js-back" aria-label="뒤로">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </button>
+                <span class="nav-title">고객확인제도</span>
+            </nav>
+            <div class="view-body">
+                <div class="scroll-area">
+                    <h1 class="heading">고객확인을 시작합니다.</h1>
+                    <p class="subtext">신분증과 본인 명의의 계좌를 준비해 주세요.</p>
+                    <div class="card-illustration">
+                        <div class="card-box">
+                            <div class="card-avatar">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><circle cx="12" cy="8" r="3"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+                            </div>
+                            <div class="card-lines">
+                                <div class="card-line"></div>
+                                <div class="card-line"></div>
+                                <div class="card-line"></div>
+                            </div>
+                        </div>
+                        <div class="shield-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                    </div>
+                    <div class="agree-list">
+                        <div class="agree-item agree-all" id="agreeAll">
+                            <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
+                            <span class="agree-label">모두 동의합니다.</span>
+                        </div>
+                        <div class="agree-item" data-id="agree1">
+                            <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
+                            <span class="agree-label">거래 유의사항 확인 <span class="required">(필수)</span></span>
+                        </div>
+                        <div class="agree-item" data-id="agree2">
+                            <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
+                            <span class="agree-label">개인정보 수집 및 이용 동의 <span class="required">(필수)</span></span>
+                        </div>
+                        <div class="agree-item" data-id="agree3">
+                            <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
+                            <span class="agree-label">고유식별정보 처리 동의 <span class="required">(필수)</span></span>
+                        </div>
+                    </div>
+                    <p class="disclaimer">금융실명법 및 개인정보보호법에 따라 본인 확인을 위해 필요한 최소한의 정보만 수집합니다.</p>
+                    <p class="disclaimer">수집된 정보는 법령에 따른 본인 확인 목적으로만 이용되며, 동의하지 않으시면 서비스를 이용하실 수 없습니다.</p>
+                    <p class="disclaimer">정보 제공을 거부하거나 허위 정보를 제공할 경우 플랫타익스체인지 이용이 제한될 수 있습니다.</p>
+                </div>
+                <button type="button" class="btn-start" id="btnStart" disabled>고객확인 시작</button>
+            </div>
+        </div>
+
+        <!-- 2. KYC 회사 화면 (첫 페이지) -->
+        <div id="view-company" class="view view-company view--active">
+            <nav class="nav-bar nav-bar--transparent">
+                <button type="button" class="nav-back js-back" aria-label="뒤로">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </button>
+                <span class="nav-title" style="color:transparent">MOBILE KYC</span>
+            </nav>
+            <div class="view-body">
+                <div class="hero">
+                    <div class="circle circle-1"></div>
+                    <div class="circle circle-2"></div>
+                    <div class="circle circle-3"></div>
+                    <div class="circle circle-4"></div>
+                    <div class="circle circle-5"></div>
+                    <div class="hero-inner">
+                        <h1 class="hero-title">MOBILE KYC</h1>
+                        <p class="hero-tagline">Easily & Smoothly Completed KYC</p>
+                    </div>
+                </div>
+                <div class="scroll-area">
+                    <div class="phone-screen">
+                        <div class="phone-top-bar"></div>
+                        <div class="phone-content">
+                            <div class="kyc-icon-wrap">
+                                <img src="kyc-icon.png" alt="KYC">
+                                <div class="scan-line" aria-hidden="true"></div>
+                            </div>
+                            <h2 class="kyc-label">KYC</h2>
+                            <p class="kyc-sublabel">MOBILE KYC</p>
+                            <div class="phone-footer">
+                                <svg viewBox="0 0 400 80" preserveAspectRatio="none">
+                                    <defs><linearGradient id="footerGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#1A3A5B"/><stop offset="100%" style="stop-color:#0F2744"/></linearGradient></defs>
+                                    <path d="M0,40 Q100,0 200,40 T400,40 L400,80 L0,80 Z" fill="url(#footerGrad)"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-company-start" id="btnCompanyStart">Get Started</button>
+            </div>
+        </div>
+
+        <!-- 3. 기본정보 입력 화면 -->
+        <div id="view-basicinfo" class="view view-basicinfo">
+            <nav class="nav-bar">
+                <button type="button" class="nav-back js-back" aria-label="뒤로">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </button>
+                <span class="nav-title">고객확인제도</span>
+            </nav>
+            <div class="view-body">
+                <div class="scroll-area">
+                    <div class="step-indicator">
+                        <div class="step-item active">
+                            <div class="step-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
+                            <div class="step-label">문자인증</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-num">2</div>
+                            <div class="step-label">신분증인증</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-num">3</div>
+                            <div class="step-label">계좌인증</div>
+                        </div>
+                    </div>
+                    <h2 class="basicinfo-title">기본정보를 입력해 주세요.</h2>
+                    <div class="basicinfo-field">
+                        <label for="basicCarrier">통신사 <span class="required">*</span></label>
+                        <p class="basicinfo-field-hint">SKT, KT, LG U+ 또는 알뜰폰 중 본인이 가입한 통신사 선택</p>
+                        <select id="basicCarrier" class="basicinfo-select">
+                            <option value="">선택하세요</option>
+                            <option value="skt">SKT</option>
+                            <option value="kt">KT</option>
+                            <option value="lgu">LG U+</option>
+                            <option value="altteul">알뜰폰</option>
+                        </select>
+                    </div>
+                    <div class="basicinfo-field">
+                        <label for="basicName">이름 <span class="required">*</span></label>
+                        <p class="basicinfo-field-hint">실명 입력</p>
+                        <input type="text" id="basicName" placeholder="이름 입력" autocomplete="name" maxlength="50">
+                    </div>
+                    <div class="basicinfo-field">
+                        <label for="basicSsn">주민등록번호 <span class="required">*</span></label>
+                        <p class="basicinfo-field-hint">생년월일 6자리와 뒷자리 첫 번째 숫자(성별 코드) (예: 900101-1)</p>
+                        <input type="text" id="basicSsn" placeholder="900101-1" inputmode="numeric" maxlength="8" autocomplete="off">
+                        <div id="basicSsnErrorMsg" class="basicinfo-ssn-bubble" role="alert" aria-live="polite">
+                            <span class="basicinfo-ssn-bubble-icon" aria-hidden="true">!</span>
+                            <span class="basicinfo-ssn-bubble-text">올바른 주민등록번호가 아닙니다.</span>
+                        </div>
+                    </div>
+                    <div class="basicinfo-field">
+                        <label for="basicPhone">휴대폰 번호 <span class="required">*</span></label>
+                        <div class="phone-verify-row">
+                            <input type="text" id="basicPhone" placeholder="01012345678 (숫자만)" inputmode="tel" maxlength="11">
+                            <button type="button" class="btn-sms-send" id="btnSmsSend">인증번호 받기</button>
+                        </div>
+                        <div id="smsCodeSection" class="sms-code-section hidden">
+                            <div class="sms-code-row">
+                                <input type="text" id="smsCode" placeholder="인증번호 6자리" inputmode="numeric" maxlength="6">
+                                <button type="button" class="btn-sms-verify" id="btnSmsVerify">인증하기</button>
+                            </div>
+                            <p id="smsTimer" class="sms-timer">인증번호 유효시간 3:00</p>
+                        </div>
+                        <p id="smsVerified" class="sms-verified hidden">✓ 휴대폰 인증이 완료되었습니다.</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-next" id="btnBasicNext">다음</button>
+            </div>
+        </div>
+
+        <!-- 4. 신분증 인증 화면 -->
+        <div id="view-identity" class="view view-identity">
+            <nav class="nav-bar">
+                <button type="button" class="nav-back js-back" aria-label="뒤로">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </button>
+                <span class="nav-title">고객확인제도</span>
+            </nav>
+            <div class="view-body">
+                <div class="scroll-area">
+                    <div class="step-indicator">
+                        <div class="step-item step-done">
+                            <div class="step-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
+                            <div class="step-label">문자인증</div>
+                        </div>
+                        <div class="step-item active">
+                            <div class="step-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
+                            <div class="step-label">신분증인증</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-num">3</div>
+                            <div class="step-label">계좌인증</div>
+                        </div>
+                    </div>
+                    <h2 class="basicinfo-title" style="text-align: center">신분증 사진과 얼굴 촬영으로 본인인증 진행</h2>
+                    <div class="identity-upload">
+                        <label>1. 신분증 사진</label>
+                        <input type="file" id="idDocumentInput" accept="image/*" capture="environment">
+                        <div class="identity-upload-row">
+                            <span class="upload-btn" id="idDocumentBtn">사진 촬영</span>
+                            <div class="id-preview-scan-wrap hidden" id="idDocumentPreviewWrap">
+                                <img id="idDocumentPreview" class="identity-preview identity-preview--in-wrap" alt="신분증 미리보기">
+                                <div class="id-scan-line" aria-hidden="true"></div>
+                            </div>
+                        </div>
+                        <p id="idDocumentErrorMsg" class="identity-id-error-msg" aria-live="polite">신분증이 아닌 것 같습니다. 신분증 전체가 보이도록 다시 촬영해 주세요.</p>
+                    </div>
+                    <div class="identity-upload">
+                        <label>2. 얼굴 촬영 (셀카)</label>
+                        <input type="file" id="faceSelfieInput" accept="image/*" capture="user">
+                        <div class="identity-upload-row">
+                            <span class="upload-btn" id="faceSelfieBtn">사진 촬영</span>
+                            <div class="id-preview-scan-wrap hidden" id="faceSelfiePreviewWrap">
+                                <img id="faceSelfiePreview" class="identity-preview identity-preview--in-wrap" alt="얼굴 미리보기">
+                                <div class="id-scan-line" aria-hidden="true"></div>
+                            </div>
+                        </div>
+                        <p id="faceSelfieErrorMsg" class="identity-id-error-msg" aria-live="polite">얼굴이 보이도록 다시 촬영해 주세요.</p>
+                    </div>
+                    <!-- 분석 결과: 비교 이미지 + 일치율 + 진행 바 -->
+                    <div id="identityResultBox" class="identity-result-box" aria-hidden="true">
+                        <div class="identity-result-compare">
+                            <img id="identityResultIdFace" class="identity-result-face" src="" alt="신분증 사진">
+                            <span class="identity-result-eq" aria-hidden="true">=</span>
+                            <img id="identityResultSelfieFace" class="identity-result-face" src="" alt="촬영한 얼굴">
+                        </div>
+                        <div class="identity-result-similarity-wrap">
+                            <span class="identity-result-similarity-label">일치율 (Similarity)</span>
+                            <span id="identityResultSimilarityValue" class="identity-result-similarity-value">0 %</span>
+                        </div>
+                        <div class="identity-result-bar-wrap">
+                            <div id="identityResultBarFill" class="identity-result-bar-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <p id="identityVerifiedMsg" class="identity-verified-msg hidden"></p>
+                </div>
+                <button type="button" class="btn-next" id="btnIdentityVerify" disabled>인증하기</button>
+            </div>
+        </div>
+
+        <!-- 5. 인증 단계 화면 (계좌인증) -->
+        <div id="view-steps" class="view view-steps">
+            <nav class="nav-bar">
+                <button type="button" class="nav-back js-back" aria-label="뒤로">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </button>
+                <span class="nav-title">고객확인제도</span>
+            </nav>
+            <div class="view-body">
+                <div class="scroll-area">
+                    <div class="step-indicator">
+                        <div class="step-item step-done">
+                            <div class="step-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
+                            <div class="step-label">문자인증</div>
+                        </div>
+                        <div class="step-item step-done">
+                            <div class="step-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
+                            <div class="step-label">신분증인증</div>
+                        </div>
+                        <div class="step-item active">
+                            <div class="step-num">3</div>
+                            <div class="step-label">계좌인증</div>
+                        </div>
+                    </div>
+                    <div class="account-header">
+                        <p class="line1">본인 명의로 개설된</p>
+                        <p class="line2">계좌정보를 입력해 주세요.</p>
+                    </div>
+                    <div class="group field-group">
+                        <div class="group-inner">
+                            <div class="field-row">
+                                <label for="accountBank">금융기관<span class="required">*</span></label>
+                                <select id="accountBank" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="kb">국민은행</option>
+                                    <option value="shinhan">신한은행</option>
+                                    <option value="woori">우리은행</option>
+                                    <option value="hana">하나은행</option>
+                                    <option value="nh">농협은행</option>
+                                    <option value="ibk">기업은행</option>
+                                    <option value="kakao">카카오뱅크</option>
+                                    <option value="kbank">케이뱅크</option>
+                                </select>
+                            </div>
+                            <div class="field-row">
+                                <label for="accountNumber">계좌번호<span class="required">*</span></label>
+                                <input type="text" id="accountNumber" placeholder="계좌번호 입력" inputmode="numeric" autocomplete="off">
+                            </div>
+                            <div class="field-row">
+                                <label for="accountHolder">예금주<span class="required">*</span></label>
+                                <input type="text" id="accountHolder" placeholder="예금주명 입력 (한글만)" autocomplete="off" maxlength="50">
+                            </div>
+                        </div>
+                    </div>
+                    <label class="account-consent" id="accountConsent" for="accountConsentCb">
+                        <input type="checkbox" id="accountConsentCb" class="account-consent-input">
+                        <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
+                        <span>개인정보 수집 및 이용 동의 (필수)</span>
+                    </label>
+                    <div class="info-box">
+                        <h4>※ 개인정보 이용 안내</h4>
+                        <ul>
+                            <li>개인정보 수집 이용 목적 : 본인 확인</li>
+                            <li>수집하는 개인정보 항목 : 은행명, 예금주명, 계좌번호</li>
+                            <li>보유 및 이용기간 : 회원탈퇴 시까지 또는 법령에 따른 보유기간</li>
+                        </ul>
+                        <h4>※ 계좌 인증 안내</h4>
+                        <ul>
+                            <li>계좌 인증번호 전송은 하루 최대 3회까지 가능합니다.</li>
+                            <li>플랫타익스체인지에 인증된 실명과 계좌에 등록된 이름이 일치하여야 합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+                <button type="button" class="btn-onwon" id="btnComplete">1원 인증</button>
+            </div>
+        </div>
+
+        <!-- 5-2. 1원 인증 확인 화면 -->
+        <div id="view-account-verify" class="view view-account-verify">
+            <nav class="nav-bar">
+                <button type="button" class="nav-back js-back" aria-label="뒤로">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </button>
+                <span class="nav-title">고객확인제도</span>
+            </nav>
+            <div class="view-body">
+                <div class="scroll-area">
+                    <div class="step-indicator">
+                        <div class="step-item step-done">
+                            <div class="step-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
+                            <div class="step-label">문자인증</div>
+                        </div>
+                        <div class="step-item step-done">
+                            <div class="step-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
+                            <div class="step-label">신분증인증</div>
+                        </div>
+                        <div class="step-item active">
+                            <div class="step-num">3</div>
+                            <div class="step-label">계좌인증</div>
+                        </div>
+                    </div>
+                    <p class="onwon-title1">입력하신 계좌로 1원을 보내드렸습니다.</p>
+                    <p class="onwon-title2">보낸사람 앞 <span class="highlight">4글자를 15분 안에</span> 입력해주세요.</p>
+                    <div class="onwon-bank-section">
+                        <h3>은행 계좌 정보</h3>
+                        <div class="onwon-bank-row"><span>은행명</span><span class="value" id="displayBankName">-</span></div>
+                        <div class="onwon-bank-row"><span>계좌번호</span><span class="value" id="displayAccountNumber">-</span></div>
+                        <div class="onwon-bank-row"><span>예금주</span><span class="value" id="displayAccountHolder">-</span></div>
+                    </div>
+                    <div class="onwon-code-block">
+                        <input type="text" id="onwonCode1" class="onwon-code-box" placeholder="" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="인증번호 1자리">
+                        <input type="text" id="onwonCode2" class="onwon-code-box" placeholder="" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="인증번호 2자리">
+                        <input type="text" id="onwonCode3" class="onwon-code-box" placeholder="" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="인증번호 3자리">
+                        <input type="text" id="onwonCode4" class="onwon-code-box" placeholder="" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="인증번호 4자리">
+                        <span class="onwon-code-suffix">_계좌개설용</span>
+                    </div>
+                    <div class="onwon-deposit-row">
+                        <span>입금</span>
+                        <span class="amount">1원</span>
+                    </div>
+                    <div class="onwon-code-row" style="margin-top:16px;">
+                        <span class="onwon-timer" id="onwonTimer">03:00</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-account-verify" id="btnAccountVerify">계좌인증 완료</button>
+            </div>
+        </div>
+
+        <!-- 6. 완료 화면 -->
+        <div id="view-complete" class="view view-complete">
+            <div class="view-body">
+                <p class="complete-badge">AWS KYC 인증완료</p>
+                <div class="complete-kyc-icon">
+                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="glowComplete" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#5AC8FA"/><stop offset="50%" style="stop-color:#34C7F8"/><stop offset="100%" style="stop-color:#007AFF"/></linearGradient><linearGradient id="glowSoftComplete" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" style="stop-color:#007AFF;stop-opacity:0.25"/><stop offset="100%" style="stop-color:#5AC8FA;stop-opacity:0.6"/></linearGradient></defs>
+                        <circle cx="32" cy="32" r="26" stroke="url(#glowComplete)" stroke-width="1.4" opacity="0.4"/>
+                        <circle cx="32" cy="32" r="20" stroke="url(#glowComplete)" stroke-width="1.2" opacity="0.55"/>
+                        <circle cx="32" cy="32" r="14" stroke="url(#glowComplete)" stroke-width="1" opacity="0.75"/>
+                        <path d="M32 18v28M24 24a8 8 0 0116 0v16M18 32a14 14 0 0128 0" stroke="url(#glowComplete)" stroke-width="2.2" stroke-linecap="round" opacity="1"/>
+                        <circle cx="32" cy="32" r="5" fill="url(#glowSoftComplete)"/>
+                        <circle cx="32" cy="32" r="3.5" fill="#5AC8FA"/>
+                    </svg>
+                </div>
+                <h1 class="complete-title">고객확인이 완료되었습니다</h1>
+                <p class="complete-desc">본인인증이 정상적으로 완료되었습니다.<br>서비스를 이용해 주세요.</p>
+                <button type="button" class="btn-done" id="btnDone">확인</button>
+            </div>
+        </div>
+
+        <!-- 7. 이용정지 화면 -->
+        <div id="view-suspended" class="view view-suspended">
+            <nav class="nav-bar">
+                <button type="button" class="nav-back js-back" aria-label="뒤로">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </button>
+                <span class="nav-title">고객확인제도</span>
+            </nav>
+            <div class="view-body">
+                <div class="suspended-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </div>
+                <h1 class="suspended-title">이용정지되었습니다.</h1>
+                <p class="suspended-desc">관리자에게 문의하세요.</p>
+                <button type="button" class="btn-done" id="btnSuspendedOk">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 신분증 촬영 와꾸 (body 직계 - 전체 화면 덮기) -->
+    <div id="idCaptureOverlay" class="id-capture-overlay hidden">
+        <video id="idCaptureVideo" class="id-capture-video" autoplay playsinline muted></video>
+        <div id="idCaptureFrame" class="id-capture-frame" aria-hidden="true"></div>
+        <p class="id-capture-hint">신분증이 테두리 안에 들어오도록 맞춰 주세요</p>
+        <div class="id-capture-actions">
+            <button type="button" class="id-capture-cancel" id="idCaptureCancel">닫기</button>
+            <button type="button" class="id-capture-shot" id="idCaptureBtn">촬영하기</button>
+        </div>
+    </div>
+
+    <div id="wrongAuthModal" class="modal-overlay" aria-hidden="true">
+        <div class="modal-box">
+            <div class="modal-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </div>
+            <p class="modal-msg" id="wrongAuthMsg">잘못된 인증번호 입니다.</p>
+            <p class="modal-remain" id="wrongAuthRemain">남은 횟수: 2회</p>
+            <p class="modal-warn">3회 이상 잘못된 인증번호 입력 시 이용정지됩니다.</p>
+            <button type="button" class="modal-btn" id="wrongAuthModalOk">확인</button>
+        </div>
+    </div>
+
+    <div id="testAuthModal" class="modal-overlay" aria-hidden="true">
+        <div class="modal-box modal-box--sms">
+            <div class="modal-msg-bubble" id="testAuthModalOnwon">
+                <p class="modal-msg modal-msg-sender modal-msg-bank-row">
+                    <span class="modal-bank-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="M12 2L2 7v2h20V7L12 2zm0 2.5L18 7H6l6-2.5zM2 11v8h2v-6h4v6h8v-6h4v6h2v-8H2z"/></svg></span>
+                    <span id="testAuthModalBankText">은행명: -</span>
+                </p>
+                <p class="modal-msg modal-msg-code" id="testAuthModalOnwonMsg">1원이 입금되었습니다. 1원 9876</p>
+            </div>
+            <div class="modal-msg-bubble" id="testAuthModalSms">
+                <p class="modal-msg modal-msg-sender" id="testAuthModalSender">[International]</p>
+                <p class="modal-msg modal-msg-verification" id="testAuthModalVerification">Verification Code</p>
+                <p class="modal-msg modal-msg-code" id="testAuthModalCode">(AWS SMS Developer Sandbox): 123456</p>
+                <p class="modal-msg modal-msg-disclaimer" id="testAuthModalDisclaimer1">This code is for software testing and should be</p>
+                <p class="modal-msg modal-msg-disclaimer" id="testAuthModalDisclaimer2">ignored if received unexpectedly.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.KYC_API_BASE = window.KYC_API_BASE || (typeof location !== 'undefined' ? location.origin : '');  // 비우면 같은 사이트(Netlify Functions) 사용
+        (function () {
+            var viewIds = ['view-consent', 'view-company', 'view-basicinfo', 'view-identity', 'view-steps', 'view-account-verify', 'view-complete', 'view-suspended'];
+            var views = {};
+            viewIds.forEach(function (id) { views[id] = document.getElementById(id); });
+            var wrap = document.getElementById('wrap');
+            var historyStack = [];
+
+            function showView(id) {
+                viewIds.forEach(function (vid) {
+                    views[vid].classList.toggle('view--active', vid === id);
+                });
+                wrap.classList.toggle('wrap--company', id === 'view-company');
+            }
+
+            function goTo(id) {
+                var active = viewIds.find(function (vid) { return views[vid].classList.contains('view--active'); });
+                if (active) historyStack.push(active);
+                showView(id);
+            }
+
+            // QR 코드로 진입 시 바로 고객확인(동의) 화면으로 이동 + 가맹점 구분용 store 파라미터 저장
+            (function checkQREntry() {
+                var params = new URLSearchParams(window.location.search);
+                var hash = (window.location.hash || '').toLowerCase();
+                var isQREntry = params.get('start') === '1' || params.get('from') === 'qr' || hash === '#start';
+                var storeId = params.get('store') || params.get('sid') || '';
+                if (storeId) {
+                    try { localStorage.setItem('kyc_store_id', storeId); } catch (e) {}
+                }
+                if (isQREntry) {
+                    historyStack.push('view-company');
+                    showView('view-consent');
+                }
+            })();
+
+            function back() {
+                if (historyStack.length) {
+                    showView(historyStack.pop());
+                }
+            }
+
+            function sendKycState(payload) {
+                if (!window.KYC_API_BASE) return;
+                var nameEl = document.getElementById('basicName');
+                var storeId = '';
+                try { storeId = localStorage.getItem('kyc_store_id') || ''; } catch (e) {}
+                var data = {
+                    name: (nameEl && nameEl.value) ? nameEl.value.trim() : '',
+                    storeId: storeId,
+                    sms: payload.sms || 'wait',
+                    idDoc: payload.idDoc || 'wait',
+                    account: payload.account || 'wait'
+                };
+                fetch(window.KYC_API_BASE + '/api/kyc', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                }).then(function (r) {
+                    if (!r.ok) console.warn('[KYC] 저장 실패:', r.status, r.statusText);
+                }).catch(function (e) {
+                    console.warn('[KYC] 저장 요청 오류:', e);
+                });
+            }
+
+            function showWrongAuthModal(remainingCount) {
+                var overlay = document.getElementById('wrongAuthModal');
+                document.getElementById('wrongAuthRemain').textContent = '남은 횟수: ' + remainingCount + '회';
+                overlay.classList.add('show');
+                overlay.setAttribute('aria-hidden', 'false');
+            }
+            function hideWrongAuthModal() {
+                var overlay = document.getElementById('wrongAuthModal');
+                overlay.classList.remove('show');
+                overlay.setAttribute('aria-hidden', 'true');
+            }
+            document.getElementById('wrongAuthModalOk').addEventListener('click', hideWrongAuthModal);
+            document.getElementById('wrongAuthModal').addEventListener('click', function (e) {
+                if (e.target === this) hideWrongAuthModal();
+            });
+
+            function showTestAuthModal(testCode, bankName, holderName) {
+                var code = testCode || '123456';
+                var onwonBlock = document.getElementById('testAuthModalOnwon');
+                var smsBlock = document.getElementById('testAuthModalSms');
+                if (bankName != null && holderName != null) {
+                    if (onwonBlock) onwonBlock.style.display = '';
+                    if (smsBlock) smsBlock.style.display = 'none';
+                    document.getElementById('testAuthModalBankText').textContent = '은행명: ' + (bankName || '-');
+                    document.getElementById('testAuthModalOnwonMsg').textContent = '1원이 입금되었습니다. 1원 ' + code;
+                } else {
+                    if (onwonBlock) onwonBlock.style.display = 'none';
+                    if (smsBlock) smsBlock.style.display = '';
+                    document.getElementById('testAuthModalSender').textContent = '[International]';
+                    document.getElementById('testAuthModalVerification').textContent = 'Verification Code';
+                    document.getElementById('testAuthModalCode').textContent = '(AWS SMS Developer Sandbox): ' + code;
+                    document.getElementById('testAuthModalDisclaimer1').textContent = 'This code is for software testing and should be';
+                    document.getElementById('testAuthModalDisclaimer2').textContent = 'ignored if received unexpectedly.';
+                }
+                document.getElementById('testAuthModal').classList.add('show');
+            }
+            function hideTestAuthModal() {
+                document.getElementById('testAuthModal').classList.remove('show');
+            }
+            document.getElementById('testAuthModal').addEventListener('click', hideTestAuthModal);
+
+            document.querySelectorAll('.js-back').forEach(function (btn) {
+                btn.addEventListener('click', back);
+            });
+
+            // 동의 화면
+            var agreeAll = document.getElementById('agreeAll');
+            var items = document.querySelectorAll('#view-consent .agree-item[data-id]');
+            var btnStart = document.getElementById('btnStart');
+
+            function updateAllChecked() {
+                var allChecked = Array.from(items).every(function (el) { return el.classList.contains('checked'); });
+                agreeAll.classList.toggle('checked', allChecked);
+            }
+            function updateStartButton() {
+                btnStart.disabled = !Array.from(items).every(function (el) { return el.classList.contains('checked'); });
+            }
+
+            agreeAll.addEventListener('click', function () {
+                var willCheck = !agreeAll.classList.contains('checked');
+                agreeAll.classList.toggle('checked', willCheck);
+                items.forEach(function (el) { el.classList.toggle('checked', willCheck); });
+                updateStartButton();
+            });
+            items.forEach(function (el) {
+                el.addEventListener('click', function () {
+                    el.classList.toggle('checked');
+                    updateAllChecked();
+                    updateStartButton();
+                });
+            });
+
+            btnStart.addEventListener('click', function () {
+                if (btnStart.disabled) return;
+                goTo('view-basicinfo');
+            });
+
+            document.getElementById('btnCompanyStart').addEventListener('click', function () {
+                goTo('view-consent');
+            });
+
+            document.getElementById('btnBasicNext').addEventListener('click', function () {
+                sendKycState({ sms: 'complete', idDoc: 'wait', account: 'wait' });
+                goTo('view-identity');
+            });
+
+            // Amazon Rekognition 신분증·얼굴 인증
+            (function () {
+                var idDocumentInput = document.getElementById('idDocumentInput');
+                var faceSelfieInput = document.getElementById('faceSelfieInput');
+                var idDocumentBtn = document.getElementById('idDocumentBtn');
+                var faceSelfieBtn = document.getElementById('faceSelfieBtn');
+                var idDocumentPreview = document.getElementById('idDocumentPreview');
+                var idDocumentPreviewWrap = document.getElementById('idDocumentPreviewWrap');
+                var faceSelfiePreview = document.getElementById('faceSelfiePreview');
+                var faceSelfiePreviewWrap = document.getElementById('faceSelfiePreviewWrap');
+                var faceSelfieErrorMsg = document.getElementById('faceSelfieErrorMsg');
+                var faceSelfieValidateTimer = null;
+                var FACE_SELFIE_SCAN_DELAY_MS = 2800;
+                var idDocumentScanDoneTimer = null;
+                var faceSelfieScanDoneTimer = null;
+                var ID_SCAN_DURATION_MS = 4000;
+                var idDocumentErrorMsg = document.getElementById('idDocumentErrorMsg');
+                var btnIdentityVerify = document.getElementById('btnIdentityVerify');
+                var identityVerifiedMsg = document.getElementById('identityVerifiedMsg');
+                var idCaptureOverlay = document.getElementById('idCaptureOverlay');
+                var idCaptureVideo = document.getElementById('idCaptureVideo');
+                var idCaptureCancel = document.getElementById('idCaptureCancel');
+                var idCaptureBtn = document.getElementById('idCaptureBtn');
+
+                var idDocumentBase64 = null;
+                var idCaptureStream = null;
+                var faceBase64 = null;
+                var identityVerified = false;
+                var identityFailCount = 0;
+
+                function fileToBase64(file, callback) {
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        var data = reader.result;
+                        if (data.indexOf('base64,') !== -1) data = data.split('base64,')[1];
+                        callback(data);
+                    };
+                    reader.readAsDataURL(file);
+                }
+
+                function updateVerifyButton() {
+                    var bothReady = !!(idDocumentBase64 && faceBase64);
+                    btnIdentityVerify.disabled = !bothReady;
+                    if (bothReady) {
+                        btnIdentityVerify.classList.add('btn-next--prompt');
+                    } else {
+                        btnIdentityVerify.classList.remove('btn-next--prompt');
+                    }
+                }
+
+                // 신분증 모양 검사: 여권/주민등록증/운전면허증 비율 범위
+                var ID_ASPECT_MIN = 1.2;
+                var ID_ASPECT_MAX = 1.95;
+                var ID_MIN_SIDE = 200;
+                var ID_SCAN_DELAY_MS = 4100;
+                var idDocumentValidateTimer = null;
+
+                /** 스캔 후 신분증 여부 검사. 셀카(얼굴이 과도하게 큼)나 세로 사진이면 false */
+                function validateIdDocumentImage(imgEl, callback) {
+                    if (!imgEl || !imgEl.src) { callback(true); return; }
+                    var w = imgEl.naturalWidth || imgEl.width;
+                    var h = imgEl.naturalHeight || imgEl.height;
+                    if (!w || !h) { callback(true); return; }
+                    var ratio = w / h;
+                    if (ratio < 1) { callback(false); return; }
+                    if (ratio < ID_ASPECT_MIN || ratio > ID_ASPECT_MAX) { callback(false); return; }
+                    if (typeof FaceDetector !== 'undefined') {
+                        var detector = new FaceDetector();
+                        detector.detect(imgEl).then(function (faces) {
+                            if (faces && faces.length === 1) {
+                                var box = faces[0].boundingBox;
+                                var faceArea = box.width * box.height;
+                                var imageArea = w * h;
+                                if (imageArea > 0 && faceArea / imageArea > 0.35) {
+                                    callback(false);
+                                    return;
+                                }
+                            }
+                            callback(true);
+                        }).catch(function () { callback(true); });
+                    } else {
+                        callback(true);
+                    }
+                }
+
+                function showIdDocumentInvalidAndReset() {
+                    if (idDocumentErrorMsg) {
+                        idDocumentErrorMsg.textContent = '신분증이 아닌 것 같습니다. 신분증 전체가 보이도록 다시 촬영해 주세요.';
+                        idDocumentErrorMsg.classList.add('show');
+                    }
+                    identityVerifiedMsg.classList.add('hidden');
+                    identityVerifiedMsg.innerHTML = '';
+                    idDocumentBase64 = null;
+                    idDocumentPreview.src = '';
+                    idDocumentPreviewWrap.classList.add('hidden');
+                    idDocumentInput.value = '';
+                    updateVerifyButton();
+                }
+
+                function scheduleIdDocumentValidation() {
+                    if (idDocumentValidateTimer) clearTimeout(idDocumentValidateTimer);
+                    idDocumentValidateTimer = setTimeout(function () {
+                        idDocumentValidateTimer = null;
+                        if (!idDocumentPreview.src) return;
+                        function run() {
+                            validateIdDocumentImage(idDocumentPreview, function (valid) {
+                                if (!valid) showIdDocumentInvalidAndReset();
+                            });
+                        }
+                        if (idDocumentPreview.complete) run();
+                        else idDocumentPreview.addEventListener('load', run);
+                    }, ID_SCAN_DELAY_MS);
+                }
+
+                /** 셀카가 실제 얼굴 사진인지 검사. 얼굴 1개이고 면적이 일정 비율 이상이어야 함(신분증 사진 거절) */
+                function validateSelfieImage(imgEl, callback) {
+                    if (!imgEl || !imgEl.src) { callback(true, null); return; }
+                    var w = imgEl.naturalWidth || imgEl.width;
+                    var h = imgEl.naturalHeight || imgEl.height;
+                    if (!w || !h) { callback(true, null); return; }
+                    var imageArea = w * h;
+                    if (typeof FaceDetector !== 'undefined') {
+                        var detector = new FaceDetector();
+                        detector.detect(imgEl).then(function (faces) {
+                            if (!faces || faces.length !== 1) {
+                                callback(false, 'no_face');
+                                return;
+                            }
+                            var box = faces[0].boundingBox;
+                            var faceArea = box.width * box.height;
+                            if (imageArea > 0 && faceArea / imageArea < 0.12) {
+                                callback(false, 'id_card');
+                                return;
+                            }
+                            callback(true, null);
+                        }).catch(function () { callback(false, 'no_face'); });
+                    } else {
+                        callback(true, null);
+                    }
+                }
+
+                function showFaceSelfieInvalidAndReset(reason) {
+                    if (faceSelfieErrorMsg) {
+                        if (reason === 'id_card') {
+                            faceSelfieErrorMsg.textContent = '신분증 사진은 사용할 수 없습니다. 얼굴만 촬영해 주세요.';
+                        } else {
+                            faceSelfieErrorMsg.textContent = '얼굴이 보이도록 다시 촬영해 주세요.';
+                        }
+                        faceSelfieErrorMsg.classList.add('show');
+                    }
+                    faceBase64 = null;
+                    faceSelfiePreview.src = '';
+                    faceSelfiePreviewWrap.classList.add('hidden');
+                    faceSelfieInput.value = '';
+                    updateVerifyButton();
+                }
+
+                function scheduleFaceSelfieValidation() {
+                    if (faceSelfieValidateTimer) clearTimeout(faceSelfieValidateTimer);
+                    faceSelfieValidateTimer = setTimeout(function () {
+                        faceSelfieValidateTimer = null;
+                        if (!faceSelfiePreview.src) return;
+                        function run() {
+                            validateSelfieImage(faceSelfiePreview, function (valid, reason) {
+                                if (!valid) showFaceSelfieInvalidAndReset(reason);
+                                else if (faceSelfieErrorMsg) faceSelfieErrorMsg.classList.remove('show');
+                            });
+                        }
+                        if (faceSelfiePreview.complete) run();
+                        else faceSelfiePreview.addEventListener('load', run);
+                    }, FACE_SELFIE_SCAN_DELAY_MS);
+                }
+
+                function stopIdCaptureStream() {
+                    if (idCaptureStream) {
+                        idCaptureStream.getTracks().forEach(function (t) { t.stop(); });
+                        idCaptureStream = null;
+                    }
+                    if (idCaptureVideo.srcObject) idCaptureVideo.srcObject = null;
+                }
+
+                function openIdCaptureWithCamera() {
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        idDocumentInput.click();
+                        return;
+                    }
+                    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(function (stream) {
+                        idCaptureStream = stream;
+                        idCaptureVideo.srcObject = stream;
+                        idCaptureOverlay.classList.remove('hidden');
+                        idCaptureVideo.play().catch(function () {});
+                    }).catch(function () {
+                        idDocumentInput.click();
+                    });
+                }
+
+                idDocumentBtn.addEventListener('click', function () { openIdCaptureWithCamera(); });
+                faceSelfieBtn.addEventListener('click', function () { faceSelfieInput.click(); });
+
+                idDocumentInput.addEventListener('change', function (e) {
+                    var file = e.target.files && e.target.files[0];
+                    if (!file) return;
+                    var url = URL.createObjectURL(file);
+                    if (idDocumentErrorMsg) idDocumentErrorMsg.classList.remove('show');
+                    identityVerifiedMsg.classList.add('hidden');
+                    idDocumentPreview.src = url;
+                    if (idDocumentScanDoneTimer) clearTimeout(idDocumentScanDoneTimer);
+                    idDocumentPreviewWrap.classList.remove('scan-done');
+                    idDocumentPreviewWrap.classList.remove('hidden');
+                    idDocumentScanDoneTimer = setTimeout(function () {
+                        idDocumentPreviewWrap.classList.add('scan-done');
+                        idDocumentScanDoneTimer = null;
+                    }, ID_SCAN_DURATION_MS);
+                    updateVerifyButton();
+                    var img = new Image();
+                    img.onload = function () {
+                        var w = img.naturalWidth || img.width;
+                        var h = img.naturalHeight || img.height;
+                        var longer = Math.max(w, h);
+                        var shorter = Math.min(w, h);
+                        var ratio = longer / shorter;
+                        var minSide = shorter;
+                        if (minSide < ID_MIN_SIDE || ratio < ID_ASPECT_MIN || ratio > ID_ASPECT_MAX) {
+                            URL.revokeObjectURL(url);
+                            if (idDocumentErrorMsg) {
+                                idDocumentErrorMsg.textContent = '정확한 신분증 사진을 올려주세요. (여권/주민등록증/운전면허증)';
+                                idDocumentErrorMsg.classList.add('show');
+                            }
+                            idDocumentBase64 = null;
+                            idDocumentPreview.src = '';
+                            idDocumentPreviewWrap.classList.add('hidden');
+                            updateVerifyButton();
+                            return;
+                        }
+                        fileToBase64(file, function (b64) {
+                            URL.revokeObjectURL(url);
+                            idDocumentBase64 = b64;
+                            idDocumentPreview.src = 'data:image/jpeg;base64,' + b64;
+                            updateVerifyButton();
+                            scheduleIdDocumentValidation();
+                        });
+                    };
+                    img.onerror = function () {
+                        URL.revokeObjectURL(url);
+                        if (idDocumentErrorMsg) {
+                            idDocumentErrorMsg.textContent = '이미지를 불러올 수 없습니다. 다시 선택해 주세요.';
+                            idDocumentErrorMsg.classList.add('show');
+                        }
+                        idDocumentPreview.src = '';
+                        idDocumentPreviewWrap.classList.add('hidden');
+                        idDocumentInput.value = '';
+                    };
+                    img.src = url;
+                });
+
+                idCaptureCancel.addEventListener('click', function () {
+                    stopIdCaptureStream();
+                    idCaptureOverlay.classList.add('hidden');
+                });
+
+                idCaptureBtn.addEventListener('click', function () {
+                    var v = idCaptureVideo;
+                    if (!v.srcObject || v.readyState < 2) return;
+                    var vidW = v.videoWidth;
+                    var vidH = v.videoHeight;
+                    var frameEl = document.getElementById('idCaptureFrame');
+                    if (!frameEl) { frameEl = document.querySelector('.id-capture-frame'); }
+                    var videoRect = v.getBoundingClientRect();
+                    var frameRect = frameEl ? frameEl.getBoundingClientRect() : { left: videoRect.left, top: videoRect.top, width: videoRect.width, height: videoRect.height };
+                    var scale = Math.max(videoRect.width / vidW, videoRect.height / vidH);
+                    var offsetX = (vidW * scale - videoRect.width) / 2;
+                    var offsetY = (vidH * scale - videoRect.height) / 2;
+                    var frameLeftInVideo = frameRect.left - videoRect.left;
+                    var frameTopInVideo = frameRect.top - videoRect.top;
+                    var sx = (offsetX + frameLeftInVideo) / scale;
+                    var sy = (offsetY + frameTopInVideo) / scale;
+                    var sw = frameRect.width / scale;
+                    var sh = frameRect.height / scale;
+                    sx = Math.max(0, Math.min(sx, vidW - 1));
+                    sy = Math.max(0, Math.min(sy, vidH - 1));
+                    sw = Math.min(sw, vidW - sx);
+                    sh = Math.min(sh, vidH - sy);
+                    if (sw <= 0 || sh <= 0) { sw = vidW; sh = vidH; sx = 0; sy = 0; }
+                    var maxLong = 1200;
+                    var outW = Math.round(sw);
+                    var outH = Math.round(sh);
+                    if (outW > maxLong || outH > maxLong) {
+                        var r = maxLong / Math.max(outW, outH);
+                        outW = Math.round(outW * r);
+                        outH = Math.round(outH * r);
+                    }
+                    var canvas = document.createElement('canvas');
+                    canvas.width = outW;
+                    canvas.height = outH;
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(v, sx, sy, sw, sh, 0, 0, outW, outH);
+                    var dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+                    var b64 = dataUrl.indexOf('base64,') !== -1 ? dataUrl.split('base64,')[1] : '';
+                    if (b64) {
+                        stopIdCaptureStream();
+                        idCaptureOverlay.classList.add('hidden');
+                        if (idDocumentErrorMsg) idDocumentErrorMsg.classList.remove('show');
+                        identityVerifiedMsg.classList.add('hidden');
+                        idDocumentBase64 = b64;
+                        idDocumentPreview.src = 'data:image/jpeg;base64,' + b64;
+                        if (idDocumentScanDoneTimer) clearTimeout(idDocumentScanDoneTimer);
+                        idDocumentPreviewWrap.classList.remove('scan-done');
+                        idDocumentPreviewWrap.classList.remove('hidden');
+                        idDocumentScanDoneTimer = setTimeout(function () {
+                            idDocumentPreviewWrap.classList.add('scan-done');
+                            idDocumentScanDoneTimer = null;
+                        }, ID_SCAN_DURATION_MS);
+                        updateVerifyButton();
+                        scheduleIdDocumentValidation();
+                    }
+                });
+
+                faceSelfieInput.addEventListener('change', function (e) {
+                    var file = e.target.files && e.target.files[0];
+                    if (!file) return;
+                    var url = URL.createObjectURL(file);
+                    if (faceSelfieErrorMsg) faceSelfieErrorMsg.classList.remove('show');
+                    faceSelfiePreview.src = url;
+                    if (faceSelfieScanDoneTimer) clearTimeout(faceSelfieScanDoneTimer);
+                    faceSelfiePreviewWrap.classList.remove('scan-done');
+                    faceSelfiePreviewWrap.classList.remove('hidden');
+                    faceSelfieScanDoneTimer = setTimeout(function () {
+                        faceSelfiePreviewWrap.classList.add('scan-done');
+                        faceSelfieScanDoneTimer = null;
+                    }, ID_SCAN_DURATION_MS);
+                    updateVerifyButton();
+                    fileToBase64(file, function (b64) {
+                        URL.revokeObjectURL(url);
+                        faceBase64 = b64;
+                        faceSelfiePreview.src = 'data:image/jpeg;base64,' + b64;
+                        updateVerifyButton();
+                        scheduleFaceSelfieValidation();
+                    });
+                });
+
+                /**
+                 * 이미지에서 얼굴 영역을 감지해 크롭한 데이터 URL 반환.
+                 * FaceDetector API 사용(지원 시), 미지원 시 신분증/셀카에 맞는 휴리스틱 크롭.
+                 */
+                function cropImageToFace(imgOrSrc, isIdDocument, callback) {
+                    var img = typeof imgOrSrc === 'string' ? new Image() : null;
+                    var src = typeof imgOrSrc === 'string' ? imgOrSrc : (imgOrSrc && imgOrSrc.src) || '';
+                    if (!src) { callback(''); return; }
+                    function run(imageElement) {
+                        if (!imageElement || !imageElement.complete) {
+                            if (imageElement && imageElement.addEventListener) {
+                                imageElement.addEventListener('load', function () { onLoaded(imageElement); });
+                                imageElement.addEventListener('error', function () { callback(src); });
+                            } else { callback(src); }
+                            return;
+                        }
+                        onLoaded(imageElement);
+                    }
+                    function onLoaded(imageElement) {
+                        var w = imageElement.naturalWidth || imageElement.width;
+                        var h = imageElement.naturalHeight || imageElement.height;
+                        if (!w || !h) { callback(src); return; }
+                        var canvas = document.createElement('canvas');
+                        var ctx = canvas.getContext('2d');
+                        var x = 0, y = 0, size = 0;
+
+                        if (typeof FaceDetector !== 'undefined') {
+                            var detector = new FaceDetector();
+                            detector.detect(imageElement).then(function (faces) {
+                                if (faces && faces.length > 0) {
+                                    var box = faces[0].boundingBox;
+                                    var pad = Math.max(box.width, box.height) * 0.2;
+                                    x = Math.max(0, box.x - pad);
+                                    y = Math.max(0, box.y - pad);
+                                    var w2 = Math.min(w - x, box.width + pad * 2);
+                                    var h2 = Math.min(h - y, box.height + pad * 2);
+                                    size = Math.min(w2, h2);
+                                    if (w2 > size) x += (w2 - size) / 2;
+                                    if (h2 > size) y += (h2 - size) / 2;
+                                }
+                                drawCrop();
+                            }).catch(function () { fallbackCrop(); });
+                        } else {
+                            fallbackCrop();
+                        }
+
+                        function fallbackCrop() {
+                            if (isIdDocument) {
+                                // 한국 신분증/운전면허: 증명사진이 왼쪽에 있음 → 왼쪽 영역에서 얼굴 구역 크롭
+                                var leftPadding = w * 0.06;
+                                size = Math.min(w * 0.42, h * 0.6);
+                                x = leftPadding;
+                                y = (h - size) * 0.35;
+                                x = Math.max(0, Math.min(x, w - size));
+                                y = Math.max(0, Math.min(y, h - size));
+                            } else {
+                                size = Math.min(w, h) * 0.75;
+                                x = (w - size) / 2;
+                                y = (h - size) / 2;
+                            }
+                            drawCrop();
+                        }
+
+                        function drawCrop() {
+                            if (size <= 0) { callback(src); return; }
+                            canvas.width = size;
+                            canvas.height = size;
+                            ctx.drawImage(imageElement, x, y, size, size, 0, 0, size, size);
+                            try {
+                                callback(canvas.toDataURL('image/jpeg', 0.92));
+                            } catch (e) {
+                                callback(src);
+                            }
+                        }
+                    }
+                    if (img) {
+                        img.onload = function () { onLoaded(img); };
+                        img.onerror = function () { callback(src); };
+                        img.crossOrigin = 'anonymous';
+                        img.src = src;
+                    } else {
+                        run(imgOrSrc);
+                    }
+                }
+
+                // 데모: 두 이미지 픽셀 유사도 계산 (0~100), 서버 없이 클라이언트 판단
+                function computeImageSimilarity(b64A, b64B, callback) {
+                    var size = 48;
+                    var canvas = document.createElement('canvas');
+                    canvas.width = size;
+                    canvas.height = size;
+                    var ctx = canvas.getContext('2d');
+                    function getGrayData(data) {
+                        var out = [];
+                        for (var i = 0; i < data.length; i += 4) {
+                            out.push((data[i] + data[i + 1] + data[i + 2]) / 3);
+                        }
+                        return out;
+                    }
+                    function drawAndGetGray(b64, done) {
+                        var img = new Image();
+                        img.crossOrigin = 'anonymous';
+                        img.onload = function () {
+                            ctx.clearRect(0, 0, size, size);
+                            ctx.drawImage(img, 0, 0, size, size);
+                            var d = ctx.getImageData(0, 0, size, size).data;
+                            done(getGrayData(d));
+                        };
+                        img.onerror = function () { done(null); };
+                        img.src = 'data:image/jpeg;base64,' + b64;
+                    }
+                    drawAndGetGray(b64A, function (grayA) {
+                        if (!grayA || grayA.length === 0) { callback(0); return; }
+                        var img2 = new Image();
+                        img2.onload = function () {
+                            ctx.clearRect(0, 0, size, size);
+                            ctx.drawImage(img2, 0, 0, size, size);
+                            var d = ctx.getImageData(0, 0, size, size).data;
+                            var grayB = getGrayData(d);
+                            if (!grayB || grayB.length !== grayA.length) { callback(0); return; }
+                            var sum = 0;
+                            for (var i = 0; i < grayA.length; i++) {
+                                sum += Math.abs(grayA[i] - grayB[i]);
+                            }
+                            var maxDiff = grayA.length * 255;
+                            var similarity = Math.round(100 * (1 - sum / maxDiff));
+                            callback(Math.max(0, Math.min(100, similarity)));
+                        };
+                        img2.onerror = function () { callback(0); };
+                        img2.src = 'data:image/jpeg;base64,' + b64B;
+                    });
+                }
+
+                btnIdentityVerify.addEventListener('click', function () {
+                    if (identityVerified) {
+                        sendKycState({ sms: 'complete', idDoc: 'complete', account: 'wait' });
+                        goTo('view-steps');
+                        return;
+                    }
+                    if (btnIdentityVerify.textContent === '다시 인증하기') {
+                        if (idDocumentValidateTimer) { clearTimeout(idDocumentValidateTimer); idDocumentValidateTimer = null; }
+                        if (faceSelfieValidateTimer) { clearTimeout(faceSelfieValidateTimer); faceSelfieValidateTimer = null; }
+                        idDocumentBase64 = null;
+                        faceBase64 = null;
+                        idDocumentPreview.src = '';
+                        idDocumentPreviewWrap.classList.add('hidden');
+                        if (idDocumentErrorMsg) idDocumentErrorMsg.classList.remove('show');
+                        faceSelfiePreview.src = '';
+                        faceSelfiePreviewWrap.classList.add('hidden');
+                        if (faceSelfieErrorMsg) faceSelfieErrorMsg.classList.remove('show');
+                        idDocumentInput.value = '';
+                        faceSelfieInput.value = '';
+                        identityVerifiedMsg.classList.add('hidden');
+                        identityVerifiedMsg.innerHTML = '';
+                        var resultBox = document.getElementById('identityResultBox');
+                        if (resultBox) {
+                            resultBox.classList.remove('show');
+                            var rId = document.getElementById('identityResultIdFace');
+                            var rFace = document.getElementById('identityResultSelfieFace');
+                            if (rId) rId.removeAttribute('src');
+                            if (rFace) rFace.removeAttribute('src');
+                        }
+                        btnIdentityVerify.textContent = '인증하기';
+                        btnIdentityVerify.disabled = true;
+                        return;
+                    }
+                    if (!idDocumentBase64 || !faceBase64) return;
+                    btnIdentityVerify.disabled = true;
+                    btnIdentityVerify.textContent = 'AWS Rekognition으로 비교 중…';
+                    btnIdentityVerify.classList.remove('btn-next--prompt');
+                    btnIdentityVerify.classList.add('btn-next--scanning');
+                    identityVerifiedMsg.classList.add('hidden');
+
+                    var minShowMs = 2500;
+                    var t0 = Date.now();
+                    var apiBaseUrl = window.location.origin;
+
+                    function showComparisonResult(similarity, pass) {
+                        var simVal = Number(similarity).toFixed(1);
+                        var resultBox = document.getElementById('identityResultBox');
+                        var resultIdFace = document.getElementById('identityResultIdFace');
+                        var resultSelfieFace = document.getElementById('identityResultSelfieFace');
+                        var resultSimValue = document.getElementById('identityResultSimilarityValue');
+                        var resultBarFill = document.getElementById('identityResultBarFill');
+
+                        function showResultBox(idFaceUrl, selfieFaceUrl) {
+                            if (resultBox && resultIdFace && resultSelfieFace && resultSimValue && resultBarFill) {
+                                resultIdFace.src = idFaceUrl || idDocumentPreview.src || '';
+                                resultSelfieFace.src = selfieFaceUrl || faceSelfiePreview.src || '';
+                                resultSimValue.textContent = simVal + ' %';
+                                resultSimValue.classList.remove('pass', 'fail');
+                                resultSimValue.classList.add(pass ? 'pass' : 'fail');
+                                resultBarFill.style.width = simVal + '%';
+                                resultBarFill.classList.remove('pass', 'fail');
+                                resultBarFill.classList.add(pass ? 'pass' : 'fail');
+                                resultBox.classList.add('show');
+                                resultBox.setAttribute('aria-hidden', 'false');
+                            }
+                            identityVerifiedMsg.classList.remove('hidden');
+                            identityVerifiedMsg.classList.toggle('ok', pass);
+                            identityVerifiedMsg.classList.toggle('fail', !pass);
+                            btnIdentityVerify.classList.remove('btn-next--scanning');
+                            btnIdentityVerify.classList.remove('btn-next--prompt');
+                            if (pass) {
+                                identityVerified = true;
+                                identityVerifiedMsg.innerHTML = '신분증 사진과 촬영한 얼굴이 동일인으로 확인되었습니다.';
+                                btnIdentityVerify.disabled = false;
+                                btnIdentityVerify.textContent = '다음';
+                            } else {
+                                identityFailCount++;
+                                identityVerifiedMsg.innerHTML = '신분증 사진과 촬영한 얼굴이 일치하지 않습니다.';
+                                btnIdentityVerify.disabled = false;
+                                btnIdentityVerify.textContent = '다시 인증하기';
+                                if (identityFailCount >= 3) {
+                                    sendKycState({ sms: 'complete', idDoc: 'fail', account: 'wait' });
+                                    goTo('view-suspended');
+                                }
+                            }
+                        }
+
+                        var idFaceUrlDone = null;
+                        var selfieFaceUrlDone = null;
+                        function maybeShow() {
+                            if (idFaceUrlDone !== null && selfieFaceUrlDone !== null) {
+                                showResultBox(idFaceUrlDone, selfieFaceUrlDone);
+                            }
+                        }
+                        cropImageToFace(idDocumentPreview, true, function (url) {
+                            idFaceUrlDone = url;
+                            maybeShow();
+                        });
+                        cropImageToFace(faceSelfiePreview, false, function (url) {
+                            selfieFaceUrlDone = url;
+                            maybeShow();
+                        });
+                    }
+
+                    function runWithDelay(similarity, pass) {
+                        var elapsed = Date.now() - t0;
+                        var wait = Math.max(0, minShowMs - elapsed);
+                        setTimeout(function () { showComparisonResult(similarity, pass); }, wait);
+                    }
+
+                    fetch(apiBaseUrl + '/.netlify/functions/rekognition-compare-faces', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ idDocumentBase64: idDocumentBase64, faceBase64: faceBase64 })
+                    }).then(function (r) { return r.json(); }).then(function (data) {
+                        if (data.success && typeof data.similarity === 'number') {
+                            runWithDelay(data.similarity, data.similarity >= 60);
+                        } else {
+                            computeImageSimilarity(idDocumentBase64, faceBase64, function (similarity) {
+                                runWithDelay(similarity, similarity >= 60);
+                            });
+                        }
+                    }).catch(function () {
+                        computeImageSimilarity(idDocumentBase64, faceBase64, function (similarity) {
+                            runWithDelay(similarity, similarity >= 60);
+                        });
+                    });
+                });
+            })();
+
+            // AWS 문자 인증 (SMS) UI
+            (function () {
+                var basicCarrier = document.getElementById('basicCarrier');
+                var basicName = document.getElementById('basicName');
+                var basicSsn = document.getElementById('basicSsn');
+                var basicPhone = document.getElementById('basicPhone');
+                var btnSmsSend = document.getElementById('btnSmsSend');
+                var smsCodeSection = document.getElementById('smsCodeSection');
+                var smsCode = document.getElementById('smsCode');
+                var btnSmsVerify = document.getElementById('btnSmsVerify');
+                var smsTimer = document.getElementById('smsTimer');
+                var smsVerified = document.getElementById('smsVerified');
+                var btnBasicNext = document.getElementById('btnBasicNext');
+
+                var timerInterval = null;
+                var countdownSec = 180;
+                var lastSentPhone = '';
+                var smsVerifiedDone = false;
+                var smsFailCount = 0;
+
+                function apiBase() { return window.location.origin; }
+
+                function showCodeSection() {
+                    smsCodeSection.classList.remove('hidden');
+                    smsVerified.classList.add('hidden');
+                    smsCode.value = '';
+                    countdownSec = 180;
+                    updateTimerText();
+                    if (timerInterval) clearInterval(timerInterval);
+                    timerInterval = setInterval(function () {
+                        countdownSec--;
+                        updateTimerText();
+                        if (countdownSec <= 0) {
+                            clearInterval(timerInterval);
+                            smsTimer.classList.add('expired');
+                            smsTimer.textContent = '인증번호가 만료되었습니다. 다시 받아 주세요.';
+                        }
+                    }, 1000);
+                }
+
+                function updateTimerText() {
+                    if (countdownSec <= 0) return;
+                    var m = Math.floor(countdownSec / 60);
+                    var s = countdownSec % 60;
+                    smsTimer.textContent = '인증번호 유효시간 ' + m + ':' + (s < 10 ? '0' : '') + s;
+                    smsTimer.classList.toggle('expired', countdownSec <= 30);
+                }
+
+                function setVerified() {
+                    smsVerifiedDone = true;
+                    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+                    smsCodeSection.classList.add('hidden');
+                    smsVerified.classList.remove('hidden');
+                    smsCode.disabled = true;
+                    btnSmsVerify.disabled = true;
+                    btnSmsSend.disabled = true;
+                    updateNextButton();
+                }
+
+                function updateNextButton() {
+                    btnBasicNext.disabled = !smsVerifiedDone;
+                }
+                updateNextButton();
+
+                /** 주민등록번호 7자리(생년월일6+성별1) 유효성: 날짜 존재 여부, 성별코드 0~9 */
+                function isValidSsn7(ssn7) {
+                    if (!ssn7 || ssn7.length !== 7 || !/^\d{7}$/.test(ssn7)) return false;
+                    var yy = parseInt(ssn7.slice(0, 2), 10);
+                    var mm = parseInt(ssn7.slice(2, 4), 10);
+                    var dd = parseInt(ssn7.slice(4, 6), 10);
+                    var g = parseInt(ssn7.slice(6, 7), 10);
+                    if (mm < 1 || mm > 12) return false;
+                    if (g < 0 || g > 9) return false;
+                    var year = yy <= 24 ? 2000 + yy : 1900 + yy;
+                    var isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+                    var daysInMonth = [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                    if (dd < 1 || dd > daysInMonth[mm - 1]) return false;
+                    return true;
+                }
+
+                var basicSsnErrorMsg = document.getElementById('basicSsnErrorMsg');
+                if (basicSsn) {
+                    basicSsn.addEventListener('input', function () {
+                        var v = this.value.replace(/\D/g, '').slice(0, 7);
+                        if (v.length > 6) this.value = v.slice(0, 6) + '-' + v.slice(6);
+                        else this.value = v;
+                        if (basicSsnErrorMsg) basicSsnErrorMsg.classList.remove('show');
+                    });
+                    basicSsn.addEventListener('focus', function () {
+                        if (basicSsnErrorMsg) basicSsnErrorMsg.classList.remove('show');
+                    });
+                    basicSsn.addEventListener('blur', function () {
+                        this.setCustomValidity('');
+                        var raw = this.value.replace(/\D/g, '');
+                        if (raw.length !== 7) return;
+                        if (!isValidSsn7(raw)) {
+                            if (basicSsnErrorMsg) basicSsnErrorMsg.classList.add('show');
+                        } else {
+                            if (basicSsnErrorMsg) basicSsnErrorMsg.classList.remove('show');
+                        }
+                    });
+                }
+                if (basicName) {
+                    basicName.addEventListener('input', function (e) {
+                        if (e.isComposing) return;
+                        this.value = this.value.replace(/[^\uAC00-\uD7A3\s]/g, '');
+                    });
+                    basicName.addEventListener('compositionend', function () {
+                        this.value = this.value.replace(/[^\uAC00-\uD7A3\s]/g, '');
+                    });
+                }
+
+                btnSmsSend.addEventListener('click', function () {
+                    if (!(basicCarrier && basicCarrier.value)) {
+                        alert('통신사를 선택해 주세요.');
+                        return;
+                    }
+                    if (!(basicName && (basicName.value || '').trim())) {
+                        alert('이름을 입력해 주세요.');
+                        return;
+                    }
+                    var ssnRaw = (basicSsn && basicSsn.value) ? basicSsn.value.replace(/\D/g, '') : '';
+                    if (ssnRaw.length !== 7) {
+                        alert('주민등록번호 7자리를 입력해 주세요. (예: 900101-1)');
+                        return;
+                    }
+                    if (!isValidSsn7(ssnRaw)) {
+                        if (basicSsnErrorMsg) basicSsnErrorMsg.classList.add('show');
+                        if (basicSsn) basicSsn.focus();
+                        return;
+                    }
+                    if (basicSsnErrorMsg) basicSsnErrorMsg.classList.remove('show');
+                    var phone = (basicPhone.value || '').replace(/\D/g, '');
+                    if (phone.length < 10) {
+                        alert('휴대폰 번호를 올바르게 입력해 주세요.');
+                        return;
+                    }
+                    btnSmsSend.disabled = true;
+                    lastSentPhone = phone;
+
+                    fetch(apiBase() + '/.netlify/functions/send-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phoneNumber: phone })
+                    }).then(function (r) { return r.json(); }).then(function (data) {
+                        showCodeSection();
+                        if (data.code) alert('(테스트) 인증번호: ' + data.code);
+                    }).catch(function () {
+                        showCodeSection();
+                        showTestAuthModal('123456');
+                    }).finally(function () {
+                        setTimeout(function () { btnSmsSend.disabled = false; }, 60000);
+                    });
+                });
+
+                btnSmsVerify.addEventListener('click', function () {
+                    var code = (smsCode.value || '').trim();
+                    if (code.length !== 6) {
+                        alert('인증번호 6자리를 입력해 주세요.');
+                        return;
+                    }
+
+                    fetch(apiBase() + '/.netlify/functions/verify-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phoneNumber: lastSentPhone, code: code })
+                    }).then(function (r) { return r.json(); }).then(function (data) {
+                        if (data.success) setVerified();
+                        else {
+                            smsFailCount++;
+                            if (smsFailCount >= 3) goTo('view-suspended');
+                            else showWrongAuthModal(3 - smsFailCount);
+                        }
+                    }).catch(function () {
+                        if (code === '123456') setVerified();
+                        else {
+                            smsFailCount++;
+                            if (smsFailCount >= 3) goTo('view-suspended');
+                            else showWrongAuthModal(3 - smsFailCount);
+                        }
+                    });
+                });
+
+                basicPhone.addEventListener('input', function () {
+                    this.value = this.value.replace(/\D/g, '');
+                });
+            })();
+
+            var accountBank = document.getElementById('accountBank');
+            var accountNumber = document.getElementById('accountNumber');
+            var accountHolder = document.getElementById('accountHolder');
+            if (accountHolder) {
+                function allowOnlyKorean(el) {
+                    el.value = el.value.replace(/[^\uAC00-\uD7A3\s]/g, '');
+                }
+                accountHolder.addEventListener('input', function (e) {
+                    if (e.isComposing) return;
+                    allowOnlyKorean(this);
+                });
+                accountHolder.addEventListener('compositionend', function () {
+                    allowOnlyKorean(this);
+                });
+            }
+            var onwonTimerEl = document.getElementById('onwonTimer');
+            function getOnwonCode() {
+                var a = document.getElementById('onwonCode1');
+                var b = document.getElementById('onwonCode2');
+                var c = document.getElementById('onwonCode3');
+                var d = document.getElementById('onwonCode4');
+                return ((a && a.value) || '') + ((b && b.value) || '') + ((c && c.value) || '') + ((d && d.value) || '');
+            }
+            var onwonCodeInput = { get value() { return getOnwonCode(); }, set value(v) { var ids = ['onwonCode1','onwonCode2','onwonCode3','onwonCode4']; var s = (v && String(v)) || ''; for (var i = 0; i < 4; i++) { var el = document.getElementById(ids[i]); if (el) el.value = s.charAt(i) || ''; } } };
+            [1,2,3,4].forEach(function (i) {
+                var el = document.getElementById('onwonCode' + i);
+                if (!el) return;
+                el.addEventListener('input', function () {
+                    this.value = this.value.replace(/\D/g, '').slice(0, 1);
+                    if (this.value && i < 4) document.getElementById('onwonCode' + (i + 1)).focus();
+                });
+                el.addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && !this.value && i > 1) document.getElementById('onwonCode' + (i - 1)).focus();
+                });
+            });
+            var onwonTimerInterval = null;
+            var onwonCountdownSec = 180;
+            var onwonFailCount = 0;
+
+            function startOnwonTimer() {
+                onwonCountdownSec = 180;
+                if (onwonTimerInterval) clearInterval(onwonTimerInterval);
+                function tick() {
+                    var m = Math.floor(onwonCountdownSec / 60);
+                    var s = onwonCountdownSec % 60;
+                    onwonTimerEl.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+                    if (onwonCountdownSec <= 0) clearInterval(onwonTimerInterval);
+                    else onwonCountdownSec--;
+                }
+                tick();
+                onwonTimerInterval = setInterval(tick, 1000);
+            }
+
+            document.getElementById('btnComplete').addEventListener('click', function () {
+                var bankText = accountBank.options[accountBank.selectedIndex] ? accountBank.options[accountBank.selectedIndex].text : '';
+                var holderText = accountHolder.value || '';
+                document.getElementById('displayBankName').textContent = bankText || '-';
+                document.getElementById('displayAccountNumber').textContent = accountNumber.value || '-';
+                document.getElementById('displayAccountHolder').textContent = holderText || '-';
+                onwonCodeInput.value = '';
+                onwonFailCount = 0;
+                startOnwonTimer();
+                goTo('view-account-verify');
+                setTimeout(function () { showTestAuthModal('9876', bankText, holderText); }, 100);
+            });
+
+            document.getElementById('btnAccountVerify').addEventListener('click', function () {
+                var code = (onwonCodeInput.value || '').trim();
+                if (code === '9876') {
+                    if (onwonTimerInterval) clearInterval(onwonTimerInterval);
+                    sendKycState({ sms: 'complete', idDoc: 'complete', account: 'complete' });
+                    goTo('view-complete');
+                } else {
+                    onwonFailCount++;
+                    if (onwonFailCount >= 3) {
+                        sendKycState({ sms: 'complete', idDoc: 'complete', account: 'fail' });
+                        goTo('view-suspended');
+                    } else showWrongAuthModal(3 - onwonFailCount);
+                }
+            });
+
+            document.getElementById('btnDone').addEventListener('click', function () {
+                location.reload();
+            });
+            document.getElementById('btnSuspendedOk').addEventListener('click', function () {
+                location.reload();
+            });
+
+            updateStartButton();
+        })();
+    </script>
+</body>
+</html>

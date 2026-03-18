@@ -1,0 +1,8 @@
+{
+  "name": "kyc-korea",
+  "private": true,
+  "description": "KYC customer verification",
+  "dependencies": {
+    "@netlify/blobs": "^5.0.0"
+  }
+}

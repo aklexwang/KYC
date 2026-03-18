@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>본사 어드민 - 가맹점·회원 현황</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #E8ECF0;
+            color: #1a1a1a;
+            min-height: 100vh;
+        }
+        .admin-header {
+            background: linear-gradient(135deg, #0F2744 0%, #1A3A5B 100%);
+            color: #fff;
+            padding: 20px 24px 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.12);
+        }
+        .admin-header h1 { margin: 0 0 4px 0; font-size: 22px; font-weight: 700; }
+        .admin-header p { margin: 0; font-size: 13px; opacity: 0.9; }
+        .admin-body { max-width: 960px; margin: 0 auto; padding: 24px 16px 40px; }
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .summary-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.06);
+        }
+        .summary-card .num { font-size: 24px; font-weight: 700; color: #1A2F4A; }
+        .summary-card .label { font-size: 12px; color: #6e6e73; margin-top: 4px; }
+        .section-title { font-size: 16px; font-weight: 700; margin: 0 0 12px 0; color: #1a1a1a; }
+        .section-desc { font-size: 13px; color: #6e6e73; margin: -4px 0 12px 0; }
+        .store-filter-actions { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+        .filter-btn {
+            padding: 8px 16px;
+            background: #fff;
+            border: 1px solid #E5E5EA;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            cursor: pointer;
+        }
+        .filter-btn:hover { background: #f5f5f7; }
+        .filter-btn.active { background: #1A2F4A; color: #fff; border-color: #1A2F4A; }
+        .filter-sep { color: #C7C7CC; }
+        .filter-label { font-size: 13px; color: #6e6e73; }
+        .store-list { display: grid; gap: 12px; margin-bottom: 24px; }
+        .store-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .store-card:hover { border-color: #1A2F4A; box-shadow: 0 2px 12px rgba(26,47,74,.15); }
+        .store-card.active { border-color: #007AFF; background: #f0f7ff; }
+        .store-info .store-id { font-size: 14px; font-weight: 700; color: #1A2F4A; }
+        .store-info .store-name { font-size: 13px; color: #6e6e73; margin-top: 2px; }
+        .store-stats { display: flex; gap: 16px; font-size: 13px; }
+        .store-stats span { color: #5c5c5c; }
+        .store-stats strong { color: #1a1a1a; }
+        .table-wrap {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.06);
+            overflow: hidden;
+        }
+        .table-scroll { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 620px; }
+        th {
+            background: #1A2F4A;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: left;
+            padding: 14px 12px;
+            white-space: nowrap;
+        }
+        th:first-child { padding-left: 20px; }
+        th:nth-child(2) { }
+        th:last-child { padding-right: 20px; text-align: center; }
+        td { padding: 14px 12px; border-bottom: 1px solid #E5E5EA; font-size: 14px; }
+        td:first-child { padding-left: 20px; font-weight: 600; color: #1A2F4A; font-size: 13px; }
+        td:nth-child(2) { font-weight: 600; color: #1a1a1a; }
+        tr.member-row-hidden { display: none; }
+        td:last-child { padding-right: 20px; text-align: center; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8f9fa; }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge--complete { background: #E8F5E9; color: #2E7D32; }
+        .badge--fail { background: #FFEBEE; color: #C62828; }
+        .badge--wait { background: #F5F5F5; color: #757575; }
+        .btn-kyc-done {
+            display: inline-block;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: default;
+        }
+        .btn-kyc-done--na { background: #E0E0E0; color: #9e9e9e; }
+        .no-data { text-align: center; padding: 32px 20px; color: #8E8E93; font-size: 14px; }
+        .td-store-id { font-size: 12px; color: #6e6e73; margin-top: 2px; }
+        .create-store-section { background: #fff; border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+        .create-store-section .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 0; }
+        .create-store-section .section-header h2 { margin-top: 0; margin-bottom: 0; }
+        .create-store-section .section-body { display: none; margin-top: 16px; }
+        .create-store-section.expanded .section-body { display: block; }
+        .btn-toggle-register { padding: 8px 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-toggle-register:hover { opacity: 0.9; }
+        .create-store-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 16px; }
+        .create-store-form .field { display: flex; flex-direction: column; gap: 4px; }
+        .create-store-form .field label { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+        .create-store-form input { padding: 10px 14px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 15px; min-width: 160px; }
+        .create-store-form .btn-register { padding: 10px 24px; background: #1A2F4A; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .create-store-form .btn-register:hover { opacity: 0.9; }
+        .create-store-form .btn-register:disabled { background: #C7C7CC; cursor: not-allowed; }
+        .qr-result-card { display: none; background: #f8f9fa; border-radius: 12px; padding: 20px; margin-top: 16px; border: 1px solid #E5E5EA; }
+        .qr-result-card.show { display: block; }
+        .qr-result-card .qr-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: #1a1a1a; }
+        .qr-result-card .qr-wrap { display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+        .qr-result-card .qr-info { flex: 1; min-width: 200px; }
+        .qr-result-card .qr-info p { margin: 0 0 8px 0; font-size: 14px; color: #5c5c5c; }
+        .qr-result-card .qr-info .qr-url { word-break: break-all; font-size: 12px; color: #007AFF; }
+        .store-card .btn-qr { padding: 6px 12px; background: #007AFF; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .store-card .btn-qr:hover { opacity: 0.9; }
+        .store-card .card-right { display: flex; align-items: center; gap: 10px; }
+        .store-card .store-usage { width: 100%; margin-top: 10px; padding-top: 10px; border-top: 1px solid #E5E5EA; font-size: 12px; color: #6e6e73; }
+        .store-card .store-name-row { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+        .store-card .store-name-row .store-name { margin: 0; }
+        .store-card .btn-edit-store { padding: 4px 10px; background: #6e6e73; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
+        .store-card .btn-edit-store:hover { background: #5c5c5c; }
+        .store-card .btn-suspend-store { padding: 4px 10px; background: #FF9500; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
+        .store-card .btn-suspend-store:hover { background: #e68600; }
+        .store-card .btn-unsuspend-store { padding: 4px 10px; background: #34C759; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
+        .store-card .btn-unsuspend-store:hover { background: #2db04d; }
+        .store-card .btn-delete-store { padding: 4px 10px; background: #FF3B30; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
+        .store-card .btn-delete-store:hover { background: #e6352b; }
+        .store-card .badge-suspended { display: inline-block; margin-left: 6px; padding: 2px 8px; background: #FF3B30; color: #fff; border-radius: 4px; font-size: 11px; font-weight: 600; }
+        .store-card .store-usage span { margin-right: 12px; }
+        .store-card .store-usage .total-amount { font-weight: 700; color: #2E7D32; margin-left: 4px; }
+        .modal-overlay-prices { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 9999; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .modal-overlay-prices.show { display: flex; }
+        .modal-prices-box { background: #fff; border-radius: 16px; padding: 24px; max-width: 400px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,.15); }
+        .modal-prices-box h3 { margin: 0 0 16px 0; font-size: 18px; }
+        .modal-prices-box .field { margin-bottom: 12px; }
+        .modal-prices-box .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+        .modal-prices-box .field input { width: 100%; padding: 10px 12px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
+        .modal-prices-box .btn-wrap { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-prices-box .btn-save-prices-modal { padding: 10px 20px; background: #2E7D32; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .modal-prices-box .btn-cancel-prices { padding: 10px 20px; background: #E5E5EA; color: #1a1a1a; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .store-qr-result { display: none; width: 100%; margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E5EA; }
+        .store-qr-result.show { display: block; }
+        .store-qr-result-inner { background: #f8f9fa; border-radius: 10px; padding: 16px; }
+        .store-qr-result .store-qr-img { display: block; width: 140px; height: 140px; margin: 0 0 10px 0; border-radius: 8px; }
+        .store-qr-result .store-qr-url { font-size: 12px; word-break: break-all; color: #007AFF; margin: 0 0 10px 0; }
+        .btn-copy-qr { padding: 8px 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .btn-copy-qr:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <h1>본사 어드민</h1>
+        <p>가맹점별 KYC 회원 현황 조회</p>
+    </header>
+    <main class="admin-body">
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="num" id="totalStores">0</div>
+                <div class="label">전체 가맹점</div>
+            </div>
+            <div class="summary-card">
+                <div class="num" id="totalMembers">0</div>
+                <div class="label">전체 회원</div>
+            </div>
+            <div class="summary-card">
+                <div class="num" id="totalKycDone">0</div>
+                <div class="label">KYC 인증 완료</div>
+            </div>
+        </div>
+
+        <div class="create-store-section" id="createStoreSection">
+            <div class="section-header">
+                <h2 class="section-title">가맹점 등록</h2>
+                <button type="button" class="btn-toggle-register" id="btnToggleRegister">펼치기</button>
+            </div>
+            <div class="section-body" id="createStoreBody">
+            <p class="section-desc">가맹점 ID, 이름, 비밀번호를 입력한 뒤 등록하면, 해당 가맹점 전용 KYC 링크가 생성됩니다. 가맹점 어드민은 이 ID와 비밀번호로 로그인합니다. 인증 단가를 함께 입력하면 이용금액이 저장됩니다.</p>
+            <form class="create-store-form" id="formCreateStore">
+                <div class="field">
+                    <label for="inputStoreId">가맹점 ID *</label>
+                    <input type="text" id="inputStoreId" placeholder="예: KNC, STORE_001" required>
+                </div>
+                <div class="field">
+                    <label for="inputStoreName">가맹점 이름 *</label>
+                    <input type="text" id="inputStoreName" placeholder="예: 강남점, 서초점" required>
+                </div>
+                <div class="field">
+                    <label for="inputStorePassword">가맹점 비밀번호 *</label>
+                    <input type="password" id="inputStorePassword" placeholder="가맹점 어드민 로그인용 비밀번호" required autocomplete="new-password">
+                </div>
+                <div class="field" style="width:100%; margin-top:8px;">
+                    <span class="section-desc" style="display:block; margin-bottom:8px;">이용금액 (인증 단가 — 등록 시 함께 저장)</span>
+                </div>
+                <div class="field">
+                    <label for="inputStorePriceSms">문자인증 단가 (원)</label>
+                    <input type="number" id="inputStorePriceSms" min="0" step="1" placeholder="100">
+                </div>
+                <div class="field">
+                    <label for="inputStorePriceIdDoc">신분증 인증 단가 (원)</label>
+                    <input type="number" id="inputStorePriceIdDoc" min="0" step="1" placeholder="200">
+                </div>
+                <div class="field">
+                    <label for="inputStorePriceAccount">1원 인증 단가 (원)</label>
+                    <input type="number" id="inputStorePriceAccount" min="0" step="1" placeholder="150">
+                </div>
+                <div class="field">
+                    <label for="inputStorePriceIntegrated">통합 (원)</label>
+                    <input type="number" id="inputStorePriceIntegrated" min="0" step="1" placeholder="0" title="설정 시 KYC 완료 1건당 이 금액으로 정산">
+                </div>
+                <button type="submit" class="btn-register" id="btnRegister">등록</button>
+            </form>
+            <div class="qr-result-card" id="qrResultCard">
+                <div class="qr-title" id="qrResultTitle">가맹점 전용 KYC 링크</div>
+                <div class="qr-wrap">
+                    <div class="qr-info">
+                        <p><strong id="qrResultStoreName"></strong> <span id="qrResultStoreId" style="color:#6e6e73; font-size:13px;"></span></p>
+                        <p>회원이 아래 링크로 접속하면 KYC 인증을 시작하며, 자동으로 이 가맹점으로 구분됩니다.</p>
+                        <p class="qr-url" id="qrResultUrl"></p>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div id="storeListSection">
+            <h2 class="section-title">가맹점 구분</h2>
+            <p class="section-desc">가맹점을 클릭하면 해당 가맹점 회원만 필터됩니다. "전체 보기"로 모든 회원을 볼 수 있습니다.</p>
+            <div class="store-filter-actions">
+                <button type="button" class="filter-btn active" id="btnFilterAll">전체 보기</button>
+                <span class="filter-sep">|</span>
+                <span class="filter-label">가맹점 선택:</span>
+            </div>
+            <div class="store-list" id="storeList"></div>
+        </div>
+
+        <div id="storePricesModal" class="modal-overlay-prices" aria-hidden="true">
+            <div class="modal-prices-box">
+                <h3 id="storePricesModalTitle">가맹점 금원 수정</h3>
+                <div class="field">
+                    <label for="modalPriceSms">문자인증 단가 (원)</label>
+                    <input type="number" id="modalPriceSms" min="0" step="1">
+                </div>
+                <div class="field">
+                    <label for="modalPriceIdDoc">신분증 인증 단가 (원)</label>
+                    <input type="number" id="modalPriceIdDoc" min="0" step="1">
+                </div>
+                <div class="field">
+                    <label for="modalPriceAccount">1원 인증 단가 (원)</label>
+                    <input type="number" id="modalPriceAccount" min="0" step="1">
+                </div>
+                <div class="field">
+                    <label for="modalPriceIntegrated">통합 (원)</label>
+                    <input type="number" id="modalPriceIntegrated" min="0" step="1" title="설정 시 KYC 완료 1건당 이 금액으로 정산">
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="btn-save-prices-modal" id="btnModalSavePrices">저장</button>
+                    <button type="button" class="btn-cancel-prices" id="btnModalCancelPrices">취소</button>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">전체 회원 현황 (문자·신분증·계좌 인증)</h2>
+        <div class="table-wrap">
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>가맹점</th>
+                            <th>회원 (문자인증 이름)</th>
+                            <th>문자인증</th>
+                            <th>신분증 인증</th>
+                            <th>계좌 인증</th>
+                            <th>KYC 결과</th>
+                        </tr>
+                    </thead>
+                    <tbody id="memberList"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    <script>
+        window.ADMIN_API_BASE = window.ADMIN_API_BASE || (typeof location !== 'undefined' ? location.origin : '');
+
+        var storesFallback = [
+            { id: 'STORE_001', name: '강남점', members: [
+                { name: '김철수', sms: 'complete', idDoc: 'complete', account: 'complete' },
+                { name: '이영희', sms: 'complete', idDoc: 'complete', account: 'fail' }
+            ]},
+            { id: 'STORE_002', name: '서초점', members: [
+                { name: '박민수', sms: 'complete', idDoc: 'fail', account: 'wait' },
+                { name: '정수진', sms: 'complete', idDoc: 'complete', account: 'complete' }
+            ]},
+            { id: 'STORE_003', name: '역삼점', members: [
+                { name: '최동훈', sms: 'complete', idDoc: 'complete', account: 'complete' }
+            ]}
+        ];
+
+        var stores = [];
+        var selectedStoreId = null;
+
+        function isKycComplete(m) {
+            return m.sms === 'complete' && m.idDoc === 'complete' && m.account === 'complete';
+        }
+
+        function renderBadge(value) {
+            if (value === 'complete') return '<span class="badge badge--complete">완료</span>';
+            if (value === 'fail') return '<span class="badge badge--fail">실패</span>';
+            return '<span class="badge badge--wait">대기</span>';
+        }
+
+        function getAllMembersWithStore() {
+            var list = [];
+            stores.forEach(function (s) {
+                (s.members || []).forEach(function (m) {
+                    list.push({
+                        storeId: s.id || '',
+                        storeName: s.name || s.id || '-',
+                        name: m.name,
+                        sms: m.sms,
+                        idDoc: m.idDoc,
+                        account: m.account
+                    });
+                });
+            });
+            return list;
+        }
+
+        function renderStoreList(list) {
+            var el = document.getElementById('storeList');
+            el.innerHTML = '';
+            list.forEach(function (s) {
+                var done = (s.members || []).filter(isKycComplete).length;
+                var u = s.usage || { sms: { count: 0, amount: 0 }, idDoc: { count: 0, amount: 0 }, account: { count: 0, amount: 0 } };
+                var totalAmt = s.totalAmount != null ? s.totalAmount : (u.sms.amount + u.idDoc.amount + u.account.amount);
+                var usageHtml = '<div class="store-usage">' +
+                    '문자 <span class="num">' + (u.sms.count || 0) + '회</span> / ' + (u.sms.amount || 0).toLocaleString() + '원 ' +
+                    '신분증 <span class="num">' + (u.idDoc.count || 0) + '회</span> / ' + (u.idDoc.amount || 0).toLocaleString() + '원 ' +
+                    '1원 <span class="num">' + (u.account.count || 0) + '회</span> / ' + (u.account.amount || 0).toLocaleString() + '원 ' +
+                    '→ 합계 <span class="total-amount">' + (totalAmt || 0).toLocaleString() + '원</span></div>';
+                var card = document.createElement('div');
+                card.className = 'store-card' + (selectedStoreId === s.id ? ' active' : '');
+                card.dataset.storeId = s.id;
+                var pr = s.prices || {};
+                var suspendedBadge = s.suspended ? '<span class="badge-suspended">이용정지</span>' : '';
+                var suspendBtn = s.suspended
+                    ? '<button type="button" class="btn-unsuspend-store">이용정지 해제</button>'
+                    : '<button type="button" class="btn-suspend-store">이용정지</button>';
+                card.innerHTML =
+                    '<div class="store-info">' +
+                    '<div class="store-id">' + (s.id || '-') + '</div>' +
+                    '<div class="store-name-row"><span class="store-name">' + (s.name || '-') + '</span>' + suspendedBadge + '<button type="button" class="btn-edit-store">수정</button>' + suspendBtn + '<button type="button" class="btn-delete-store">삭제</button></div>' +
+                    usageHtml +
+                    '</div>' +
+                    '<div class="card-right">' +
+                    '<div class="store-stats">' +
+                    '<span>회원 <strong>' + (s.members ? s.members.length : 0) + '</strong>명</span>' +
+                    '<span>KYC 완료 <strong>' + done + '</strong>명</span>' +
+                    '</div>' +
+                    '<button type="button" class="btn-qr" data-store-id="' + (s.id || '') + '" data-store-name="' + (s.name || s.id || '').replace(/"/g, '&quot;') + '">QR 보기</button>' +
+                    '</div>' +
+                    '<div class="store-qr-result"><div class="store-qr-result-inner">' +
+                    '<img class="store-qr-img" src="" alt="QR">' +
+                    '<p class="store-qr-url"></p>' +
+                    '<button type="button" class="btn-copy-qr">QR 복사하기</button></div></div>';
+                card.addEventListener('click', function (e) {
+                    if (e.target.classList.contains('btn-qr') || e.target.classList.contains('btn-copy-qr') || e.target.classList.contains('btn-edit-store') || e.target.classList.contains('btn-suspend-store') || e.target.classList.contains('btn-unsuspend-store') || e.target.classList.contains('btn-delete-store')) return;
+                    setStoreFilter(s.id);
+                });
+                card.querySelector('.btn-qr').addEventListener('click', function (e) { e.stopPropagation(); showStoreQRBelow(s.id, s.name || s.id, card); });
+                card.querySelector('.btn-copy-qr').addEventListener('click', function (e) { e.stopPropagation(); copyStoreQRUrl(card); });
+                card.querySelector('.btn-edit-store').addEventListener('click', function (e) { e.stopPropagation(); openStorePricesModal(s); });
+                var suspendBtnEl = card.querySelector('.btn-suspend-store');
+                var unsuspendBtnEl = card.querySelector('.btn-unsuspend-store');
+                if (suspendBtnEl) suspendBtnEl.addEventListener('click', function (e) { e.stopPropagation(); setStoreSuspend(s.id, true, s.name); });
+                if (unsuspendBtnEl) unsuspendBtnEl.addEventListener('click', function (e) { e.stopPropagation(); setStoreSuspend(s.id, false, s.name); });
+                card.querySelector('.btn-delete-store').addEventListener('click', function (e) { e.stopPropagation(); deleteStoreConfirm(s.id, s.name); });
+                el.appendChild(card);
+            });
+        }
+
+        var currentPrices = { sms: 100, idDoc: 200, account: 150, integrated: 0 };
+
+        function fillPriceInputs(prices) {
+            if (prices) {
+                currentPrices = { sms: prices.sms != null ? prices.sms : 100, idDoc: prices.idDoc != null ? prices.idDoc : 200, account: prices.account != null ? prices.account : 150, integrated: prices.integrated != null ? prices.integrated : 0 };
+                var sp = document.getElementById('inputStorePriceSms');
+                var ip = document.getElementById('inputStorePriceIdDoc');
+                var ap = document.getElementById('inputStorePriceAccount');
+                var integratedEl = document.getElementById('inputStorePriceIntegrated');
+                if (sp) sp.value = currentPrices.sms;
+                if (ip) ip.value = currentPrices.idDoc;
+                if (ap) ap.value = currentPrices.account;
+                if (integratedEl) integratedEl.value = currentPrices.integrated;
+            }
+        }
+
+        function renderAllMembersTable() {
+            var tbody = document.getElementById('memberList');
+            tbody.innerHTML = '';
+            var all = getAllMembersWithStore();
+            if (all.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="no-data">등록된 회원이 없습니다.</td></tr>';
+            } else {
+                all.forEach(function (row) {
+                    var tr = document.createElement('tr');
+                    tr.className = 'member-row';
+                    tr.dataset.storeId = row.storeId;
+                    tr.innerHTML =
+                        '<td><div>' + (row.storeName || '-') + '</div><div class="td-store-id">' + (row.storeId || '') + '</div></td>' +
+                        '<td>' + (row.name || '-') + '</td>' +
+                        '<td>' + renderBadge(row.sms || 'wait') + '</td>' +
+                        '<td>' + renderBadge(row.idDoc || 'wait') + '</td>' +
+                        '<td>' + renderBadge(row.account || 'wait') + '</td>' +
+                        '<td>' + (isKycComplete(row)
+                            ? '<span class="btn-kyc-done">KYC 인증 완료</span>'
+                            : '<span class="btn-kyc-done btn-kyc-done--na">미완료</span>') + '</td>';
+                    tbody.appendChild(tr);
+                });
+            }
+            applyStoreFilter();
+        }
+
+        function applyStoreFilter() {
+            var rows = document.querySelectorAll('#memberList tr.member-row');
+            rows.forEach(function (tr) {
+                if (selectedStoreId === null) {
+                    tr.classList.remove('member-row-hidden');
+                } else {
+                    tr.classList.toggle('member-row-hidden', tr.dataset.storeId !== selectedStoreId);
+                }
+            });
+        }
+
+        function setStoreFilter(storeId) {
+            selectedStoreId = storeId;
+            document.getElementById('btnFilterAll').classList.toggle('active', storeId === null);
+            renderStoreList(stores);
+            applyStoreFilter();
+        }
+
+        function updateSummary() {
+            var totalMembers = 0;
+            var totalDone = 0;
+            stores.forEach(function (s) {
+                var list = s.members || [];
+                totalMembers += list.length;
+                totalDone += list.filter(isKycComplete).length;
+            });
+            document.getElementById('totalStores').textContent = stores.length;
+            document.getElementById('totalMembers').textContent = totalMembers;
+            document.getElementById('totalKycDone').textContent = totalDone;
+        }
+
+        document.getElementById('btnFilterAll').addEventListener('click', function () {
+            selectedStoreId = null;
+            document.getElementById('btnFilterAll').classList.add('active');
+            renderStoreList(stores);
+            applyStoreFilter();
+        });
+
+        document.getElementById('btnToggleRegister').addEventListener('click', function () {
+            var section = document.getElementById('createStoreSection');
+            var btn = document.getElementById('btnToggleRegister');
+            section.classList.toggle('expanded');
+            btn.textContent = section.classList.contains('expanded') ? '접기' : '펼치기';
+        });
+
+        var editingStoreId = null;
+        function openStorePricesModal(store) {
+            editingStoreId = store.id;
+            document.getElementById('storePricesModalTitle').textContent = (store.name || store.id) + ' — 금원 수정';
+            var p = store.prices || {};
+            document.getElementById('modalPriceSms').value = p.sms != null ? p.sms : 100;
+            document.getElementById('modalPriceIdDoc').value = p.idDoc != null ? p.idDoc : 200;
+            document.getElementById('modalPriceAccount').value = p.account != null ? p.account : 150;
+            document.getElementById('modalPriceIntegrated').value = p.integrated != null ? p.integrated : 0;
+            document.getElementById('storePricesModal').classList.add('show');
+            document.getElementById('storePricesModal').setAttribute('aria-hidden', 'false');
+        }
+        function closeStorePricesModal() {
+            document.getElementById('storePricesModal').classList.remove('show');
+            document.getElementById('storePricesModal').setAttribute('aria-hidden', 'true');
+            editingStoreId = null;
+        }
+        document.getElementById('btnModalSavePrices').addEventListener('click', function () {
+            if (!editingStoreId) return;
+            var sms = parseInt(document.getElementById('modalPriceSms').value, 10);
+            var idDoc = parseInt(document.getElementById('modalPriceIdDoc').value, 10);
+            var account = parseInt(document.getElementById('modalPriceAccount').value, 10);
+            var integrated = parseInt(document.getElementById('modalPriceIntegrated').value, 10);
+            if (isNaN(sms)) sms = 100;
+            if (isNaN(idDoc)) idDoc = 200;
+            if (isNaN(account)) account = 150;
+            if (isNaN(integrated)) integrated = 0;
+            var btn = document.getElementById('btnModalSavePrices');
+            btn.disabled = true;
+            var apiBase = window.ADMIN_API_BASE || '';
+            fetch(apiBase + '/api/store-prices', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ storeId: editingStoreId, sms: sms, idDoc: idDoc, account: account, integrated: integrated })
+            }).then(function (r) { return r.json(); }).then(function (data) {
+                btn.disabled = false;
+                if (data.error) { alert(data.error + (data.message ? ': ' + data.message : '')); return; }
+                closeStorePricesModal();
+                loadStores();
+                alert('해당 가맹점 금원이 저장되었습니다.');
+            }).catch(function () {
+                btn.disabled = false;
+                alert('저장에 실패했습니다.');
+            });
+        });
+        document.getElementById('btnModalCancelPrices').addEventListener('click', closeStorePricesModal);
+        document.getElementById('storePricesModal').addEventListener('click', function (e) {
+            if (e.target === this) closeStorePricesModal();
+        });
+
+        function setStoreSuspend(storeId, suspended, storeName) {
+            var msg = suspended ? ('"' + (storeName || storeId) + '" 가맹점을 이용정지 하시겠습니까?') : ('"' + (storeName || storeId) + '" 가맹점 이용정지를 해제하시겠습니까?');
+            if (!confirm(msg)) return;
+            var apiBase = window.ADMIN_API_BASE || '';
+            fetch(apiBase + '/api/store-suspend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ storeId: storeId, suspended: suspended })
+            }).then(function (r) { return r.json(); }).then(function (data) {
+                if (data.error) { alert(data.error); return; }
+                loadStores();
+                alert(suspended ? '이용정지 처리되었습니다.' : '이용정지가 해제되었습니다.');
+            }).catch(function () { alert('요청에 실패했습니다.'); });
+        }
+
+        function deleteStoreConfirm(storeId, storeName) {
+            if (!confirm('"' + (storeName || storeId) + '" 가맹점을 삭제하시겠습니까?\n삭제 시 해당 가맹점의 회원·단가·이용 데이터가 모두 삭제되며 복구할 수 없습니다.')) return;
+            var apiBase = window.ADMIN_API_BASE || '';
+            fetch(apiBase + '/api/store-delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ storeId: storeId })
+            }).then(function (r) { return r.json(); }).then(function (data) {
+                if (data.error) { alert(data.error); return; }
+                loadStores();
+                renderAllMembersTable();
+                alert('가맹점이 삭제되었습니다.');
+            }).catch(function () { alert('삭제 요청에 실패했습니다.'); });
+        }
+
+        var baseKycUrl = (typeof location !== 'undefined' ? location.origin : '') + '/?start=1';
+        var qrApi = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=';
+
+        function showStoreQRBelow(storeId, storeName, card) {
+            var qrResult = card.querySelector('.store-qr-result');
+            if (!qrResult) return;
+            if (qrResult.classList.contains('show')) {
+                qrResult.classList.remove('show');
+                return;
+            }
+            var url = baseKycUrl + '&store=' + encodeURIComponent(storeId);
+            document.querySelectorAll('.store-qr-result').forEach(function (el) { el.classList.remove('show'); });
+            var img = qrResult.querySelector('.store-qr-img');
+            var urlEl = qrResult.querySelector('.store-qr-url');
+            if (img) img.src = qrApi + encodeURIComponent(url);
+            if (urlEl) { urlEl.textContent = url; urlEl.dataset.url = url; }
+            qrResult.classList.add('show');
+            qrResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function copyStoreQRUrl(card) {
+            var urlEl = card ? card.querySelector('.store-qr-url') : null;
+            var url = (urlEl && urlEl.dataset.url) ? urlEl.dataset.url : (urlEl ? urlEl.textContent.trim() : '');
+            if (!url && card && card.dataset.storeId) url = baseKycUrl + '&store=' + encodeURIComponent(card.dataset.storeId);
+            if (!url) { alert('QR 보기를 먼저 눌러 주세요.'); return; }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(function () { alert('링크가 복사되었습니다.'); }).catch(function () { fallbackCopy(url); });
+            } else {
+                fallbackCopy(url);
+            }
+        }
+        function fallbackCopy(text) {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                alert('링크가 복사되었습니다.');
+            } catch (e) {
+                alert('복사에 실패했습니다. 링크를 직접 선택해 복사해 주세요.');
+            }
+            document.body.removeChild(ta);
+        }
+
+        function showStoreQR(storeId, storeName) {
+            var url = baseKycUrl + '&store=' + encodeURIComponent(storeId);
+            document.getElementById('qrResultStoreName').textContent = storeName || storeId || '-';
+            document.getElementById('qrResultStoreId').textContent = storeId ? '(' + storeId + ')' : '';
+            document.getElementById('qrResultUrl').textContent = url;
+            document.getElementById('qrResultCard').classList.add('show');
+            document.getElementById('qrResultCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        document.getElementById('formCreateStore').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var idInput = document.getElementById('inputStoreId');
+            var nameInput = document.getElementById('inputStoreName');
+            var pwInput = document.getElementById('inputStorePassword');
+            var storeId = (idInput.value || '').trim();
+            var storeName = (nameInput.value || '').trim() || storeId;
+            var password = (pwInput.value || '').trim();
+            if (!storeId) { alert('가맹점 ID를 입력해 주세요.'); return; }
+            if (!password) { alert('가맹점 비밀번호를 입력해 주세요.'); return; }
+            var btn = document.getElementById('btnRegister');
+            btn.disabled = true;
+            var apiBase = window.ADMIN_API_BASE || '';
+            fetch(apiBase + '/api/create-store', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ storeId: storeId, storeName: storeName, password: password })
+            }).then(function (r) {
+                return r.json().then(function (data) {
+                    if (!r.ok) throw new Error(data.error || data.message || '등록 실패 (HTTP ' + r.status + ')');
+                    return data;
+                });
+            }).then(function (data) {
+                if (data && data.error) {
+                    btn.disabled = false;
+                    alert(data.error + (data.message ? '\n' + data.message : ''));
+                    return;
+                }
+                var priceSms = document.getElementById('inputStorePriceSms').value;
+                var priceIdDoc = document.getElementById('inputStorePriceIdDoc').value;
+                var priceAccount = document.getElementById('inputStorePriceAccount').value;
+                var priceIntegrated = document.getElementById('inputStorePriceIntegrated').value;
+                var sms = priceSms !== '' ? parseInt(priceSms, 10) : currentPrices.sms;
+                var idDoc = priceIdDoc !== '' ? parseInt(priceIdDoc, 10) : currentPrices.idDoc;
+                var account = priceAccount !== '' ? parseInt(priceAccount, 10) : currentPrices.account;
+                var integrated = priceIntegrated !== '' ? parseInt(priceIntegrated, 10) : (currentPrices.integrated || 0);
+                if (isNaN(sms)) sms = currentPrices.sms;
+                if (isNaN(idDoc)) idDoc = currentPrices.idDoc;
+                if (isNaN(account)) account = currentPrices.account;
+                if (isNaN(integrated)) integrated = currentPrices.integrated || 0;
+                // 등록 직후 목록에 바로 반영 (이후 loadStores로 서버 데이터와 동기화)
+                var newStore = { id: storeId, name: storeName, members: [], usage: { sms: { count: 0, amount: 0 }, idDoc: { count: 0, amount: 0 }, account: { count: 0, amount: 0 } }, totalAmount: 0, prices: { sms: sms, idDoc: idDoc, account: account, integrated: integrated || 0 }, suspended: false };
+                stores = stores.filter(function (s) { return s.id !== storeId; });
+                stores.push(newStore);
+                updateSummary();
+                renderStoreList(stores);
+                renderAllMembersTable();
+                idInput.value = '';
+                nameInput.value = '';
+                pwInput.value = '';
+                btn.disabled = false;
+                showStoreQR(storeId, storeName);
+                loadStores();
+                // 단가 저장(전역 + 이 가맹점용)
+                fetch(apiBase + '/api/usage-prices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sms: sms, idDoc: idDoc, account: account, integrated: integrated })
+                }).then(function (r2) { return r2.json(); }).then(function (data2) {
+                    if (data2 && data2.prices) fillPriceInputs(data2.prices);
+                    fetch(apiBase + '/api/store-prices', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ storeId: storeId, sms: sms, idDoc: idDoc, account: account, integrated: integrated })
+                    }).then(function () { loadStores(); }).catch(function () { loadStores(); });
+                }).catch(function () { loadStores(); });
+            }).catch(function (err) {
+                btn.disabled = false;
+                alert(err.message || '등록 요청에 실패했습니다.');
+            });
+        });
+
+        function loadStores() {
+            if (window.ADMIN_API_BASE) {
+                fetch(window.ADMIN_API_BASE + '/api/stores')
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        stores = (data && data.stores) ? data.stores : storesFallback;
+                        if (data && data.prices) fillPriceInputs(data.prices);
+                        updateSummary();
+                        renderStoreList(stores);
+                        renderAllMembersTable();
+                    })
+                    .catch(function () {
+                        if (stores.length === 0) stores = storesFallback;
+                        updateSummary();
+                        renderStoreList(stores);
+                        renderAllMembersTable();
+                    });
+            } else {
+                stores = storesFallback;
+                fillPriceInputs({ sms: 100, idDoc: 200, account: 150 });
+                updateSummary();
+                renderStoreList(stores);
+                renderAllMembersTable();
+            }
+        }
+
+        loadStores();
+    </script>
+</body>
+</html>
