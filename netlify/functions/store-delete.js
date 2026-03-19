@@ -1,4 +1,4 @@
-const { deleteStore, getStorageErrorHelp } = require('./storage');
+const { deleteStore, getKycData, getStorageErrorHelp } = require('./storage');
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -33,6 +33,18 @@ exports.handler = async (event, context) => {
 
   try {
     await deleteStore(event, storeId);
+    await new Promise(function (r) { setTimeout(r, 200); });
+    const after = await getKycData(event);
+    if (Object.prototype.hasOwnProperty.call(after.data || {}, storeId)) {
+      return {
+        statusCode: 500,
+        headers: { ...CORS, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          error: '삭제가 저장소에 반영되지 않았습니다.',
+          message: '잠시 후 다시 시도하거나, Netlify 대시보드에서 Blobs/Upstash 환경 변수가 설정되었는지 확인해 주세요.',
+        }),
+      };
+    }
     return {
       statusCode: 200,
       headers: { ...CORS, 'Content-Type': 'application/json' },
