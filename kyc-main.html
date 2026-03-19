@@ -110,7 +110,7 @@
 
         /* ===== 2. KYC 회사 화면 ===== */
         .view-company .view-body { padding: 0; display: flex; flex-direction: column; flex: 1; min-height: 0; }
-        .hero { flex-shrink: 0; position: relative; background: linear-gradient(135deg, #1A3A5B 0%, #0F2744 100%); padding: clamp(32px, 10vw, 48px) clamp(16px, 5vw, 24px) clamp(40px, 12vw, 56px); overflow: hidden; }
+        .hero { flex-shrink: 0; position: relative; background: linear-gradient(135deg, #1A3A5B 0%, #0F2744 100%); padding: clamp(24px, 8vw, 40px) clamp(16px, 5vw, 24px) clamp(24px, 8vw, 40px); overflow: hidden; }
         .hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 32px; background: #E8ECF0; border-radius: 24px 24px 0 0; }
         .hero-inner { position: relative; z-index: 1; }
         .hero-title { font-size: 28px; font-weight: 800; letter-spacing: 0.08em; color: #fff; text-align: center; margin: 0 0 6px 0; text-transform: uppercase; font-family: 'Inter', sans-serif; }
@@ -121,7 +121,7 @@
         .circle-3 { width: 32px; height: 32px; background: rgba(255,255,255,0.15); top: 24px; right: 8%; }
         .circle-4 { width: 56px; height: 56px; border: 2px solid rgba(90,200,250,0.5); bottom: 24px; left: 8%; }
         .circle-5 { width: 24px; height: 24px; background: rgba(255,255,255,0.2); bottom: 40px; right: 12%; }
-        .view-company .scroll-area { display: flex; justify-content: center; align-items: center; padding: clamp(12px, 4vw, 20px); min-height: 0; }
+        .view-company .scroll-area { display: flex; justify-content: center; align-items: flex-start; padding: 4px clamp(12px, 4vw, 20px) 20px; min-height: 0; }
         /* 가맹점 확인 화면 (QR 스캔 시) */
         .view-store-confirm .view-body { padding: 0; display: flex; flex-direction: column; flex: 1; min-height: 0; }
         .hero--store-confirm { padding: clamp(28px, 8vw, 40px) 20px; }
@@ -150,9 +150,9 @@
                 0 24px 48px rgba(0,0,0,0.06);
         }
         .phone-top-bar { height: 6px; background: linear-gradient(90deg, #1A3A5B, #0F2744); }
-        .phone-content { padding: clamp(60px, 18vw, 80px) clamp(16px, 5vw, 28px) clamp(32px, 10vw, 48px); text-align: center; }
+        .phone-content { padding: clamp(24px, 6vw, 40px) clamp(16px, 5vw, 28px) clamp(24px, 8vw, 40px); text-align: center; }
         .kyc-icon-wrap {
-            width: 180px; height: 180px; margin: 0 auto 40px;
+            width: 180px; height: 180px; margin: 0 auto 20px;
             background: linear-gradient(152deg, #1A3A5B 0%, #152a45 40%, #0d2137 100%);
             border-radius: 28px; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 20px 40px rgba(26,58,91,0.4), 0 0 0 1px rgba(255,255,255,0.06) inset;
@@ -210,8 +210,8 @@
                 3px 5px 4px rgba(0,0,0,0.1),
                 4px 7px 8px rgba(0,0,0,0.06);
         }
-        .kyc-sublabel { font-size: 13px; font-weight: 600; color: #8E8E93; letter-spacing: 0.2em; margin: 0 0 56px 0; }
-        .phone-footer { position: relative; height: 144px; margin-top: 48px; }
+        .kyc-sublabel { font-size: 13px; font-weight: 600; color: #8E8E93; letter-spacing: 0.2em; margin: 0 0 24px 0; }
+        .phone-footer { position: relative; height: 100px; margin-top: 20px; }
         .phone-footer svg { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; }
         .btn-company-start { flex-shrink: 0; display: block; width: calc(100% - clamp(24px, 6vw, 40px)); margin: 0 clamp(12px, 4vw, 20px); margin-bottom: calc(24px + env(safe-area-inset-bottom)); padding: 18px; background: #1A2F4A; color: #fff; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 2px 8px rgba(26,47,74,0.25); }
         .btn-company-start:active { transform: scale(0.98); }
