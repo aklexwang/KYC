@@ -10,6 +10,12 @@ exports.handler = async (event, context) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
   if (event.httpMethod !== 'POST') return { statusCode: 405, headers: CORS, body: '' };
 
+  // Netlify Blobs: 배포 환경에서 컨텍스트를 요청 직후 연결
+  try {
+    const { connectLambda } = require('@netlify/blobs');
+    connectLambda(event);
+  } catch (e) {}
+
   let body;
   try {
     body = JSON.parse(event.body || '{}');

@@ -571,12 +571,18 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ storeId: storeId })
-            }).then(function (r) { return r.json(); }).then(function (data) {
-                if (data.error) { alert(data.error); return; }
-                loadStores();
+            }).then(function (r) {
+                if (!r.ok) return r.json().then(function (d) { throw new Error(d && d.message ? d.message : '삭제 실패'); });
+                return r.json();
+            }).then(function (data) {
+                if (data && data.error) { alert(data.error); return; }
+                stores = stores.filter(function (s) { return s.id !== storeId; });
+                updateSummary();
+                renderStoreList(stores);
                 renderAllMembersTable();
+                loadStores(true);
                 alert('가맹점이 삭제되었습니다.');
-            }).catch(function () { alert('삭제 요청에 실패했습니다.'); });
+            }).catch(function (err) { alert(err && err.message ? err.message : '삭제 요청에 실패했습니다.'); });
         }
 
         var baseKycUrl = (typeof location !== 'undefined' ? location.origin : '') + '/?start=1';
@@ -698,9 +704,11 @@
             });
         });
 
-        function loadStores() {
+        function loadStores(noCache) {
             if (window.ADMIN_API_BASE) {
-                fetch(window.ADMIN_API_BASE + '/api/stores')
+                var url = window.ADMIN_API_BASE + '/api/stores';
+                if (noCache) url += '?t=' + Date.now();
+                fetch(url, noCache ? { cache: 'no-store' } : {})
                     .then(function (r) { return r.json(); })
                     .then(function (data) {
                         stores = (data && data.stores) ? data.stores : storesFallback;
