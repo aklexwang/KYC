@@ -140,10 +140,11 @@
         .store-confirm-card .btn-company-start { width: 100%; margin: 0; }
         .phone-screen {
             width: min(300px, 88vmin); max-width: 300px; margin: 0 auto; flex-shrink: 0;
-            aspect-ratio: 1 / 1.2;
+            aspect-ratio: 1 / 1;
             display: flex; flex-direction: column;
             background: #fff; border-radius: 44px; overflow: hidden;
-            border: 1px solid rgba(226, 232, 240, 0.8);
+            border: 6px solid #1A3A5B;
+            border-top: none;
             box-shadow:
                 0 1px 0 rgba(255,255,255,0.8) inset,
                 0 2px 4px rgba(0,0,0,0.04),
@@ -152,7 +153,7 @@
                 0 16px 32px rgba(26,58,91,0.12),
                 0 24px 48px rgba(0,0,0,0.06);
         }
-        .phone-top-bar { height: 6px; background: linear-gradient(90deg, #1A3A5B, #0F2744); }
+        .phone-top-bar { height: 6px; background: linear-gradient(90deg, #1A3A5B, #0F2744); flex-shrink: 0; }
         .phone-content {
             padding: clamp(20px, 5vmin, 48px) clamp(20px, 5vmin, 32px) clamp(24px, 6vmin, 48px);
             text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-height: 0;
