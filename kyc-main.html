@@ -121,7 +121,7 @@
         .circle-3 { width: 32px; height: 32px; background: rgba(255,255,255,0.15); top: 24px; right: 8%; }
         .circle-4 { width: 56px; height: 56px; border: 2px solid rgba(90,200,250,0.5); bottom: 24px; left: 8%; }
         .circle-5 { width: 24px; height: 24px; background: rgba(255,255,255,0.2); bottom: 40px; right: 12%; }
-        .view-company .scroll-area { display: flex; justify-content: center; align-items: flex-start; padding: 4px clamp(12px, 4vw, 20px) 12px; min-height: 0; flex: 0 1 auto; }
+        .view-company .scroll-area { display: flex; justify-content: center; align-items: flex-start; padding: 4px clamp(12px, 4vw, 20px) 12px; min-height: 0; flex: 0 1 auto; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         /* 가맹점 확인 화면 (QR 스캔 시) */
         .view-store-confirm .view-body { padding: 0; display: flex; flex-direction: column; flex: 1; min-height: 0; }
         .hero--store-confirm { padding: clamp(28px, 8vw, 40px) 20px; }
@@ -216,6 +216,34 @@
         .btn-company-start { flex-shrink: 0; display: block; width: calc(100% - clamp(24px, 6vw, 40px)); margin: 12px clamp(12px, 4vw, 20px) calc(24px + env(safe-area-inset-bottom)); padding: 18px; background: #1A2F4A; color: #fff; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 2px 8px rgba(26,47,74,0.25); }
         .btn-company-start:active { transform: scale(0.98); }
         .view-company .nav-bar { position: absolute; top: 0; left: 0; right: 0; padding-top: env(safe-area-inset-top); border: none; background: transparent; }
+
+        /* 갤럭시 폴드 등: 접었을 때(좁은 화면) */
+        @media (max-width: 380px) {
+            .view-company .hero { padding: clamp(24px, 8vw, 36px) 12px clamp(20px, 6vw, 32px); }
+            .view-company .hero-title { font-size: 22px; letter-spacing: 0.05em; }
+            .view-company .hero-tagline { font-size: 12px; }
+            .view-company .phone-screen { width: min(280px, 94vw); max-width: 94vw; min-height: 260px; }
+            .view-company .phone-content { padding: 16px 12px 20px; }
+            .view-company .kyc-icon-wrap { width: 130px; height: 130px; margin-bottom: 12px; }
+            .view-company .kyc-label { font-size: 24px; letter-spacing: 0.08em; margin-bottom: 8px; }
+            .view-company .kyc-sublabel { font-size: 12px; margin-bottom: 12px; }
+            .view-company .phone-footer { height: 44px; margin-top: 8px; }
+            .view-company .btn-company-start { margin: 8px 12px calc(20px + env(safe-area-inset-bottom)); padding: 14px; font-size: 16px; }
+        }
+        @media (max-width: 320px) {
+            .view-company .hero-title { font-size: 18px; }
+            .view-company .hero-tagline { font-size: 11px; }
+            .view-company .phone-screen { width: 96vw; }
+            .view-company .kyc-icon-wrap { width: 110px; height: 110px; margin-bottom: 10px; }
+            .view-company .kyc-label { font-size: 20px; letter-spacing: 0.04em; }
+        }
+        /* 갤럭시 폴드 등: 펼쳤을 때(넓은 화면) */
+        @media (min-width: 520px) {
+            .view-company .view-body { max-width: 480px; margin: 0 auto; width: 100%; }
+            .view-company .hero { padding: clamp(36px, 8vw, 48px) clamp(20px, 5vw, 32px) clamp(28px, 8vw, 44px); }
+            .view-company .phone-screen { width: 320px; }
+            .view-company .scroll-area { padding-bottom: 20px; }
+        }
 
         /* ===== 3. 기본정보 입력 화면 ===== */
         .view-basicinfo .view-body { padding: 0 clamp(16px, 4vw, 20px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
