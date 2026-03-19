@@ -142,9 +142,10 @@
             width: min(300px, 88vmin); max-width: 300px; margin: 0 auto; flex-shrink: 0;
             aspect-ratio: 1 / 1;
             display: flex; flex-direction: column;
-            background: #fff; border-radius: 44px; overflow: hidden;
-            border: 6px solid #1A3A5B;
-            border-top: none;
+            background: #fff;
+            border-radius: clamp(24px, 12vmin, 44px);
+            overflow: hidden;
+            border: clamp(4px, 2vmin, 6px) solid #1A3A5B;
             box-shadow:
                 0 1px 0 rgba(255,255,255,0.8) inset,
                 0 2px 4px rgba(0,0,0,0.04),
@@ -153,13 +154,13 @@
                 0 16px 32px rgba(26,58,91,0.12),
                 0 24px 48px rgba(0,0,0,0.06);
         }
-        .phone-top-bar { height: 6px; background: linear-gradient(90deg, #1A3A5B, #0F2744); flex-shrink: 0; }
+        .phone-top-bar { display: none; }
         .phone-content {
-            padding: clamp(20px, 5vmin, 48px) clamp(20px, 5vmin, 32px) clamp(24px, 6vmin, 48px);
-            text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-height: 0;
+            padding: clamp(16px, 4vmin, 48px) clamp(16px, 4vmin, 32px) clamp(24px, 6vmin, 48px);
+            text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; flex: 1; min-height: 0;
         }
         .kyc-icon-wrap {
-            width: 56%; max-width: 180px; aspect-ratio: 1; margin: 0 auto clamp(16px, 4vmin, 24px);
+            width: 72%; max-width: 220px; aspect-ratio: 1; margin: 0 auto clamp(10px, 2.5vmin, 18px);
             background: linear-gradient(152deg, #1A3A5B 0%, #152a45 40%, #0d2137 100%);
             border-radius: 28px; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 20px 40px rgba(26,58,91,0.4), 0 0 0 1px rgba(255,255,255,0.06) inset;
@@ -205,7 +206,9 @@
         }
         .kyc-label {
             font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-size: clamp(20px, 8vmin, 36px); font-weight: 700; letter-spacing: 0.12em; margin: 0 0 12px 0;
+            font-size: clamp(20px, 8vmin, 36px); font-weight: 700; letter-spacing: 0.12em;
+            margin: auto 0 8px 0;
+            transform: translateY(2cm);
             color: #1a1a2e;
             text-transform: uppercase;
             text-shadow:
@@ -217,12 +220,13 @@
                 3px 5px 4px rgba(0,0,0,0.1),
                 4px 7px 8px rgba(0,0,0,0.06);
         }
-        .kyc-sublabel { font-size: clamp(11px, 3vmin, 13px); font-weight: 600; color: #8E8E93; letter-spacing: 0.2em; margin: 0; }
-        .phone-footer { position: relative; height: clamp(24px, 6vmin, 40px); margin-top: clamp(12px, 3vmin, 20px); flex-shrink: 0; }
+        .kyc-sublabel { font-size: clamp(11px, 3vmin, 13px); font-weight: 600; color: #8E8E93; letter-spacing: 0.2em; margin: 0 0 6px 0; transform: translateY(2cm); }
+        .phone-footer { position: relative; height: clamp(24px, 6vmin, 40px); margin-top: 0; flex-shrink: 0; }
         .phone-footer svg { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; }
         .btn-company-start { flex-shrink: 0; display: block; width: calc(100% - clamp(24px, 6vw, 40px)); margin: 0 clamp(12px, 4vw, 20px) calc(24px + env(safe-area-inset-bottom)); padding: 18px; background: #1A2F4A; color: #fff; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 2px 8px rgba(26,47,74,0.25); }
         .btn-company-start:active { transform: scale(0.98); }
         .view-company .nav-bar { position: absolute; top: 0; left: 0; right: 0; padding-top: env(safe-area-inset-top); border: none; background: transparent; }
+        .view-company .nav-back { display: none; }
 
         /* 넓은 화면(폴드 펼침): 본문 너비 제한 */
         @media (min-width: 520px) {
