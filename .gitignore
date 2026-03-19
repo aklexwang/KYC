@@ -1,6 +1,9 @@
 # Local Netlify folder
 .netlify
 
+# Local fallback storage (로컬 테스트용)
+.kyc-local-store.json
+
 # Environment / secrets (do not commit)
 .env
 .env.*
