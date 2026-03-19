@@ -2,9 +2,9 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0;url=kyc-main.html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>고객확인제도</title>
-    <script>location.replace('kyc-main.html');</script>
+    <script>location.replace('kyc-main.html' + (location.search || '') + (location.hash || ''));</script>
 </head>
 <body>
     <p><a href="kyc-main.html">고객확인 시작</a></p>

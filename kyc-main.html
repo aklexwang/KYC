@@ -122,6 +122,21 @@
         .circle-4 { width: 56px; height: 56px; border: 2px solid rgba(90,200,250,0.5); bottom: 24px; left: 8%; }
         .circle-5 { width: 24px; height: 24px; background: rgba(255,255,255,0.2); bottom: 40px; right: 12%; }
         .view-company .scroll-area { display: flex; justify-content: center; align-items: center; padding: clamp(12px, 4vw, 20px); min-height: 0; }
+        /* 가맹점 확인 화면 (QR 스캔 시) */
+        .view-store-confirm .view-body { padding: 0; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+        .hero--store-confirm { padding: clamp(28px, 8vw, 40px) 20px; }
+        .hero--store-confirm .hero-title { font-size: 22px; }
+        .hero--store-confirm .hero-tagline { font-size: 14px; margin-top: 8px; }
+        .store-confirm-card-wrap { display: flex; justify-content: center; align-items: flex-start; padding: 24px 20px 40px; min-height: 0; }
+        .store-confirm-card {
+            background: #fff; border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 320px;
+            box-shadow: 0 4px 20px rgba(0,0,0,.08); border: 1px solid rgba(0,0,0,.06);
+            text-align: center;
+        }
+        .store-confirm-label { font-size: 13px; color: #6e6e73; margin: 0 0 8px 0; }
+        .store-confirm-name { font-size: 22px; font-weight: 700; color: #1A2F4A; margin: 0 0 16px 0; }
+        .store-confirm-hint { font-size: 14px; color: #5c5c5c; margin: 0 0 24px 0; line-height: 1.45; }
+        .store-confirm-card .btn-company-start { width: 100%; margin: 0; }
         .phone-screen {
             width: min(300px, 85vw); max-width: 300px; height: min(400px, 75vmin); max-height: 400px; margin: 0 auto;
             background: #fff; border-radius: 24px; overflow: hidden; flex-shrink: 0;
@@ -671,8 +686,8 @@
                                 <img src="kyc-icon.png" alt="KYC">
                                 <div class="scan-line" aria-hidden="true"></div>
                             </div>
-                            <h2 class="kyc-label">KYC</h2>
-                            <p class="kyc-sublabel">MOBILE KYC</p>
+                            <h2 class="kyc-label" id="companyStoreName">가맹점명</h2>
+                            <p class="kyc-sublabel">가맹점인증</p>
                             <div class="phone-footer">
                                 <svg viewBox="0 0 400 80" preserveAspectRatio="none">
                                     <defs><linearGradient id="footerGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#1A3A5B"/><stop offset="100%" style="stop-color:#0F2744"/></linearGradient></defs>
@@ -683,6 +698,32 @@
                     </div>
                 </div>
                 <button type="button" class="btn-company-start" id="btnCompanyStart">Get Started</button>
+            </div>
+        </div>
+
+        <!-- 2-1. 가맹점 확인 화면 (QR 스캔 시 store 파라미터 있을 때만) -->
+        <div id="view-store-confirm" class="view view-store-confirm">
+            <nav class="nav-bar nav-bar--transparent">
+                <button type="button" class="nav-back js-back" aria-label="뒤로">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </button>
+                <span class="nav-title" style="color:transparent">가맹점 확인</span>
+            </nav>
+            <div class="view-body">
+                <div class="hero hero--store-confirm">
+                    <div class="hero-inner">
+                        <h1 class="hero-title">가맹점 KYC 확인</h1>
+                        <p class="hero-tagline">아래 가맹점에서 진행하는 인증이 맞는지 확인해 주세요.</p>
+                    </div>
+                </div>
+                <div class="scroll-area store-confirm-card-wrap">
+                    <div class="store-confirm-card">
+                        <p class="store-confirm-label">KYC 진행 가맹점</p>
+                        <p class="store-confirm-name" id="storeConfirmName">-</p>
+                        <p class="store-confirm-hint">해당 가맹점의 인증이 맞으면 시작하기를 눌러 주세요.</p>
+                        <button type="button" class="btn-company-start" id="btnStoreConfirmStart">시작하기</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1038,7 +1079,7 @@
     <script>
         window.KYC_API_BASE = window.KYC_API_BASE || (typeof location !== 'undefined' ? location.origin : '');  // 비우면 같은 사이트(Netlify Functions) 사용
         (function () {
-            var viewIds = ['view-consent', 'view-company', 'view-basicinfo', 'view-identity', 'view-steps', 'view-account-verify', 'view-complete', 'view-suspended'];
+            var viewIds = ['view-consent', 'view-company', 'view-store-confirm', 'view-basicinfo', 'view-identity', 'view-steps', 'view-account-verify', 'view-complete', 'view-suspended'];
             var views = {};
             viewIds.forEach(function (id) { views[id] = document.getElementById(id); });
             var wrap = document.getElementById('wrap');
@@ -1048,7 +1089,7 @@
                 viewIds.forEach(function (vid) {
                     views[vid].classList.toggle('view--active', vid === id);
                 });
-                wrap.classList.toggle('wrap--company', id === 'view-company');
+                wrap.classList.toggle('wrap--company', id === 'view-company' || id === 'view-store-confirm');
             }
 
             function goTo(id) {
@@ -1057,7 +1098,7 @@
                 showView(id);
             }
 
-            // QR 코드로 진입 시 바로 고객확인(동의) 화면으로 이동 + 가맹점 구분용 store 파라미터 저장
+            // QR/URL로 진입 시: 사진2(가맹점명·가맹점인증 + Get Started) 화면 먼저 표시, 가맹점명 자리에 해당 가맹점 이름 표시
             (function checkQREntry() {
                 var params = new URLSearchParams(window.location.search);
                 var hash = (window.location.hash || '').toLowerCase();
@@ -1068,7 +1109,21 @@
                 }
                 if (isQREntry) {
                     historyStack.push('view-company');
-                    showView('view-consent');
+                    showView('view-company');
+                    var nameEl = document.getElementById('companyStoreName');
+                    if (storeId && nameEl) {
+                        nameEl.textContent = storeId;
+                        if (window.KYC_API_BASE) {
+                            fetch(window.KYC_API_BASE + '/api/stores')
+                                .then(function (r) { return r.json(); })
+                                .then(function (data) {
+                                    var stores = (data && data.stores) ? data.stores : [];
+                                    var store = stores.find(function (s) { return (s.id || '') === storeId; });
+                                    if (nameEl) nameEl.textContent = (store && store.name) ? store.name : storeId;
+                                })
+                                .catch(function () { if (nameEl) nameEl.textContent = storeId; });
+                        }
+                    }
                 }
             })();
 
@@ -1184,6 +1239,9 @@
             });
 
             document.getElementById('btnCompanyStart').addEventListener('click', function () {
+                goTo('view-consent');
+            });
+            document.getElementById('btnStoreConfirmStart').addEventListener('click', function () {
                 goTo('view-consent');
             });
 
