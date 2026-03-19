@@ -139,8 +139,10 @@
         .store-confirm-hint { font-size: 14px; color: #5c5c5c; margin: 0 0 24px 0; line-height: 1.45; }
         .store-confirm-card .btn-company-start { width: 100%; margin: 0; }
         .phone-screen {
-            width: min(300px, 88vmin); max-width: 300px; min-height: 200px; margin: 0 auto; flex-shrink: 0;
-            background: #fff; border-radius: 24px; overflow: hidden;
+            width: min(300px, 88vmin); max-width: 300px; margin: 0 auto; flex-shrink: 0;
+            aspect-ratio: 1 / 1.2;
+            display: flex; flex-direction: column;
+            background: #fff; border-radius: 44px; overflow: hidden;
             border: 1px solid rgba(226, 232, 240, 0.8);
             box-shadow:
                 0 1px 0 rgba(255,255,255,0.8) inset,
@@ -151,9 +153,12 @@
                 0 24px 48px rgba(0,0,0,0.06);
         }
         .phone-top-bar { height: 6px; background: linear-gradient(90deg, #1A3A5B, #0F2744); }
-        .phone-content { padding: clamp(16px, 4vmin, 40px) clamp(14px, 4vmin, 28px) clamp(20px, 5vmin, 40px); text-align: center; }
+        .phone-content {
+            padding: clamp(20px, 5vmin, 48px) clamp(20px, 5vmin, 32px) clamp(24px, 6vmin, 48px);
+            text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-height: 0;
+        }
         .kyc-icon-wrap {
-            width: min(180px, 48vmin); height: min(180px, 48vmin); margin: 0 auto 20px;
+            width: 56%; max-width: 180px; aspect-ratio: 1; margin: 0 auto clamp(16px, 4vmin, 24px);
             background: linear-gradient(152deg, #1A3A5B 0%, #152a45 40%, #0d2137 100%);
             border-radius: 28px; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 20px 40px rgba(26,58,91,0.4), 0 0 0 1px rgba(255,255,255,0.06) inset;
@@ -211,8 +216,8 @@
                 3px 5px 4px rgba(0,0,0,0.1),
                 4px 7px 8px rgba(0,0,0,0.06);
         }
-        .kyc-sublabel { font-size: clamp(11px, 3vmin, 13px); font-weight: 600; color: #8E8E93; letter-spacing: 0.2em; margin: 0 0 16px 0; }
-        .phone-footer { position: relative; height: clamp(40px, 12vmin, 56px); margin-top: 12px; }
+        .kyc-sublabel { font-size: clamp(11px, 3vmin, 13px); font-weight: 600; color: #8E8E93; letter-spacing: 0.2em; margin: 0; }
+        .phone-footer { position: relative; height: clamp(24px, 6vmin, 40px); margin-top: clamp(12px, 3vmin, 20px); flex-shrink: 0; }
         .phone-footer svg { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; }
         .btn-company-start { flex-shrink: 0; display: block; width: calc(100% - clamp(24px, 6vw, 40px)); margin: 0 clamp(12px, 4vw, 20px) calc(24px + env(safe-area-inset-bottom)); padding: 18px; background: #1A2F4A; color: #fff; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 2px 8px rgba(26,47,74,0.25); }
         .btn-company-start:active { transform: scale(0.98); }
