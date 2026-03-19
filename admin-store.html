@@ -194,6 +194,39 @@
         }
         .admin-header .btn-logout:hover { background: rgba(255,255,255,0.3); }
         .admin-header { position: relative; }
+        .store-qr-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.06);
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .store-qr-card .qr-title { font-size: 16px; font-weight: 700; margin: 0 0 12px 0; color: #1a1a1a; }
+        .store-qr-card .qr-img-wrap {
+            padding: 12px;
+            background: #fff;
+            border: 1px solid #E5E5EA;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+        .store-qr-card .qr-img-wrap img { display: block; width: 160px; height: 160px; }
+        .store-qr-card .qr-info { flex: 1; min-width: 200px; }
+        .store-qr-card .qr-url { font-size: 13px; color: #007AFF; word-break: break-all; margin: 0 0 12px 0; }
+        .store-qr-card .btn-copy-qr {
+            padding: 10px 20px;
+            background: #1A2F4A;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .store-qr-card .btn-copy-qr:hover { opacity: 0.9; }
         @media (max-width: 600px) {
             .admin-body { padding: 16px 12px 32px; }
             th, td { padding: 10px 8px; font-size: 13px; }
@@ -239,6 +272,16 @@
             <div class="summary-card">
                 <div class="num" id="progressCount">0</div>
                 <div class="label">진행 중</div>
+            </div>
+        </div>
+        <div class="store-qr-card" id="storeQrCard">
+            <div class="qr-img-wrap">
+                <img id="storeAdminQrImg" src="" alt="KYC QR 코드" width="160" height="160">
+            </div>
+            <div class="qr-info">
+                <p class="qr-title">가맹점 KYC QR 코드</p>
+                <p class="qr-url" id="storeAdminQrUrl"></p>
+                <button type="button" class="btn-copy-qr" id="btnCopyStoreQr">링크 복사</button>
             </div>
         </div>
         <div class="table-wrap">
@@ -329,12 +372,36 @@
             window.ADMIN_STORE_ID = '';
         }
 
+        var baseKycUrl = (typeof location !== 'undefined' ? location.origin : '') + '/?start=1';
+        var qrApi = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=';
+
         function showDashboard(storeId, storeName) {
             window.ADMIN_STORE_ID = storeId || '';
             document.getElementById('headerStoreName').textContent = storeName || storeId || '';
             document.getElementById('loginWrap').style.display = 'none';
             document.getElementById('dashboardWrap').classList.add('show');
+            var qrUrl = baseKycUrl + '&store=' + encodeURIComponent(storeId || '');
+            var imgEl = document.getElementById('storeAdminQrImg');
+            var urlEl = document.getElementById('storeAdminQrUrl');
+            if (imgEl) imgEl.src = qrApi + encodeURIComponent(qrUrl);
+            if (urlEl) { urlEl.textContent = qrUrl; urlEl.dataset.url = qrUrl; }
             loadMembers();
+        }
+
+        function fallbackCopy(text) {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                alert('링크가 복사되었습니다.');
+            } catch (e) {
+                alert('복사에 실패했습니다. 링크를 직접 선택해 복사해 주세요.');
+            }
+            document.body.removeChild(ta);
         }
 
         function checkStoredLogin() {
@@ -395,6 +462,17 @@
             document.getElementById('loginPassword').value = '';
             document.getElementById('loginError').classList.remove('show');
             showLogin();
+        });
+
+        document.getElementById('btnCopyStoreQr').addEventListener('click', function () {
+            var urlEl = document.getElementById('storeAdminQrUrl');
+            var url = (urlEl && urlEl.dataset.url) ? urlEl.dataset.url : (urlEl ? urlEl.textContent.trim() : '');
+            if (!url) { alert('QR 링크가 없습니다.'); return; }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(function () { alert('링크가 복사되었습니다.'); }).catch(function () { fallbackCopy(url); });
+            } else {
+                fallbackCopy(url);
+            }
         });
 
         if (!checkStoredLogin()) {

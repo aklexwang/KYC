@@ -144,6 +144,9 @@
         .create-store-form .btn-register { padding: 10px 24px; background: #1A2F4A; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
         .create-store-form .btn-register:hover { opacity: 0.9; }
         .create-store-form .btn-register:disabled { background: #C7C7CC; cursor: not-allowed; }
+        .create-store-prices-row { display: flex; flex-wrap: nowrap; gap: 12px; align-items: flex-end; width: 100%; margin-bottom: 16px; }
+        .create-store-prices-row .field { flex: 1; min-width: 0; }
+        .create-store-prices-row input { min-width: 0; width: 100%; box-sizing: border-box; }
         .qr-result-card { display: none; background: #f8f9fa; border-radius: 12px; padding: 20px; margin-top: 16px; border: 1px solid #E5E5EA; }
         .qr-result-card.show { display: block; }
         .qr-result-card .qr-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: #1a1a1a; }
@@ -214,51 +217,42 @@
                 <button type="button" class="btn-toggle-register" id="btnToggleRegister">펼치기</button>
             </div>
             <div class="section-body" id="createStoreBody">
-            <p class="section-desc">가맹점 ID, 이름, 비밀번호를 입력한 뒤 등록하면, 해당 가맹점 전용 KYC 링크가 생성됩니다. 가맹점 어드민은 이 ID와 비밀번호로 로그인합니다. 인증 단가를 함께 입력하면 이용금액이 저장됩니다.</p>
-            <form class="create-store-form" id="formCreateStore">
+            <form class="create-store-form" id="formCreateStore" autocomplete="off">
                 <div class="field">
                     <label for="inputStoreId">가맹점 ID *</label>
-                    <input type="text" id="inputStoreId" placeholder="예: KNC, STORE_001" required>
-                </div>
-                <div class="field">
-                    <label for="inputStoreName">가맹점 이름 *</label>
-                    <input type="text" id="inputStoreName" placeholder="예: 강남점, 서초점" required>
+                    <input type="text" id="inputStoreId" placeholder="예: KNC, STORE_001" required autocomplete="off">
                 </div>
                 <div class="field">
                     <label for="inputStorePassword">가맹점 비밀번호 *</label>
                     <input type="password" id="inputStorePassword" placeholder="가맹점 어드민 로그인용 비밀번호" required autocomplete="new-password">
                 </div>
+                <div class="field">
+                    <label for="inputStoreName">가맹점 이름 *</label>
+                    <input type="text" id="inputStoreName" placeholder="예: 강남점, 서초점" required autocomplete="off">
+                </div>
                 <div class="field" style="width:100%; margin-top:8px;">
                     <span class="section-desc" style="display:block; margin-bottom:8px;">이용금액 (인증 단가 — 등록 시 함께 저장)</span>
                 </div>
-                <div class="field">
-                    <label for="inputStorePriceSms">문자인증 단가 (원)</label>
-                    <input type="number" id="inputStorePriceSms" min="0" step="1" placeholder="100">
-                </div>
-                <div class="field">
-                    <label for="inputStorePriceIdDoc">신분증 인증 단가 (원)</label>
-                    <input type="number" id="inputStorePriceIdDoc" min="0" step="1" placeholder="200">
-                </div>
-                <div class="field">
-                    <label for="inputStorePriceAccount">1원 인증 단가 (원)</label>
-                    <input type="number" id="inputStorePriceAccount" min="0" step="1" placeholder="150">
-                </div>
-                <div class="field">
-                    <label for="inputStorePriceIntegrated">통합 (원)</label>
-                    <input type="number" id="inputStorePriceIntegrated" min="0" step="1" placeholder="0" title="설정 시 KYC 완료 1건당 이 금액으로 정산">
+                <div class="create-store-prices-row">
+                    <div class="field">
+                        <label for="inputStorePriceSms">문자인증 단가 (원)</label>
+                        <input type="number" id="inputStorePriceSms" min="0" step="1" placeholder="100">
+                    </div>
+                    <div class="field">
+                        <label for="inputStorePriceIdDoc">신분증 인증 단가 (원)</label>
+                        <input type="number" id="inputStorePriceIdDoc" min="0" step="1" placeholder="200">
+                    </div>
+                    <div class="field">
+                        <label for="inputStorePriceAccount">1원 인증 단가 (원)</label>
+                        <input type="number" id="inputStorePriceAccount" min="0" step="1" placeholder="150">
+                    </div>
+                    <div class="field">
+                        <label for="inputStorePriceIntegrated">통합 (원)</label>
+                        <input type="number" id="inputStorePriceIntegrated" min="0" step="1" placeholder="0" title="설정 시 KYC 완료 1건당 이 금액으로 정산">
+                    </div>
                 </div>
                 <button type="submit" class="btn-register" id="btnRegister">등록</button>
             </form>
-            <div class="qr-result-card" id="qrResultCard">
-                <div class="qr-title" id="qrResultTitle">가맹점 전용 KYC 링크</div>
-                <div class="qr-wrap">
-                    <div class="qr-info">
-                        <p><strong id="qrResultStoreName"></strong> <span id="qrResultStoreId" style="color:#6e6e73; font-size:13px;"></span></p>
-                        <p>회원이 아래 링크로 접속하면 KYC 인증을 시작하며, 자동으로 이 가맹점으로 구분됩니다.</p>
-                        <p class="qr-url" id="qrResultUrl"></p>
-                    </div>
-                </div>
-            </div>
             </div>
         </div>
 
@@ -632,15 +626,6 @@
             document.body.removeChild(ta);
         }
 
-        function showStoreQR(storeId, storeName) {
-            var url = baseKycUrl + '&store=' + encodeURIComponent(storeId);
-            document.getElementById('qrResultStoreName').textContent = storeName || storeId || '-';
-            document.getElementById('qrResultStoreId').textContent = storeId ? '(' + storeId + ')' : '';
-            document.getElementById('qrResultUrl').textContent = url;
-            document.getElementById('qrResultCard').classList.add('show');
-            document.getElementById('qrResultCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
         document.getElementById('formCreateStore').addEventListener('submit', function (e) {
             e.preventDefault();
             var idInput = document.getElementById('inputStoreId');
@@ -692,7 +677,7 @@
                 nameInput.value = '';
                 pwInput.value = '';
                 btn.disabled = false;
-                showStoreQR(storeId, storeName);
+                alert('등록완료');
                 loadStores();
                 // 단가 저장(전역 + 이 가맹점용)
                 fetch(apiBase + '/api/usage-prices', {

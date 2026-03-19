@@ -2,6 +2,59 @@ const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
 const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
 const USE_UPSTASH = UPSTASH_URL && UPSTASH_TOKEN;
 
+const fs = require('fs/promises');
+const path = require('path');
+
+// 로컬 테스트 전용: Netlify Blobs 환경설정(siteID/token)이 없을 때만 로컬 JSON 파일로 저장합니다.
+// 배포/운영 환경에서는 기본적으로 꺼져 있어야 하므로, 명시적으로 켰을 때만 동작합니다.
+const LOCAL_FALLBACK_ENABLED = ['1', 'true', 'yes', 'on'].includes(
+  String(process.env.KYC_LOCAL_FALLBACK || '').toLowerCase()
+);
+const LOCAL_FALLBACK_FILE = process.env.KYC_LOCAL_STORE_FILE
+  ? String(process.env.KYC_LOCAL_STORE_FILE)
+  : path.resolve(__dirname, '..', '..', '.kyc-local-store.json');
+
+let localFallbackCache = null;
+let localFallbackDirty = false;
+
+async function loadLocalFallbackStore() {
+  if (localFallbackCache) return localFallbackCache;
+  try {
+    const raw = await fs.readFile(LOCAL_FALLBACK_FILE, 'utf8');
+    const parsed = JSON.parse(raw || '{}');
+    localFallbackCache = (parsed && typeof parsed === 'object') ? parsed : {};
+  } catch (err) {
+    if (err && err.code === 'ENOENT') {
+      localFallbackCache = {};
+    } else {
+      throw err;
+    }
+  }
+  return localFallbackCache;
+}
+
+async function persistLocalFallbackStore() {
+  if (!localFallbackDirty) return;
+  const data = localFallbackCache || {};
+  await fs.writeFile(LOCAL_FALLBACK_FILE, JSON.stringify(data, null, 2), 'utf8');
+  localFallbackDirty = false;
+}
+
+function getLocalFallbackBlobsStore() {
+  return {
+    async get(key) {
+      const store = await loadLocalFallbackStore();
+      return Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null;
+    },
+    async set(key, value) {
+      const store = await loadLocalFallbackStore();
+      store[key] = value;
+      localFallbackDirty = true;
+      await persistLocalFallbackStore();
+    },
+  };
+}
+
 async function upstashGet(key) {
   const res = await fetch(UPSTASH_URL + '/get/' + encodeURIComponent(key), {
     headers: { Authorization: 'Bearer ' + UPSTASH_TOKEN },
@@ -34,7 +87,16 @@ async function blobsGetStore(event) {
   try {
     connectLambda(event);
   } catch (e) {}
-  return getStore({ name: 'kyc-data', consistency: 'strong' });
+  try {
+    return getStore({ name: 'kyc-data', consistency: 'strong' });
+  } catch (err) {
+    // 로컬에서 Netlify Blobs 환경값이 없을 때: 로컬 JSON 파일로 대체
+    if (LOCAL_FALLBACK_ENABLED && err && err.name === 'MissingBlobsEnvironmentError') {
+      console.warn('[KYC] Netlify Blobs 환경값이 없어 로컬 폴백 저장소를 사용합니다:', err.name);
+      return getLocalFallbackBlobsStore();
+    }
+    throw err;
+  }
 }
 
 const DEFAULT_USAGE_PRICES = { sms: 100, idDoc: 200, account: 150, integrated: 0 };
