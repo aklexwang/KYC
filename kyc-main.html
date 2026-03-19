@@ -1083,6 +1083,11 @@
                 var nameEl = document.getElementById('basicName');
                 var storeId = '';
                 try { storeId = localStorage.getItem('kyc_store_id') || ''; } catch (e) {}
+                if (!storeId) {
+                    var p = new URLSearchParams(window.location.search);
+                    storeId = p.get('store') || p.get('sid') || '';
+                    if (storeId) try { localStorage.setItem('kyc_store_id', storeId); } catch (e2) {}
+                }
                 var data = {
                     name: (nameEl && nameEl.value) ? nameEl.value.trim() : '',
                     storeId: storeId,
