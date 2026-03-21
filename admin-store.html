@@ -1076,6 +1076,34 @@
         var MIN_USDT_FOR_USE = 100;
         var lastKnownStoreUsdt = null;
 
+        function loadStoreGateConfig(done) {
+            var apiBase = window.ADMIN_API_BASE || '';
+            if (!apiBase) {
+                MIN_USDT_FOR_USE = 100;
+                if (done) done();
+                return;
+            }
+            fetch(apiBase + '/api/store-gate-config')
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    var m = data && data.minUsdtForStoreUse != null ? Number(data.minUsdtForStoreUse) : 100;
+                    if (isFinite(m) && m >= 0) {
+                        MIN_USDT_FOR_USE = Math.round(m * 2) / 2;
+                    } else {
+                        MIN_USDT_FOR_USE = 100;
+                    }
+                    var dash = document.getElementById('dashboardWrap');
+                    if (dash && dash.classList.contains('show')) {
+                        applyStoreUsdtGate(lastKnownStoreUsdt != null && isFinite(lastKnownStoreUsdt) ? lastKnownStoreUsdt : 0);
+                    }
+                    if (done) done();
+                })
+                .catch(function () {
+                    MIN_USDT_FOR_USE = 100;
+                    if (done) done();
+                });
+        }
+
         /** 표시명 AAA → 저장소 키 STORE_001 (본사에서 부여한 ID와 동일하게 로그인) */
         function resolveStoreIdForLogin(raw) {
             var s = (raw || '').trim();
@@ -1977,9 +2005,11 @@
             });
         });
 
-        if (!checkStoredLogin()) {
-            document.getElementById('loginWrap').style.display = 'block';
-        }
+        loadStoreGateConfig(function () {
+            if (!checkStoredLogin()) {
+                document.getElementById('loginWrap').style.display = 'block';
+            }
+        });
     </script>
 </body>
 </html>

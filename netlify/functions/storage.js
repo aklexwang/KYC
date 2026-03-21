@@ -393,6 +393,40 @@ function getStorageErrorHelp() {
   return '저장소 설정: Netlify Blobs가 이 환경에서 동작하지 않습니다. Upstash(무료) 사용을 권장합니다. 1) https://console.upstash.com 에서 Redis 데이터베이스 생성 2) Netlify 대시보드 → 사이트 설정 → Environment variables 에 UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN 추가 3) 재배포';
 }
 
+const DEFAULT_STORE_GATE_MIN_USDT = 100;
+
+async function getStoreGateMinUsdt(event) {
+  if (USE_UPSTASH) {
+    const v = await upstashGet('kyc_store_gate_min_usdt');
+    if (v == null || v === '') return DEFAULT_STORE_GATE_MIN_USDT;
+    const n = typeof v === 'number' ? v : parseFloat(String(v));
+    if (!isFinite(n) || n < 0) return DEFAULT_STORE_GATE_MIN_USDT;
+    return Math.round(n * 2) / 2;
+  }
+  const store = await blobsGetStore(event);
+  const raw = await store.get('store_gate_min_usdt');
+  if (!raw) return DEFAULT_STORE_GATE_MIN_USDT;
+  try {
+    const n = parseFloat(String(raw));
+    if (!isFinite(n) || n < 0) return DEFAULT_STORE_GATE_MIN_USDT;
+    return Math.round(n * 2) / 2;
+  } catch (e) {
+    return DEFAULT_STORE_GATE_MIN_USDT;
+  }
+}
+
+async function setStoreGateMinUsdt(event, raw) {
+  const parsed = typeof raw === 'number' ? raw : parseFloat(String(raw));
+  const next = !isFinite(parsed) || parsed < 0 ? DEFAULT_STORE_GATE_MIN_USDT : Math.round(parsed * 2) / 2;
+  if (USE_UPSTASH) {
+    await upstashSet('kyc_store_gate_min_usdt', next);
+    return next;
+  }
+  const store = await blobsGetStore(event);
+  await store.set('store_gate_min_usdt', String(next));
+  return next;
+}
+
 module.exports = {
   getKycData,
   setKycData,
@@ -413,5 +447,7 @@ module.exports = {
   deleteStore,
   getStorePointsMap,
   setStorePointsMap,
+  getStoreGateMinUsdt,
+  setStoreGateMinUsdt,
   USE_UPSTASH,
 };

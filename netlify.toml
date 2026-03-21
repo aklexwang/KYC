@@ -51,6 +51,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/store-gate-config"
+  to = "/.netlify/functions/store-gate-config"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/store-suspend"
   to = "/.netlify/functions/store-suspend"
   status = 200

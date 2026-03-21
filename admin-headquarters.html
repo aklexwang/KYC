@@ -666,7 +666,12 @@
             border-right: 1px solid rgba(255,255,255,0.08);
             padding: 22px 16px;
             flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
+        .sidebar-menu--settings { margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); }
         .sidebar-title { font-size: 24px; font-weight: 700; margin: 0 0 4px 0; color: #fff; }
         .sidebar-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin: 0 0 20px 0; }
         .sidebar-menu { display: grid; gap: 8px; }
@@ -817,6 +822,26 @@
             color: #fff;
         }
         #section-members #memberListSearchInput::placeholder { color: rgba(255,255,255,0.45); }
+        #section-settings .settings-panel {
+            background: #0b153d;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 22px 24px;
+            max-width: 560px;
+        }
+        #section-settings .settings-desc { color: rgba(255,255,255,0.72); margin: 0 0 18px 0; line-height: 1.55; }
+        #section-settings .settings-usdt-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+        #section-settings .settings-usdt-row label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.88); }
+        #section-settings #hqStoreGateMinUsdt {
+            width: 140px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #0f1d4c;
+            border: 1px solid rgba(255,255,255,0.14);
+            color: #fff;
+            font-size: 15px;
+        }
+        #section-settings .settings-hint { font-size: 13px; color: #86efac; margin: 14px 0 0 0; min-height: 1.2em; }
         .create-store-form .btn-register, .btn-toggle-register, .btn-copy-qr { background: #2a74ff; }
         .store-status-option { border-color: rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.05); color: #fff; }
         .store-status-option:hover { border-color: rgba(255, 255, 255, 0.28); }
@@ -1351,6 +1376,9 @@
             <div class="menu-item" data-view="settlement">수수료 통계</div>
             <div class="menu-item" data-view="pointLedger">포인트 내역</div>
         </nav>
+        <nav class="sidebar-menu sidebar-menu--settings">
+            <div class="menu-item" data-view="settings">설정</div>
+        </nav>
     </aside>
     <div class="dashboard-main">
     <header class="admin-header">
@@ -1818,6 +1846,18 @@
             </div>
         </section>
         </section>
+        <section id="section-settings" class="dashboard-section">
+        <div class="settings-panel">
+            <h3 class="settlement-title">USDT 설정</h3>
+            <p class="section-desc settings-desc">가맹점 어드민에서 보유 USDT가 아래 숫자 <strong>미만</strong>이면 &quot;충전 후 이용하세요&quot;가 표시되고 메뉴가 잠깁니다. (예: 100이면 100 USDT 미만일 때, 400이면 400 USDT 미만일 때)</p>
+            <div class="settings-usdt-row">
+                <label for="hqStoreGateMinUsdt">최소 보유 USDT (기준값)</label>
+                <input type="number" id="hqStoreGateMinUsdt" min="0" step="0.5" inputmode="decimal" placeholder="100" aria-label="가맹점 이용 최소 USDT">
+                <button type="button" class="btn-settlement-query" id="btnSaveStoreGateMinUsdt">저장</button>
+            </div>
+            <p class="settings-hint" id="hqStoreGateSaveStatus" aria-live="polite"></p>
+        </div>
+        </section>
     </main>
     </div>
     </div>
@@ -1864,7 +1904,7 @@
         var selectedStoreId = null;
         var settlementTfootSnapshot = '';
 
-        var ADMIN_DASHBOARD_VIEWS = ['overview', 'stores', 'members', 'accountQueue', 'settlement', 'pointLedger'];
+        var ADMIN_DASHBOARD_VIEWS = ['overview', 'stores', 'members', 'accountQueue', 'settlement', 'pointLedger', 'settings'];
         var ADMIN_DASHBOARD_VIEW_KEY = 'adminHqDashboardView';
 
         function persistDashboardView(view) {
@@ -1894,9 +1934,12 @@
             document.getElementById('section-members').classList.toggle('active', nextView === 'members');
             document.getElementById('section-settlement').classList.toggle('active', nextView === 'settlement');
             document.getElementById('section-point-ledger').classList.toggle('active', nextView === 'pointLedger');
+            var secSet = document.getElementById('section-settings');
+            if (secSet) secSet.classList.toggle('active', nextView === 'settings');
             var secAq = document.getElementById('section-account-queue');
             if (secAq) secAq.classList.toggle('active', nextView === 'accountQueue');
             if (nextView === 'pointLedger') renderGlobalPointLedger();
+            if (nextView === 'settings') loadHqStoreGateSettings();
             if (nextView === 'accountQueue') {
                 loadAccountVerifyQueue();
                 try {
@@ -2572,6 +2615,64 @@
                 btn.dataset.ledgerBound = '1';
                 btn.addEventListener('click', function () { loadStores(true); });
             }
+        }
+
+        function loadHqStoreGateSettings() {
+            var el = document.getElementById('hqStoreGateMinUsdt');
+            var st = document.getElementById('hqStoreGateSaveStatus');
+            if (!el) return;
+            if (st) st.textContent = '';
+            var api = window.ADMIN_API_BASE || '';
+            if (!api) {
+                el.value = '100';
+                if (st) st.textContent = '로컬에서는 API가 없어 기본값(100)만 표시됩니다.';
+                return;
+            }
+            fetch(api + '/api/store-gate-config')
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    var v = data && data.minUsdtForStoreUse != null ? Number(data.minUsdtForStoreUse) : 100;
+                    el.value = isFinite(v) && v >= 0 ? String(v) : '100';
+                })
+                .catch(function () {
+                    el.value = '100';
+                    if (st) st.textContent = '불러오기에 실패했습니다.';
+                });
+        }
+
+        function saveHqStoreGateSettings() {
+            var el = document.getElementById('hqStoreGateMinUsdt');
+            var st = document.getElementById('hqStoreGateSaveStatus');
+            var api = window.ADMIN_API_BASE || '';
+            if (!el) return;
+            var raw = String(el.value || '').trim();
+            var n = parseFloat(raw.replace(/,/g, ''));
+            if (!isFinite(n) || n < 0) {
+                if (st) st.textContent = '0 이상의 숫자를 입력하세요.';
+                return;
+            }
+            if (!api) {
+                if (st) st.textContent = 'API 베이스가 없어 저장할 수 없습니다.';
+                return;
+            }
+            if (st) st.textContent = '저장 중…';
+            fetch(api + '/api/store-gate-config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ minUsdtForStoreUse: n })
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data && data.ok && data.minUsdtForStoreUse != null) {
+                        el.value = String(data.minUsdtForStoreUse);
+                        if (st) st.textContent = '저장되었습니다.';
+                    } else {
+                        if (st) st.textContent = (data && data.error) ? String(data.error) : '저장에 실패했습니다.';
+                    }
+                })
+                .catch(function () {
+                    if (st) st.textContent = '저장 요청에 실패했습니다.';
+                });
         }
 
         function pickMemberJoinedIso(m) {
@@ -3593,6 +3694,11 @@
         initSettlementDateRange();
         initSettlementFilters();
         initPointLedgerToolbar();
+        var btnSaveGate = document.getElementById('btnSaveStoreGateMinUsdt');
+        if (btnSaveGate && !btnSaveGate.dataset.bound) {
+            btnSaveGate.dataset.bound = '1';
+            btnSaveGate.addEventListener('click', saveHqStoreGateSettings);
+        }
         var memberSearchInp = document.getElementById('memberListSearchInput');
         if (memberSearchInp && !memberSearchInp.dataset.memberSearchBound) {
             memberSearchInp.dataset.memberSearchBound = '1';
