@@ -315,6 +315,32 @@ async function setStoreSuspended(event, storeId, suspended) {
   await store.set('suspended_stores', JSON.stringify(all));
 }
 
+async function getStorePointsMap(event) {
+  if (USE_UPSTASH) {
+    const p = await upstashGet('kyc_store_points');
+    return p && typeof p === 'object' ? p : {};
+  }
+  const store = await blobsGetStore(event);
+  const raw = await store.get('store_points');
+  if (!raw) return {};
+  try {
+    const p = JSON.parse(raw);
+    return typeof p === 'object' && p !== null ? p : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+async function setStorePointsMap(event, map) {
+  const obj = typeof map === 'object' && map !== null ? map : {};
+  if (USE_UPSTASH) {
+    await upstashSet('kyc_store_points', obj);
+    return;
+  }
+  const store = await blobsGetStore(event);
+  await store.set('store_points', JSON.stringify(obj));
+}
+
 async function deleteStore(event, storeId) {
   if (storeId == null) return;
   let sid = String(storeId).trim();
@@ -323,13 +349,15 @@ async function deleteStore(event, storeId) {
   const keysToPurge = new Set([sid]);
   if (sid === '') keysToPurge.add('미지정');
 
-  const [kycData, passwords, storePrices, counts, suspended] = await Promise.all([
+  const [kycData, passwords, storePrices, counts, suspended, pointsMapRaw] = await Promise.all([
     getKycData(event),
     getStorePasswords(event),
     getStorePrices(event),
     getUsageCounts(event),
     getSuspendedStores(event),
+    getStorePointsMap(event).catch(() => ({})),
   ]);
+  const pointsMap = typeof pointsMapRaw === 'object' && pointsMapRaw !== null ? { ...pointsMapRaw } : {};
   const data = { ...kycData.data };
   const namesObj = { ...kycData.names };
   const pw = { ...passwords };
@@ -343,6 +371,7 @@ async function deleteStore(event, storeId) {
     delete sp[k];
     delete cnt[k];
     delete susp[k];
+    delete pointsMap[k];
   });
   await setKycData(event, data, namesObj);
   await setStorePasswords(event, pw);
@@ -356,6 +385,7 @@ async function deleteStore(event, storeId) {
     await store.set('usage_counts', JSON.stringify(cnt));
     await store.set('suspended_stores', JSON.stringify(susp));
   }
+  await setStorePointsMap(event, pointsMap);
 }
 
 function getStorageErrorHelp() {
@@ -381,5 +411,7 @@ module.exports = {
   getSuspendedStores,
   setStoreSuspended,
   deleteStore,
+  getStorePointsMap,
+  setStorePointsMap,
   USE_UPSTASH,
 };

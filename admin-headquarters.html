@@ -124,6 +124,23 @@
             gap: 14px 20px;
             margin-bottom: 20px;
         }
+        .member-section-bar { align-items: flex-start; }
+        .member-section-lead { flex: 1 1 260px; min-width: 0; }
+        .member-section-title { font-size: 18px; font-weight: 700; margin: 0 0 8px 0; color: #1a1a1a; letter-spacing: -0.02em; }
+        .member-section-desc { margin: 0; max-width: 560px; line-height: 1.5; font-size: 13px; }
+        .member-list-filters { align-items: flex-start; padding-top: 2px; }
+        #memberListSearchInput {
+            flex: 1 1 200px;
+            min-width: 160px;
+            max-width: 380px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            border: 1px solid #E5E5EA;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        #memberListSearchInput::placeholder { color: #8e8e93; }
         .create-store-toolbar { margin-bottom: 0; flex-shrink: 0; }
         .store-list-filters {
             display: flex;
@@ -792,6 +809,14 @@
         #section-stores #storeListSearchInput::placeholder { color: rgba(255, 255, 255, 0.45); }
         #section-stores .store-filter-status label { color: rgba(255, 255, 255, 0.82); }
         #section-stores #storeListStatusFilter option { background: #0f1d4c; color: #fff; }
+        #section-members .member-section-title { color: #fff; }
+        #section-members .member-section-desc { color: rgba(255,255,255,0.72); }
+        #section-members #memberListSearchInput {
+            background: #0f1d4c;
+            border-color: rgba(255,255,255,0.14);
+            color: #fff;
+        }
+        #section-members #memberListSearchInput::placeholder { color: rgba(255,255,255,0.45); }
         .create-store-form .btn-register, .btn-toggle-register, .btn-copy-qr { background: #2a74ff; }
         .store-status-option { border-color: rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.05); color: #fff; }
         .store-status-option:hover { border-color: rgba(255, 255, 255, 0.28); }
@@ -1606,7 +1631,15 @@
         </div>
 
         <section id="section-members" class="dashboard-section">
-        <h2 class="section-title">전체 회원 현황 (문자·신분증·계좌 인증)</h2>
+        <div class="store-section-bar member-section-bar">
+            <div class="member-section-lead">
+                <h2 class="section-title member-section-title">회원 목록</h2>
+                <p class="section-desc member-section-desc">문자·신분증·계좌 인증 현황입니다. 가맹점 관리에서 카드를 선택하면 해당 가맹점 회원만 표시됩니다.</p>
+            </div>
+            <div class="store-list-filters member-list-filters">
+                <input type="search" id="memberListSearchInput" placeholder="회원명·가맹명·로그인 계정 검색" autocomplete="off" aria-label="회원 검색">
+            </div>
+        </div>
         <div class="table-wrap">
             <div class="table-scroll">
                 <table>
@@ -2180,22 +2213,49 @@
                 return;
             }
             ensureStorePointData(store);
-            store.pointBalance = normalizeStorePointUsdt(kind === 'grant' ? bal + amt : bal - amt);
-            store.pointHistory.push({ at: new Date().toISOString(), kind: kind, amount: amt, historyId: generatePointHistoryId(), status: '완료', note: 'TVzaRmEckn6AtJWGvdKmYnfsMZLdBbRVYg' });
             var apiBase = window.ADMIN_API_BASE || '';
+            var defaultNote = 'TVzaRmEckn6AtJWGvdKmYnfsMZLdBbRVYg';
+            function applyLocalOnly() {
+                store.pointBalance = normalizeStorePointUsdt(kind === 'grant' ? bal + amt : bal - amt);
+                store.pointHistory.push({ at: new Date().toISOString(), kind: kind, amount: amt, historyId: generatePointHistoryId(), status: '완료', note: defaultNote });
+            }
+            function finishPointUi() {
+                renderStoreListFromState();
+                document.getElementById('storePointModalBalance').textContent = formatStorePointUsdt(getStorePointBalance(store));
+                storePointHistoryPage = 1;
+                renderStorePointHistoryBody(store);
+                renderGlobalPointLedger();
+                document.getElementById('storePointAmountInput').value = '';
+            }
             if (apiBase) {
                 fetch(apiBase + '/api/store-points', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ storeId: storeId, kind: kind, amount: amt, balance: store.pointBalance })
-                }).catch(function () {});
+                    body: JSON.stringify({ storeId: storeId, kind: kind, amount: amt, note: defaultNote })
+                }).then(function (r) {
+                    return r.json().catch(function () { return {}; }).then(function (data) {
+                        if (r.ok && data && data.ok && data.pointBalanceUsdt != null) {
+                            store.pointBalanceUsdt = data.pointBalanceUsdt;
+                            store.pointBalance = data.pointBalanceUsdt;
+                            store.pointHistory = Array.isArray(data.pointHistory) ? data.pointHistory : store.pointHistory;
+                            finishPointUi();
+                            return;
+                        }
+                        if (data && data.error) {
+                            alert(typeof data.error === 'string' ? data.error : '포인트 처리에 실패했습니다.');
+                            return;
+                        }
+                        applyLocalOnly();
+                        finishPointUi();
+                    });
+                }).catch(function () {
+                    applyLocalOnly();
+                    finishPointUi();
+                });
+            } else {
+                applyLocalOnly();
+                finishPointUi();
             }
-            renderStoreListFromState();
-            document.getElementById('storePointModalBalance').textContent = formatStorePointUsdt(getStorePointBalance(store));
-            storePointHistoryPage = 1;
-            renderStorePointHistoryBody(store);
-            renderGlobalPointLedger();
-            document.getElementById('storePointAmountInput').value = '';
         }
 
         function isKycComplete(m) {
@@ -2510,7 +2570,7 @@
             }
             if (btn && !btn.dataset.ledgerBound) {
                 btn.dataset.ledgerBound = '1';
-                btn.addEventListener('click', function () { renderGlobalPointLedger(); });
+                btn.addEventListener('click', function () { loadStores(true); });
             }
         }
 
@@ -2865,12 +2925,13 @@
 
         function applyStoreFilter() {
             var rows = document.querySelectorAll('#memberList tr.member-row');
+            var searchEl = document.getElementById('memberListSearchInput');
+            var q = searchEl ? (searchEl.value || '').trim().toLowerCase() : '';
             rows.forEach(function (tr) {
-                if (selectedStoreId === null) {
-                    tr.classList.remove('member-row-hidden');
-                } else {
-                    tr.classList.toggle('member-row-hidden', tr.dataset.storeId !== selectedStoreId);
-                }
+                var storeOk = selectedStoreId === null || tr.dataset.storeId === selectedStoreId;
+                var text = (tr.textContent || '').toLowerCase().replace(/\s+/g, ' ');
+                var searchOk = !q || text.indexOf(q) !== -1;
+                tr.classList.toggle('member-row-hidden', !storeOk || !searchOk);
             });
         }
 
@@ -3532,6 +3593,11 @@
         initSettlementDateRange();
         initSettlementFilters();
         initPointLedgerToolbar();
+        var memberSearchInp = document.getElementById('memberListSearchInput');
+        if (memberSearchInp && !memberSearchInp.dataset.memberSearchBound) {
+            memberSearchInp.dataset.memberSearchBound = '1';
+            memberSearchInp.addEventListener('input', function () { applyStoreFilter(); });
+        }
         syncSettlementTableRowSearchAttr();
         applySettlementStoreFilter();
 

@@ -1,4 +1,10 @@
-const { getKycData, verifyStorePassword, getSuspendedStores, getStorageErrorHelp } = require('./storage');
+const {
+  getKycData,
+  verifyStorePassword,
+  getSuspendedStores,
+  getStorePointsMap,
+  getStorageErrorHelp,
+} = require('./storage');
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -43,13 +49,25 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({ error: '이용정지된 가맹점입니다. 관리자에게 문의하세요.' }),
       };
     }
-    const { names } = await getKycData(event);
+    const [{ names }, pointsMap] = await Promise.all([
+      getKycData(event),
+      getStorePointsMap(event).catch(() => ({})),
+    ]);
     const namesObj = typeof names === 'object' && names !== null ? names : {};
     const storeName = (namesObj[storeId] !== undefined && namesObj[storeId] !== '') ? namesObj[storeId] : storeId;
+    const pt = pointsMap && typeof pointsMap === 'object' ? pointsMap[storeId] : null;
+    const balRaw = pt && (pt.pointBalanceUsdt != null ? pt.pointBalanceUsdt : pt.pointBalance);
+    const pointBalanceUsdt = balRaw != null && !isNaN(Number(balRaw)) ? Math.round(Number(balRaw) * 2) / 2 : 0;
     return {
       statusCode: 200,
       headers: { ...CORS, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ok: true, storeId, storeName }),
+      body: JSON.stringify({
+        ok: true,
+        storeId,
+        storeName,
+        pointBalanceUsdt,
+        pointBalance: pointBalanceUsdt,
+      }),
     };
   } catch (err) {
     console.error('store-login error', err);
