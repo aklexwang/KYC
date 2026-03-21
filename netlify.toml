@@ -55,3 +55,9 @@
   to = "/.netlify/functions/store-delete"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/api/account-verify"
+  to = "/.netlify/functions/account-verify"
+  status = 200
+  force = true

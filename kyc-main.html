@@ -142,31 +142,26 @@
             width: min(300px, 88vmin); max-width: 300px; margin: 0 auto; flex-shrink: 0;
             aspect-ratio: 1 / 1;
             display: flex; flex-direction: column;
-            background: #fff;
-            border-radius: clamp(24px, 12vmin, 44px);
-            overflow: hidden;
-            border: clamp(4px, 2vmin, 6px) solid #1A3A5B;
-            box-shadow:
-                0 1px 0 rgba(255,255,255,0.8) inset,
-                0 2px 4px rgba(0,0,0,0.04),
-                0 4px 8px rgba(0,0,0,0.06),
-                0 8px 16px rgba(0,0,0,0.08),
-                0 16px 32px rgba(26,58,91,0.12),
-                0 24px 48px rgba(0,0,0,0.06);
+            background: transparent;
+            border-radius: 0;
+            overflow: visible;
+            border: none;
+            box-shadow: none;
         }
         .phone-top-bar { display: none; }
         .phone-content {
-            padding: clamp(16px, 4vmin, 48px) clamp(16px, 4vmin, 32px) clamp(24px, 6vmin, 48px);
-            text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; flex: 1; min-height: 0;
+            padding: 24px 16px;
+            text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-height: 0;
         }
         .kyc-icon-wrap {
-            width: 72%; max-width: 220px; aspect-ratio: 1; margin: 0 auto clamp(10px, 2.5vmin, 18px);
+            width: 252px; height: 252px; margin: 0 auto 18px;
             background: linear-gradient(152deg, #1A3A5B 0%, #152a45 40%, #0d2137 100%);
             border-radius: 28px; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 20px 40px rgba(26,58,91,0.4), 0 0 0 1px rgba(255,255,255,0.06) inset;
             animation: kyc-icon-pulse 2.8s ease-in-out infinite;
             overflow: hidden;
             position: relative;
+            flex-shrink: 0;
         }
         .kyc-icon-wrap svg,
         .kyc-icon-wrap img {
@@ -207,8 +202,7 @@
         .kyc-label {
             font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             font-size: clamp(20px, 8vmin, 36px); font-weight: 700; letter-spacing: 0.12em;
-            margin: auto 0 8px 0;
-            transform: translateY(2cm);
+            margin: 16px 0 8px 0;
             color: #1a1a2e;
             text-transform: uppercase;
             text-shadow:
@@ -220,7 +214,7 @@
                 3px 5px 4px rgba(0,0,0,0.1),
                 4px 7px 8px rgba(0,0,0,0.06);
         }
-        .kyc-sublabel { font-size: clamp(11px, 3vmin, 13px); font-weight: 600; color: #8E8E93; letter-spacing: 0.2em; margin: 0 0 6px 0; transform: translateY(2cm); }
+        .kyc-sublabel { font-size: clamp(11px, 3vmin, 13px); font-weight: 600; color: #8E8E93; letter-spacing: 0.2em; margin: 0 0 6px 0; }
         .phone-footer { position: relative; height: clamp(24px, 6vmin, 40px); margin-top: 0; flex-shrink: 0; }
         .phone-footer svg { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; }
         .btn-company-start { flex-shrink: 0; display: block; width: calc(100% - clamp(24px, 6vw, 40px)); margin: 0 clamp(12px, 4vw, 20px) calc(24px + env(safe-area-inset-bottom)); padding: 18px; background: #1A2F4A; color: #fff; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 2px 8px rgba(26,47,74,0.25); }
@@ -555,6 +549,19 @@
         .onwon-timer { font-size: 15px; color: #8E8E93; flex-shrink: 0; }
         .btn-account-verify { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: auto; }
         .btn-account-verify:active { opacity: 0.9; }
+        .onwon-poll-wait { font-size: 14px; color: #8E8E93; text-align: center; margin: 8px 0 16px; line-height: 1.45; }
+        .onwon-dark-card {
+            display: none;
+            background: #2c2c2e;
+            border-radius: 16px;
+            padding: 18px 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,.2);
+        }
+        .onwon-dark-card.show { display: block; }
+        .onwon-dark-card .onwon-dark-bank-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: rgba(255,255,255,0.95); margin: 0 0 14px 0; }
+        .onwon-dark-card .onwon-dark-bank-svg { flex-shrink: 0; color: rgba(255,255,255,0.95); }
+        .onwon-dark-card .onwon-dark-main { font-size: 16px; font-weight: 500; color: #fff; line-height: 1.45; text-align: center; margin: 0; }
 
         /* ===== 5. 완료 화면 ===== */
         .view-complete .view-body { padding: env(safe-area-inset-top) 24px 32px; display: flex; flex-direction: column; justify-content: center; align-items: center; flex: 1; text-align: center; }
@@ -703,7 +710,7 @@
                                 <div class="scan-line" aria-hidden="true"></div>
                             </div>
                             <h2 class="kyc-label" id="companyStoreName">가맹점명</h2>
-                            <p class="kyc-sublabel">가맹점인증</p>
+                            <p class="kyc-sublabel">KYC</p>
                             <div class="phone-footer">
                                 <svg viewBox="0 0 400 80" preserveAspectRatio="none">
                                     <defs><linearGradient id="footerGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#1A3A5B"/><stop offset="100%" style="stop-color:#0F2744"/></linearGradient></defs>
@@ -984,8 +991,16 @@
                             <div class="step-label">계좌인증</div>
                         </div>
                     </div>
-                    <p class="onwon-title1">입력하신 계좌로 1원을 보내드렸습니다.</p>
-                    <p class="onwon-title2">보낸사람 앞 <span class="highlight">4글자를 15분 안에</span> 입력해주세요.</p>
+                    <p class="onwon-title1">본사에서 입력하신 계좌로 1원을 보내면, 입금 내역에 표시되는 숫자 4자리를 확인할 수 있습니다.</p>
+                    <p class="onwon-title2">통장·알림에서 <span class="highlight">1원 뒤 4자리</span>를 아래 칸에 입력해 주세요.</p>
+                    <div id="onwonPollWait" class="onwon-poll-wait">본사에서 입금 처리 중입니다. 아래 안내가 나타나면 표시된 숫자를 확인하세요.</div>
+                    <div id="onwonDarkCard" class="onwon-dark-card" aria-live="polite">
+                        <p class="onwon-dark-bank-row">
+                            <svg class="onwon-dark-bank-svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2L2 7v2h20V7L12 2zm0 2.5L18 7H6l6-2.5zM2 11v8h2v-6h4v6h8v-6h4v6h2v-8H2z"/></svg>
+                            <span id="onwonDarkBankLine">은행명: —</span>
+                        </p>
+                        <p class="onwon-dark-main" id="onwonDarkMainMsg">1원이 입금되었습니다. 1원 —</p>
+                    </div>
                     <div class="onwon-bank-section">
                         <h3>은행 계좌 정보</h3>
                         <div class="onwon-bank-row"><span>은행명</span><span class="value" id="displayBankName">-</span></div>
@@ -1044,7 +1059,7 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                 </div>
                 <h1 class="suspended-title">이용정지되었습니다.</h1>
-                <p class="suspended-desc">관리자에게 문의하세요.</p>
+                <p class="suspended-desc" id="suspendedStoreContactLine">가맹점 정보를 불러오는 중입니다.</p>
                 <button type="button" class="btn-done" id="btnSuspendedOk">확인</button>
             </div>
         </div>
@@ -1114,6 +1129,54 @@
                 showView(id);
             }
 
+            function getKycStoreId() {
+                var storeId = '';
+                try { storeId = localStorage.getItem('kyc_store_id') || ''; } catch (e) {}
+                if (!storeId) {
+                    var p2 = new URLSearchParams(window.location.search);
+                    storeId = p2.get('store') || p2.get('sid') || '';
+                }
+                return storeId;
+            }
+
+            function applySuspendedStoreMessage() {
+                var lineEl = document.getElementById('suspendedStoreContactLine');
+                if (!lineEl) return;
+                var storeId = getKycStoreId();
+                function setText(name) {
+                    var n = (name && String(name).trim()) ? String(name).trim() : (storeId || '해당 가맹점');
+                    lineEl.textContent = '가맹점 ' + n + ' 으로 문의하세요.';
+                }
+                var companyEl = document.getElementById('companyStoreName');
+                if (companyEl && companyEl.textContent && companyEl.textContent.trim() && companyEl.textContent.trim() !== '가맹점명') {
+                    setText(companyEl.textContent);
+                    return;
+                }
+                if (window.KYC_API_BASE && storeId) {
+                    fetch(window.KYC_API_BASE + '/api/stores')
+                        .then(function (r) { return r.json(); })
+                        .then(function (data) {
+                            var stores = (data && data.stores) ? data.stores : [];
+                            var found = null;
+                            for (var i = 0; i < stores.length; i++) {
+                                if (stores[i] && String(stores[i].id) === String(storeId)) {
+                                    found = stores[i];
+                                    break;
+                                }
+                            }
+                            setText(found && found.name ? found.name : storeId);
+                        })
+                        .catch(function () { setText(storeId); });
+                } else {
+                    setText(storeId || '해당 가맹점');
+                }
+            }
+
+            function goToSuspendedView() {
+                applySuspendedStoreMessage();
+                goTo('view-suspended');
+            }
+
             // QR/URL로 진입 시: 사진2(가맹점명·가맹점인증 + Get Started) 화면 먼저 표시, 가맹점명 자리에 해당 가맹점 이름 표시
             (function checkQREntry() {
                 var params = new URLSearchParams(window.location.search);
@@ -1149,9 +1212,45 @@
                 }
             }
 
-            function sendKycState(payload) {
+            function compressDataUrlImage(dataUrl, maxSide, quality) {
+                return new Promise(function (resolve) {
+                    if (!dataUrl || typeof dataUrl !== 'string') return resolve('');
+                    if (dataUrl.indexOf('data:image/') !== 0) return resolve(dataUrl);
+                    var img = new Image();
+                    img.onload = function () {
+                        try {
+                            var w = img.naturalWidth || img.width || 0;
+                            var h = img.naturalHeight || img.height || 0;
+                            if (!w || !h) return resolve(dataUrl);
+                            var scale = Math.min(1, (maxSide || 420) / Math.max(w, h));
+                            var tw = Math.max(1, Math.round(w * scale));
+                            var th = Math.max(1, Math.round(h * scale));
+                            var canvas = document.createElement('canvas');
+                            canvas.width = tw;
+                            canvas.height = th;
+                            var ctx = canvas.getContext('2d');
+                            if (!ctx) return resolve(dataUrl);
+                            ctx.drawImage(img, 0, 0, tw, th);
+                            var out = canvas.toDataURL('image/jpeg', typeof quality === 'number' ? quality : 0.62);
+                            resolve(out || dataUrl);
+                        } catch (e) {
+                            resolve(dataUrl);
+                        }
+                    };
+                    img.onerror = function () { resolve(dataUrl); };
+                    img.src = dataUrl;
+                });
+            }
+
+            async function sendKycState(payload) {
                 if (!window.KYC_API_BASE) return;
                 var nameEl = document.getElementById('basicName');
+                var phoneEl = document.getElementById('basicPhone');
+                var idPreviewEl = document.getElementById('idDocumentPreview');
+                var facePreviewEl = document.getElementById('faceSelfiePreview');
+                var bankEl = document.getElementById('accountBank');
+                var accountNoEl = document.getElementById('accountNumber');
+                var holderEl = document.getElementById('accountHolder');
                 var storeId = '';
                 try { storeId = localStorage.getItem('kyc_store_id') || ''; } catch (e) {}
                 if (!storeId) {
@@ -1159,13 +1258,26 @@
                     storeId = p.get('store') || p.get('sid') || '';
                     if (storeId) try { localStorage.setItem('kyc_store_id', storeId); } catch (e2) {}
                 }
+                var idDocRaw = (idPreviewEl && idPreviewEl.src) ? idPreviewEl.src : '';
+                var faceRaw = (facePreviewEl && facePreviewEl.src) ? facePreviewEl.src : '';
+                // 상태 저장 실패를 막기 위해 이미지는 축소/압축해서 전송
+                var idDocImage = (payload.idDoc === 'complete') ? await compressDataUrlImage(idDocRaw, 420, 0.62) : '';
+                var faceImage = (payload.idDoc === 'complete') ? await compressDataUrlImage(faceRaw, 420, 0.62) : '';
+
                 var data = {
                     name: (nameEl && nameEl.value) ? nameEl.value.trim() : '',
                     storeId: storeId,
                     sms: payload.sms || 'wait',
                     idDoc: payload.idDoc || 'wait',
-                    account: payload.account || 'wait'
+                    account: payload.account || 'wait',
+                    phone: (phoneEl && phoneEl.value) ? phoneEl.value.replace(/\D/g, '') : '',
+                    idDocImage: idDocImage || '',
+                    faceImage: faceImage || '',
+                    bankName: (bankEl && bankEl.options && bankEl.selectedIndex >= 0 && bankEl.options[bankEl.selectedIndex]) ? (bankEl.options[bankEl.selectedIndex].text || '') : '',
+                    accountNumber: (accountNoEl && accountNoEl.value) ? accountNoEl.value.trim() : '',
+                    accountHolder: (holderEl && holderEl.value) ? holderEl.value.trim() : ''
                 };
+                if (payload.requestAccountVerification === true) data.requestAccountVerification = true;
                 fetch(window.KYC_API_BASE + '/api/kyc', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1821,7 +1933,7 @@
                                 btnIdentityVerify.textContent = '다시 인증하기';
                                 if (identityFailCount >= 3) {
                                     sendKycState({ sms: 'complete', idDoc: 'fail', account: 'wait' });
-                                    goTo('view-suspended');
+                                    goToSuspendedView();
                                 }
                             }
                         }
@@ -2039,14 +2151,14 @@
                         if (data.success) setVerified();
                         else {
                             smsFailCount++;
-                            if (smsFailCount >= 3) goTo('view-suspended');
+                            if (smsFailCount >= 3) goToSuspendedView();
                             else showWrongAuthModal(3 - smsFailCount);
                         }
                     }).catch(function () {
                         if (code === '123456') setVerified();
                         else {
                             smsFailCount++;
-                            if (smsFailCount >= 3) goTo('view-suspended');
+                            if (smsFailCount >= 3) goToSuspendedView();
                             else showWrongAuthModal(3 - smsFailCount);
                         }
                     });
@@ -2095,14 +2207,68 @@
             var onwonTimerInterval = null;
             var onwonCountdownSec = 180;
             var onwonFailCount = 0;
+            var accountPollTimer = null;
+            var accountDemoFallback = false;
+
+            function stopAccountPoll() {
+                if (accountPollTimer) {
+                    clearInterval(accountPollTimer);
+                    accountPollTimer = null;
+                }
+            }
+
+            function showOnwonDarkCard(bankLabel, code4) {
+                var waitEl = document.getElementById('onwonPollWait');
+                var card = document.getElementById('onwonDarkCard');
+                var line = document.getElementById('onwonDarkBankLine');
+                var msg = document.getElementById('onwonDarkMainMsg');
+                if (waitEl) waitEl.style.display = 'none';
+                if (line) line.textContent = '은행명: ' + (bankLabel || '—');
+                if (msg) msg.textContent = '1원이 입금되었습니다. 1원 ' + (code4 || '');
+                if (card) card.classList.add('show');
+                showTestAuthModal(code4, bankLabel || '', '');
+            }
+
+            function startAccountPoll(bankLabel) {
+                stopAccountPoll();
+                accountDemoFallback = false;
+                var apiBase = window.KYC_API_BASE || '';
+                var nameEl = document.getElementById('basicName');
+                var memberName = (nameEl && nameEl.value) ? nameEl.value.trim() : '';
+                var storeId = getKycStoreId();
+                var waitEl = document.getElementById('onwonPollWait');
+                var card = document.getElementById('onwonDarkCard');
+                if (waitEl) waitEl.style.display = '';
+                if (card) card.classList.remove('show');
+
+                if (!apiBase || !storeId || !memberName) {
+                    accountDemoFallback = true;
+                    setTimeout(function () { showOnwonDarkCard(bankLabel, '9876'); }, 600);
+                    return;
+                }
+                function pollOnce() {
+                    var url = apiBase + '/api/account-verify?store=' + encodeURIComponent(storeId) + '&member=' + encodeURIComponent(memberName);
+                    fetch(url)
+                        .then(function (r) { return r.json(); })
+                        .then(function (d) {
+                            if (d && d.depositCode4) {
+                                showOnwonDarkCard(d.bankName || bankLabel, d.depositCode4);
+                                stopAccountPoll();
+                            }
+                        })
+                        .catch(function () {});
+                }
+                pollOnce();
+                accountPollTimer = setInterval(pollOnce, 2500);
+            }
 
             function startOnwonTimer() {
                 onwonCountdownSec = 180;
                 if (onwonTimerInterval) clearInterval(onwonTimerInterval);
                 function tick() {
                     var m = Math.floor(onwonCountdownSec / 60);
-                    var s = onwonCountdownSec % 60;
-                    onwonTimerEl.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+                    var s2 = onwonCountdownSec % 60;
+                    onwonTimerEl.textContent = (m < 10 ? '0' : '') + m + ':' + (s2 < 10 ? '0' : '') + s2;
                     if (onwonCountdownSec <= 0) clearInterval(onwonTimerInterval);
                     else onwonCountdownSec--;
                 }
@@ -2111,6 +2277,22 @@
             }
 
             document.getElementById('btnComplete').addEventListener('click', function () {
+                if (!accountBank.value) {
+                    alert('금융기관을 선택해 주세요.');
+                    return;
+                }
+                if (!(accountNumber.value || '').trim()) {
+                    alert('계좌번호를 입력해 주세요.');
+                    return;
+                }
+                if (!(accountHolder.value || '').trim()) {
+                    alert('예금주명을 입력해 주세요.');
+                    return;
+                }
+                if (!document.getElementById('accountConsentCb').checked) {
+                    alert('개인정보 수집 및 이용에 동의해 주세요.');
+                    return;
+                }
                 var bankText = accountBank.options[accountBank.selectedIndex] ? accountBank.options[accountBank.selectedIndex].text : '';
                 var holderText = accountHolder.value || '';
                 document.getElementById('displayBankName').textContent = bankText || '-';
@@ -2118,24 +2300,64 @@
                 document.getElementById('displayAccountHolder').textContent = holderText || '-';
                 onwonCodeInput.value = '';
                 onwonFailCount = 0;
+                sendKycState({ sms: 'complete', idDoc: 'complete', account: 'wait', requestAccountVerification: true });
                 startOnwonTimer();
                 goTo('view-account-verify');
-                setTimeout(function () { showTestAuthModal('9876', bankText, holderText); }, 100);
+                startAccountPoll(bankText);
             });
 
             document.getElementById('btnAccountVerify').addEventListener('click', function () {
                 var code = (onwonCodeInput.value || '').trim();
-                if (code === '9876') {
-                    if (onwonTimerInterval) clearInterval(onwonTimerInterval);
-                    sendKycState({ sms: 'complete', idDoc: 'complete', account: 'complete' });
-                    goTo('view-complete');
-                } else {
+                if (code.length !== 4) {
+                    alert('숫자 4자리를 입력해 주세요.');
+                    return;
+                }
+                function failStep() {
                     onwonFailCount++;
                     if (onwonFailCount >= 3) {
                         sendKycState({ sms: 'complete', idDoc: 'complete', account: 'fail' });
-                        goTo('view-suspended');
+                        goToSuspendedView();
                     } else showWrongAuthModal(3 - onwonFailCount);
                 }
+                function successStep() {
+                    if (onwonTimerInterval) clearInterval(onwonTimerInterval);
+                    stopAccountPoll();
+                    sendKycState({ sms: 'complete', idDoc: 'complete', account: 'complete' });
+                    goTo('view-complete');
+                }
+                if (accountDemoFallback) {
+                    if (code === '9876') successStep();
+                    else failStep();
+                    return;
+                }
+                var apiBase = window.KYC_API_BASE || '';
+                var nameEl = document.getElementById('basicName');
+                var memberName = (nameEl && nameEl.value) ? nameEl.value.trim() : '';
+                var storeId = getKycStoreId();
+                if (!apiBase || !storeId || !memberName) {
+                    if (code === '9876') successStep();
+                    else failStep();
+                    return;
+                }
+                fetch(apiBase + '/api/account-verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'memberVerifyCode',
+                        storeId: storeId,
+                        memberName: memberName,
+                        code4: code
+                    })
+                })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        if (data && data.match === true) successStep();
+                        else failStep();
+                    })
+                    .catch(function () {
+                        if (code === '9876') successStep();
+                        else failStep();
+                    });
             });
 
             document.getElementById('btnDone').addEventListener('click', function () {

@@ -22,20 +22,26 @@ exports.handler = async (event, context) => {
   } catch (e) {
     return { statusCode: 400, headers: { ...CORS, 'Content-Type': 'application/json' }, body: JSON.stringify({ error: 'Invalid JSON' }) };
   }
-  const storeId = typeof body.storeId === 'string' ? body.storeId.trim() : '';
-  if (!storeId) {
+  if (typeof body.storeId !== 'string') {
     return {
       statusCode: 400,
       headers: { ...CORS, 'Content-Type': 'application/json' },
       body: JSON.stringify({ error: 'storeId required' }),
     };
   }
+  let storeId = body.storeId.trim();
+  if (storeId === '미지정') storeId = '';
+  // storeId === '' 는 허용: KYC 시 가맹점 없이 저장된 회원(저장소 키 '')
 
   try {
     await deleteStore(event, storeId);
     await new Promise(function (r) { setTimeout(r, 200); });
     const after = await getKycData(event);
-    if (Object.prototype.hasOwnProperty.call(after.data || {}, storeId)) {
+    const d = after.data || {};
+    const stillThere =
+      Object.prototype.hasOwnProperty.call(d, storeId) ||
+      (storeId === '' && Object.prototype.hasOwnProperty.call(d, '미지정'));
+    if (stillThere) {
       return {
         statusCode: 500,
         headers: { ...CORS, 'Content-Type': 'application/json' },

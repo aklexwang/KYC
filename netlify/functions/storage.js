@@ -316,8 +316,13 @@ async function setStoreSuspended(event, storeId, suspended) {
 }
 
 async function deleteStore(event, storeId) {
-  const sid = String(storeId).trim();
-  if (!sid) return;
+  if (storeId == null) return;
+  let sid = String(storeId).trim();
+  // 목록 API가 빈 키를 '미지정'으로만 보여주던 경우와 실제 저장 키 '' 를 맞춤
+  if (sid === '미지정') sid = '';
+  const keysToPurge = new Set([sid]);
+  if (sid === '') keysToPurge.add('미지정');
+
   const [kycData, passwords, storePrices, counts, suspended] = await Promise.all([
     getKycData(event),
     getStorePasswords(event),
@@ -327,16 +332,18 @@ async function deleteStore(event, storeId) {
   ]);
   const data = { ...kycData.data };
   const namesObj = { ...kycData.names };
-  delete data[sid];
-  delete namesObj[sid];
   const pw = { ...passwords };
-  delete pw[sid];
   const sp = { ...storePrices };
-  delete sp[sid];
   const cnt = { ...counts };
-  delete cnt[sid];
   const susp = { ...suspended };
-  delete susp[sid];
+  keysToPurge.forEach(function (k) {
+    delete data[k];
+    delete namesObj[k];
+    delete pw[k];
+    delete sp[k];
+    delete cnt[k];
+    delete susp[k];
+  });
   await setKycData(event, data, namesObj);
   await setStorePasswords(event, pw);
   if (USE_UPSTASH) {

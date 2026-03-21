@@ -42,21 +42,6 @@
         .summary-card .label { font-size: 12px; color: #6e6e73; margin-top: 4px; }
         .section-title { font-size: 16px; font-weight: 700; margin: 0 0 12px 0; color: #1a1a1a; }
         .section-desc { font-size: 13px; color: #6e6e73; margin: -4px 0 12px 0; }
-        .store-filter-actions { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-        .filter-btn {
-            padding: 8px 16px;
-            background: #fff;
-            border: 1px solid #E5E5EA;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #1a1a1a;
-            cursor: pointer;
-        }
-        .filter-btn:hover { background: #f5f5f7; }
-        .filter-btn.active { background: #1A2F4A; color: #fff; border-color: #1A2F4A; }
-        .filter-sep { color: #C7C7CC; }
-        .filter-label { font-size: 13px; color: #6e6e73; }
         .store-list { display: grid; gap: 12px; margin-bottom: 24px; }
         .store-card {
             background: #fff;
@@ -74,8 +59,10 @@
         }
         .store-card:hover { border-color: #1A2F4A; box-shadow: 0 2px 12px rgba(26,47,74,.15); }
         .store-card.active { border-color: #007AFF; background: #f0f7ff; }
-        .store-info .store-id { font-size: 14px; font-weight: 700; color: #1A2F4A; }
-        .store-info .store-name { font-size: 13px; color: #6e6e73; margin-top: 2px; }
+        .store-card .store-info { flex: 1 1 240px; min-width: 0; }
+        .store-info .store-id { font-size: 13px; font-weight: 700; color: #1A2F4A; letter-spacing: -0.02em; white-space: nowrap; flex-shrink: 0; }
+        .store-card .store-name-row .store-id { margin-right: 10px; }
+        .store-info .store-name { font-size: 15px; color: #1a1a1a; font-weight: 600; margin: 0; }
         .store-stats { display: flex; gap: 16px; font-size: 13px; }
         .store-stats span { color: #5c5c5c; }
         .store-stats strong { color: #1a1a1a; }
@@ -86,7 +73,7 @@
             overflow: hidden;
         }
         .table-scroll { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 620px; }
+        table { width: 100%; border-collapse: collapse; min-width: 720px; }
         th {
             background: #1A2F4A;
             color: #fff;
@@ -130,11 +117,57 @@
         .btn-kyc-done--na { background: #E0E0E0; color: #9e9e9e; }
         .no-data { text-align: center; padding: 32px 20px; color: #8E8E93; font-size: 14px; }
         .td-store-id { font-size: 12px; color: #6e6e73; margin-top: 2px; }
-        .create-store-section { background: #fff; border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
-        .create-store-section .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 0; }
-        .create-store-section .section-header h2 { margin-top: 0; margin-bottom: 0; }
-        .create-store-section .section-body { display: none; margin-top: 16px; }
-        .create-store-section.expanded .section-body { display: block; }
+        .store-section-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 14px 20px;
+            margin-bottom: 20px;
+        }
+        .create-store-toolbar { margin-bottom: 0; flex-shrink: 0; }
+        .store-list-filters {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 14px;
+            flex: 1 1 auto;
+            min-width: min(100%, 260px);
+        }
+        #storeListSearchInput {
+            flex: 1 1 200px;
+            min-width: 160px;
+            max-width: 380px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            border: 1px solid #E5E5EA;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        #storeListSearchInput::placeholder { color: #8e8e93; }
+        .store-filter-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .store-filter-status label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #5c5c5c;
+            white-space: nowrap;
+        }
+        #storeListStatusFilter {
+            padding: 8px 28px 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            border: 1px solid #E5E5EA;
+            font-family: inherit;
+            min-width: 108px;
+            cursor: pointer;
+            background: #fff;
+            box-sizing: border-box;
+        }
         .btn-toggle-register { padding: 8px 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
         .btn-toggle-register:hover { opacity: 0.9; }
         .create-store-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 16px; }
@@ -144,9 +177,6 @@
         .create-store-form .btn-register { padding: 10px 24px; background: #1A2F4A; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
         .create-store-form .btn-register:hover { opacity: 0.9; }
         .create-store-form .btn-register:disabled { background: #C7C7CC; cursor: not-allowed; }
-        .create-store-prices-row { display: flex; flex-wrap: nowrap; gap: 12px; align-items: flex-end; width: 100%; margin-bottom: 16px; }
-        .create-store-prices-row .field { flex: 1; min-width: 0; }
-        .create-store-prices-row input { min-width: 0; width: 100%; box-sizing: border-box; }
         .qr-result-card { display: none; background: #f8f9fa; border-radius: 12px; padding: 20px; margin-top: 16px; border: 1px solid #E5E5EA; }
         .qr-result-card.show { display: block; }
         .qr-result-card .qr-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: #1a1a1a; }
@@ -154,48 +184,1156 @@
         .qr-result-card .qr-info { flex: 1; min-width: 200px; }
         .qr-result-card .qr-info p { margin: 0 0 8px 0; font-size: 14px; color: #5c5c5c; }
         .qr-result-card .qr-info .qr-url { word-break: break-all; font-size: 12px; color: #007AFF; }
-        .store-card .btn-qr { padding: 6px 12px; background: #007AFF; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
-        .store-card .btn-qr:hover { opacity: 0.9; }
-        .store-card .card-right { display: flex; align-items: center; gap: 10px; }
         .store-card .store-usage { width: 100%; margin-top: 10px; padding-top: 10px; border-top: 1px solid #E5E5EA; font-size: 12px; color: #6e6e73; }
-        .store-card .store-name-row { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
-        .store-card .store-name-row .store-name { margin: 0; }
-        .store-card .btn-edit-store { padding: 4px 10px; background: #6e6e73; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
-        .store-card .btn-edit-store:hover { background: #5c5c5c; }
-        .store-card .btn-suspend-store { padding: 4px 10px; background: #FF9500; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
-        .store-card .btn-suspend-store:hover { background: #e68600; }
-        .store-card .btn-unsuspend-store { padding: 4px 10px; background: #34C759; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
-        .store-card .btn-unsuspend-store:hover { background: #2db04d; }
-        .store-card .btn-delete-store { padding: 4px 10px; background: #FF3B30; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
-        .store-card .btn-delete-store:hover { background: #e6352b; }
-        .store-card .badge-suspended { display: inline-block; margin-left: 6px; padding: 2px 8px; background: #FF3B30; color: #fff; border-radius: 4px; font-size: 11px; font-weight: 600; }
-        .store-card .store-usage span { margin-right: 12px; }
-        .store-card .store-usage .total-amount { font-weight: 700; color: #2E7D32; margin-left: 4px; }
+        .store-usage-panel {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+            gap: 0;
+            margin-top: 2px;
+            padding: 10px 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background: rgba(0, 0, 0, 0.02);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .store-usage-panel-lead {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1.35;
+            color: #5c5c5c;
+            padding: 4px 10px 4px 4px;
+            margin-right: 6px;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            letter-spacing: -0.02em;
+        }
+        .store-usage-panel-col {
+            flex: 1 1 0;
+            min-width: 96px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 6px;
+            padding: 8px 10px 10px;
+            border-left: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 8px;
+            margin-left: -1px;
+        }
+        .store-usage-panel-lead + .store-usage-panel-col { border-left: none; margin-left: 0; }
+        .sup-col-tit {
+            font-size: 11px;
+            font-weight: 700;
+            color: #5c5c5c;
+            letter-spacing: -0.02em;
+            text-align: center;
+        }
+        .sup-col-status { font-weight: 700; white-space: nowrap; }
+        .sup-col-status--on { color: #2563eb; }
+        .sup-col-status--off { color: #dc2626; }
+        .sup-col-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+        .sup-metric-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 10px;
+            width: 100%;
+            font-variant-numeric: tabular-nums;
+        }
+        .sup-metric-row + .sup-metric-row {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(0, 0, 0, 0.07);
+        }
+        .sup-metric-lbl {
+            font-size: 10px;
+            font-weight: 600;
+            color: #8e8e93;
+            letter-spacing: -0.01em;
+            flex-shrink: 0;
+        }
+        .sup-metric-row .sup-metric {
+            justify-content: flex-end;
+            flex-shrink: 0;
+        }
+        .sup-metric-row--total {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+        .sup-metric-row--total .sup-metric {
+            justify-content: flex-end;
+        }
+        .sup-metric {
+            display: inline-flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 2px;
+            font-variant-numeric: tabular-nums;
+        }
+        .sup-metric .seg-num { font-weight: 700; font-size: 13px; color: #1a1a1a; }
+        .sup-metric .seg-muted { font-weight: 600; font-size: 11px; color: #8e8e93; }
+        .sup-metric--emph .seg-num { font-size: 14px; color: #1a2f4a; }
+        .store-usage-panel-col--sms { background: rgba(96, 165, 250, 0.08); border-color: rgba(96, 165, 250, 0.2); }
+        .store-usage-panel-col--id { background: rgba(52, 211, 153, 0.07); border-color: rgba(52, 211, 153, 0.2); }
+        .store-usage-panel-col--won { background: rgba(251, 191, 36, 0.07); border-color: rgba(251, 191, 36, 0.22); }
+        .store-usage-panel-col--total { background: rgba(140, 200, 255, 0.09); border-color: rgba(100, 150, 220, 0.25); }
+        .store-usage-panel-col--total .sup-metric--emph .seg-num { color: #1a4a7a; }
+        .store-usage-panel-col--members { min-width: 132px; background: rgba(167, 139, 250, 0.07); border-color: rgba(139, 92, 246, 0.22); }
+        .store-card .store-name-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 0; }
+        .store-card .store-name-row .store-name { margin: 0; font-weight: 600; }
+        .store-card .store-name-row > button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px 14px;
+            min-height: 38px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            border-width: 2px;
+            border-style: solid;
+            line-height: 1.2;
+            white-space: nowrap;
+            transition: filter 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        button.store-point-balance-btn {
+            border-color: rgba(245, 158, 11, 0.7);
+            background: linear-gradient(180deg, #fffbeb 0%, #fde68a 100%);
+            color: #92400e;
+            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.32);
+        }
+        button.store-point-balance-btn:hover {
+            filter: brightness(1.04);
+            border-color: rgba(217, 119, 6, 0.85);
+            box-shadow: 0 3px 12px rgba(245, 158, 11, 0.4);
+        }
+        button.store-point-balance-btn .store-point-num {
+            color: #b45309;
+            font-variant-numeric: tabular-nums;
+            font-size: 14px;
+        }
+        #storePointModal.modal-overlay-prices.show {
+            align-items: flex-start;
+            justify-content: center;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 24px 20px;
+        }
+        #storePointModal .modal-point-box {
+            max-width: min(480px, 100%);
+            width: 100%;
+            min-width: 0;
+            text-align: center;
+            flex-shrink: 0;
+            margin-top: auto;
+            margin-bottom: auto;
+            box-sizing: border-box;
+        }
+        #storePointModal .modal-point-box h3 { text-align: center; }
+        #storePointModal .store-point-action-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 14px;
+            box-sizing: border-box;
+        }
+        #storePointModal .modal-prices-box .field label { text-align: center; }
+        #storePointModal #storePointAmountInput { text-align: center; }
+        #storePointModal .modal-prices-box .btn-wrap { justify-content: center; flex-wrap: wrap; }
+        #storePointModal .store-point-modal-balance {
+            margin: 0 0 14px 0;
+            font-size: 15px;
+            color: #5c5c5c;
+        }
+        #storePointModal .store-point-modal-balance strong {
+            font-size: 18px;
+            color: #1a2f4a;
+            font-variant-numeric: tabular-nums;
+        }
+        #storePointModal .store-point-history-title {
+            margin: 20px 0 10px 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        #storePointModal .store-point-history-pager {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        #storePointModal .store-point-history-pager.is-visible { display: flex; }
+        #storePointModal .store-point-pager-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid #E5E5EA;
+            background: #f5f5f7;
+            color: #1a1a1a;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        #storePointModal .store-point-pager-btn:hover:not(:disabled) { filter: brightness(0.97); }
+        #storePointModal .store-point-pager-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        #storePointModal .store-point-pager-info {
+            font-size: 13px;
+            font-weight: 600;
+            color: #3a3a3c;
+            font-variant-numeric: tabular-nums;
+            min-width: 4.5em;
+            text-align: center;
+        }
+        #storePointModal .store-point-history-wrap {
+            border: 1px solid #E5E5EA;
+            border-radius: 10px;
+            background: #fafafa;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+        #storePointModal .store-point-history-table {
+            table-layout: fixed;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        #storePointModal .store-point-history-table col.col-date { width: 42%; }
+        #storePointModal .store-point-history-table col.col-kind { width: 26%; }
+        #storePointModal .store-point-history-table col.col-amt { width: 32%; }
+        #storePointModal .store-point-history-table th {
+            background: #f0f0f2;
+            color: #3a3a3c;
+            text-align: center;
+            padding: 10px 6px;
+            border-bottom: 1px solid #E5E5EA;
+            font-weight: 600;
+            vertical-align: middle;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        #storePointModal .store-point-history-table td {
+            padding: 9px 6px;
+            border-bottom: 1px solid #eee;
+            color: #1a1a1a;
+            text-align: center;
+            vertical-align: middle;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        #storePointModal .store-point-history-table tbody tr:hover td {
+            background: transparent;
+        }
+        #storePointModal .store-point-history-table tr:last-child td { border-bottom: none; }
+        #storePointModal .store-point-history-table .td-kind-grant { color: #166534; font-weight: 600; }
+        #storePointModal .store-point-history-table .td-kind-deduct { color: #b91c1c; font-weight: 600; }
+        #storePointModal .store-point-history-table .td-amt-grant { color: #166534; font-weight: 600; font-variant-numeric: tabular-nums; }
+        #storePointModal .store-point-history-table .td-amt-deduct { color: #b91c1c; font-weight: 600; font-variant-numeric: tabular-nums; }
+        #storePointModal .modal-price-toggle {
+            border-color: #E5E5EA;
+            background: #f5f5f7;
+        }
+        #storePointModal .modal-toggle-btn { color: #6e6e73; }
+        #storePointModal .modal-toggle-btn + .modal-toggle-btn { border-left-color: #E5E5EA; }
+        #storePointModal .modal-toggle-btn.is-active {
+            background: #1A2F4A;
+            color: #fff;
+        }
+        #storePointModal #storePointKindToggle .modal-toggle-btn.is-active[data-point-kind="deduct"] {
+            background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+            color: #fff;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+        .store-card .store-name-row > button.store-status-btn:hover { filter: brightness(1.05); }
+        .store-card .store-name-row > button.store-status-btn.store-status--ok {
+            border-color: rgba(22, 163, 74, 0.75);
+            background: linear-gradient(180deg, #ecfdf5 0%, #86efac 100%);
+            color: #14532d;
+            box-shadow: 0 2px 10px rgba(34, 197, 94, 0.32);
+        }
+        .store-card .store-name-row > button.store-status-btn.store-status--suspended {
+            border-color: rgba(220, 38, 38, 0.7);
+            background: linear-gradient(180deg, #fef2f2 0%, #fecaca 100%);
+            color: #991b1b;
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+        }
+        .store-card .store-name-row > button.store-status-btn.store-status--withdrawn {
+            border-color: rgba(100, 116, 139, 0.6);
+            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #334155;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.14);
+        }
+        .store-card .store-name-row > button.btn-edit-store {
+            border-color: rgba(71, 85, 105, 0.6);
+            background: linear-gradient(180deg, #64748b 0%, #475569 100%);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(71, 85, 105, 0.38);
+        }
+        .store-card .store-name-row > button.btn-edit-store:hover { filter: brightness(1.08); }
+        .store-card .store-name-row > button.btn-account-store {
+            border-color: rgba(99, 102, 241, 0.8);
+            background: linear-gradient(180deg, #818cf8 0%, #4f46e5 100%);
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(79, 70, 229, 0.42);
+        }
+        .store-card .store-name-row > button.btn-account-store:hover { filter: brightness(1.07); }
+        .store-card .store-name-row > button.btn-qr {
+            border-color: rgba(14, 165, 233, 0.8);
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(2, 132, 199, 0.42);
+        }
+        .store-card .store-name-row > button.btn-qr:hover { filter: brightness(1.07); }
         .modal-overlay-prices { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 9999; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
         .modal-overlay-prices.show { display: flex; }
         .modal-prices-box { background: #fff; border-radius: 16px; padding: 24px; max-width: 400px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,.15); }
         .modal-prices-box h3 { margin: 0 0 16px 0; font-size: 18px; }
         .modal-prices-box .field { margin-bottom: 12px; }
         .modal-prices-box .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
-        .modal-prices-box .field input { width: 100%; padding: 10px 12px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
+        .modal-prices-box .field input,
+        .modal-prices-box .field textarea { width: 100%; padding: 10px 12px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 15px; box-sizing: border-box; font-family: inherit; }
+        .modal-prices-box .field textarea { min-height: 88px; resize: vertical; line-height: 1.45; }
+        .modal-prices-box .field-hint { display: block; font-size: 12px; font-weight: 500; color: #8e8e93; margin-top: 6px; line-height: 1.4; }
+        #storeAccountModal .modal-prices-box { text-align: center; }
+        #storeAccountModal .modal-prices-box h3 { text-align: center; }
+        #storeAccountModal .modal-prices-box .field label { text-align: center; }
+        #storeAccountModal .modal-prices-box .field input,
+        #storeAccountModal .modal-prices-box .field textarea { text-align: center; }
+        #storeAccountModal .modal-prices-box textarea.modal-account-note {
+            min-height: 120px;
+            padding: 44px 14px;
+            line-height: 1.5;
+            box-sizing: border-box;
+        }
+        #storeAccountModal .modal-prices-box .btn-wrap { justify-content: center; }
+        #storePricesModal .modal-prices-box { max-width: 440px; }
+        #storePricesModal .modal-price-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #storePricesModal .modal-price-row input[type="number"] {
+            flex: 1;
+            min-width: 0;
+            width: auto;
+        }
+        #createStoreModal .modal-price-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #createStoreModal .modal-price-row input[type="number"] {
+            flex: 1;
+            min-width: 0;
+            width: auto;
+        }
+        .modal-price-toggle {
+            display: inline-flex;
+            flex-shrink: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #E5E5EA;
+            background: #f5f5f7;
+        }
+        .modal-toggle-btn {
+            padding: 9px 14px;
+            margin: 0;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 700;
+            color: #6e6e73;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .modal-toggle-btn + .modal-toggle-btn { border-left: 1px solid #E5E5EA; }
+        .modal-toggle-btn.is-active {
+            background: #1A2F4A;
+            color: #fff;
+        }
+        #storeStatusModal .modal-prices-box { text-align: center; max-width: 360px; }
+        #storeStatusModal .modal-prices-box h3 { text-align: center; margin-bottom: 8px; }
+        .store-status-pick-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 0 0 18px 0; }
+        .store-status-option {
+            padding: 12px 8px;
+            border-radius: 10px;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.02);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            color: #1a1a1a;
+        }
+        .store-status-option:hover { border-color: rgba(0, 0, 0, 0.2); }
+        .store-status-option.is-selected { border-color: #2a74ff; background: rgba(42, 116, 255, 0.1); color: #1a2f4a; }
+        .store-status-option[data-status="normal"].is-selected { border-color: #22c55e; background: rgba(34, 197, 94, 0.12); color: #166534; }
+        .store-status-option[data-status="suspended"].is-selected { border-color: #f59e0b; background: rgba(245, 158, 11, 0.15); color: #92400e; }
+        .store-status-option[data-status="withdrawn"].is-selected { border-color: #787880; background: rgba(120, 120, 128, 0.15); color: #374151; }
+        #storeStatusModal .modal-prices-box .btn-wrap { justify-content: center; }
+        #storeQrModal .modal-prices-box { text-align: center; max-width: 360px; }
+        #storeQrModal .modal-prices-box h3 { text-align: center; margin-bottom: 14px; }
+        #storeQrModal .modal-prices-box .btn-wrap { justify-content: center; flex-wrap: wrap; }
+        #createStoreModal .modal-prices-box { max-width: min(440px, 100%); }
+        #createStoreModal .create-store-form {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            align-items: stretch;
+            gap: 12px;
+            margin-bottom: 0;
+        }
+        #createStoreModal .create-store-form > .field { width: 100%; box-sizing: border-box; }
+        #createStoreModal .create-store-form > .field > input:not([type="number"]) {
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+        #createStoreModal .modal-prices-box .btn-wrap { margin-top: 8px; justify-content: flex-end; flex-wrap: wrap; }
+        #createStoreModal .modal-price-toggle {
+            border-color: #E5E5EA;
+            background: #f5f5f7;
+        }
+        #createStoreModal .modal-toggle-btn { color: #6e6e73; }
+        #createStoreModal .modal-toggle-btn + .modal-toggle-btn { border-left-color: #E5E5EA; }
+        #createStoreModal .modal-toggle-btn.is-active {
+            background: #1A2F4A;
+            color: #fff;
+        }
+        #storeQrModal .store-qr-modal-inner { background: #f8f9fa; border-radius: 12px; padding: 20px; margin-bottom: 16px; border: 1px solid #E5E5EA; }
+        #storeQrModal .store-qr-modal-img { display: block; width: 200px; height: 200px; margin: 0 auto 12px; border-radius: 8px; background: #fff; }
+        #storeQrModal .store-qr-modal-url { font-size: 12px; word-break: break-all; color: #007AFF; margin: 0; text-align: left; line-height: 1.45; }
         .modal-prices-box .btn-wrap { display: flex; gap: 10px; margin-top: 20px; }
         .modal-prices-box .btn-save-prices-modal { padding: 10px 20px; background: #2E7D32; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
         .modal-prices-box .btn-cancel-prices { padding: 10px 20px; background: #E5E5EA; color: #1a1a1a; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
-        .store-qr-result { display: none; width: 100%; margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E5EA; }
-        .store-qr-result.show { display: block; }
-        .store-qr-result-inner { background: #f8f9fa; border-radius: 10px; padding: 16px; }
-        .store-qr-result .store-qr-img { display: block; width: 140px; height: 140px; margin: 0 0 10px 0; border-radius: 8px; }
-        .store-qr-result .store-qr-url { font-size: 12px; word-break: break-all; color: #007AFF; margin: 0 0 10px 0; }
         .btn-copy-qr { padding: 8px 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
         .btn-copy-qr:hover { opacity: 0.9; }
+        /* ===== 본사 어드민 대시보드 UI v2 ===== */
+        .dashboard-shell { display: flex; min-height: 100vh; background: #020b2b; color: #fff; }
+        .dashboard-sidebar {
+            width: 220px;
+            background: #081230;
+            border-right: 1px solid rgba(255,255,255,0.08);
+            padding: 22px 16px;
+            flex-shrink: 0;
+        }
+        .sidebar-title { font-size: 24px; font-weight: 700; margin: 0 0 4px 0; color: #fff; }
+        .sidebar-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin: 0 0 20px 0; }
+        .sidebar-menu { display: grid; gap: 8px; }
+        .menu-item {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.82);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+        .menu-item.active { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.18); }
+        .dashboard-main { flex: 1; min-width: 0; padding: 20px 20px 30px; }
+        .admin-header {
+            background: transparent;
+            box-shadow: none;
+            padding: 0 0 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 16px;
+        }
+        .admin-header h1 { font-size: 20px; color: #fff; }
+        .admin-header p { color: rgba(255,255,255,0.78); }
+        .admin-body { max-width: none; margin: 0; padding: 0; }
+        .dashboard-section { display: none; }
+        .dashboard-section.active { display: block; }
+        .summary-cards { grid-template-columns: repeat(3, minmax(140px, 1fr)); margin-bottom: 16px; }
+        .summary-card { border-radius: 12px; padding: 14px 14px 12px; box-shadow: 0 6px 16px rgba(0,0,0,.24); color: #fff; }
+        .summary-card .num { color: #fff; font-size: 32px; line-height: 1.1; }
+        .summary-card .label { color: rgba(255,255,255,0.9); font-size: 12px; }
+        .summary-card:nth-child(1) { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
+        .summary-card:nth-child(2) { background: linear-gradient(135deg, #1da1f2 0%, #10c5f5 100%); }
+        .summary-card:nth-child(3) { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); }
+        .store-card, .table-wrap { background: #0b153d; border: 1px solid rgba(255,255,255,0.08); box-shadow: none; }
+        .section-title, td:first-child, td:nth-child(2) { color: #fff; }
+        .section-desc, .store-stats span, .td-store-id { color: rgba(255,255,255,0.72); }
+        .store-info .store-name { color: #fff; }
+        button.store-point-balance-btn {
+            border-color: rgba(251, 191, 36, 0.7);
+            background: linear-gradient(180deg, rgba(180, 83, 9, 0.88) 0%, rgba(120, 53, 15, 0.95) 100%);
+            color: #fef3c7;
+            box-shadow: 0 2px 14px rgba(251, 191, 36, 0.28), 0 2px 10px rgba(0, 0, 0, 0.35);
+        }
+        button.store-point-balance-btn:hover { filter: brightness(1.08); border-color: rgba(253, 224, 71, 0.85); }
+        button.store-point-balance-btn .store-point-num { color: #fff; }
+        #storePointModal .store-point-modal-balance { color: rgba(255, 255, 255, 0.75); }
+        #storePointModal .store-point-modal-balance strong { color: #fde68a; }
+        #storePointModal .store-point-history-title { color: #fff; }
+        #storePointModal .store-point-history-wrap {
+            border-color: rgba(255, 255, 255, 0.12);
+            background: rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+        #storePointModal .store-point-history-table th {
+            background: #101f54;
+            color: rgba(255, 255, 255, 0.88);
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+            text-align: center;
+            white-space: normal;
+        }
+        #storePointModal .store-point-history-table td {
+            border-bottom-color: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            white-space: normal;
+        }
+        #storePointModal .store-point-history-table .td-kind-grant { color: #86efac; }
+        #storePointModal .store-point-history-table .td-kind-deduct { color: #fca5a5; }
+        #storePointModal .store-point-history-table .td-amt-grant { color: #86efac; }
+        #storePointModal .store-point-history-table .td-amt-deduct { color: #fca5a5; }
+        #storePointModal .store-point-pager-btn {
+            border-color: rgba(255, 255, 255, 0.14);
+            background: rgba(0, 0, 0, 0.22);
+            color: rgba(255, 255, 255, 0.9);
+        }
+        #storePointModal .store-point-pager-info { color: rgba(255, 255, 255, 0.82); }
+        #storePointModal .modal-price-toggle {
+            border-color: rgba(255, 255, 255, 0.14);
+            background: rgba(0, 0, 0, 0.22);
+        }
+        #storePointModal .modal-toggle-btn { color: rgba(255, 255, 255, 0.72); }
+        #storePointModal .modal-toggle-btn + .modal-toggle-btn { border-left-color: rgba(255, 255, 255, 0.14); }
+        #storePointModal .modal-toggle-btn.is-active {
+            background: #2a74ff;
+            color: #fff;
+        }
+        #storePointModal #storePointKindToggle .modal-toggle-btn.is-active[data-point-kind="deduct"] {
+            background: linear-gradient(180deg, #f87171 0%, #dc2626 100%);
+            color: #fff;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        .store-info .store-id { color: rgba(255, 255, 255, 0.88); }
+        .store-card.active { border-color: #2a74ff; background: #0f1d4c; }
+        .store-card .store-usage { border-top-color: rgba(255,255,255,0.16); color: #fff; }
+        .store-usage-panel { border-color: rgba(255, 255, 255, 0.18); background: rgba(0, 0, 0, 0.42); }
+        .store-usage-panel-lead {
+            color: #fff;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55), 0 0 1px rgba(0, 0, 0, 0.8);
+            border-right-color: rgba(255, 255, 255, 0.22);
+        }
+        .store-usage-panel-col { border-left-color: rgba(255, 255, 255, 0.12); }
+        .sup-col-tit { color: #fff; font-weight: 900; letter-spacing: -0.02em; }
+        .sup-col-status--on { color: #bfdbfe; font-weight: 800; }
+        .sup-col-status--off { color: #fecaca; font-weight: 800; }
+        .sup-col-stack {
+            background: rgba(0, 0, 0, 0.48);
+            border-color: rgba(255, 255, 255, 0.16);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+        .sup-metric-row + .sup-metric-row { border-top-color: rgba(255, 255, 255, 0.18); }
+        .sup-metric-lbl {
+            color: #f1f5f9;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+        .sup-metric .seg-num { color: #fff; font-weight: 900; }
+        .sup-metric .seg-muted { color: #e2e8f0; font-weight: 700; }
+        .store-usage-panel-col--sms { background: rgba(96, 165, 250, 0.14); border-color: rgba(96, 165, 250, 0.38); }
+        .store-usage-panel-col--id { background: rgba(52, 211, 153, 0.12); border-color: rgba(52, 211, 153, 0.34); }
+        .store-usage-panel-col--won { background: rgba(251, 191, 36, 0.12); border-color: rgba(251, 191, 36, 0.36); }
+        .store-usage-panel-col--total { background: rgba(140, 200, 255, 0.14); border-color: rgba(140, 200, 255, 0.38); }
+        .store-usage-panel-col--total .sup-metric--emph .seg-num { color: #fff; text-shadow: 0 0 12px rgba(147, 197, 253, 0.45); }
+        .store-usage-panel-col--members { background: rgba(167, 139, 250, 0.14); border-color: rgba(167, 139, 250, 0.38); }
+        .create-store-form .field label { color: #fff; }
+        .create-store-form input { background: #0f1d4c; border-color: rgba(255,255,255,0.14); color: #fff; }
+        #section-stores #storeListSearchInput,
+        #section-stores #storeListStatusFilter {
+            background: #0f1d4c;
+            border-color: rgba(255, 255, 255, 0.14);
+            color: #fff;
+        }
+        #section-stores #storeListSearchInput::placeholder { color: rgba(255, 255, 255, 0.45); }
+        #section-stores .store-filter-status label { color: rgba(255, 255, 255, 0.82); }
+        #section-stores #storeListStatusFilter option { background: #0f1d4c; color: #fff; }
+        .create-store-form .btn-register, .btn-toggle-register, .btn-copy-qr { background: #2a74ff; }
+        .store-status-option { border-color: rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.05); color: #fff; }
+        .store-status-option:hover { border-color: rgba(255, 255, 255, 0.28); }
+        .store-status-option.is-selected { color: #fff; }
+        .store-card .store-name-row > button.store-status-btn.store-status--ok {
+            border-color: rgba(52, 211, 153, 0.65);
+            background: linear-gradient(180deg, rgba(5, 150, 105, 0.9) 0%, rgba(6, 78, 59, 0.95) 100%);
+            color: #d1fae5;
+            box-shadow: 0 2px 14px rgba(34, 197, 94, 0.38);
+        }
+        .store-card .store-name-row > button.store-status-btn.store-status--suspended {
+            border-color: rgba(248, 113, 113, 0.65);
+            background: linear-gradient(180deg, rgba(220, 38, 38, 0.85) 0%, rgba(127, 29, 29, 0.92) 100%);
+            color: #fecaca;
+            box-shadow: 0 2px 14px rgba(239, 68, 68, 0.35);
+        }
+        .store-card .store-name-row > button.store-status-btn.store-status--withdrawn {
+            border-color: rgba(148, 163, 184, 0.55);
+            background: linear-gradient(180deg, rgba(71, 85, 105, 0.9) 0%, rgba(30, 41, 59, 0.95) 100%);
+            color: #e2e8f0;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+        }
+        .store-card .store-name-row > button.btn-edit-store {
+            border-color: rgba(96, 165, 250, 0.55);
+            background: linear-gradient(180deg, #2563eb 0%, #1e3a8a 100%);
+            color: #fff;
+            box-shadow: 0 2px 14px rgba(37, 99, 235, 0.48);
+        }
+        .store-card .store-name-row > button.btn-account-store {
+            border-color: rgba(167, 139, 250, 0.55);
+            background: linear-gradient(180deg, #7c3aed 0%, #4c1d95 100%);
+            color: #fff;
+            box-shadow: 0 2px 14px rgba(124, 58, 237, 0.45);
+        }
+        .store-card .store-name-row > button.btn-qr {
+            border-color: rgba(34, 211, 238, 0.55);
+            background: linear-gradient(180deg, #0ea5e9 0%, #075985 100%);
+            color: #fff;
+            box-shadow: 0 2px 14px rgba(14, 165, 233, 0.45);
+        }
+        #storeQrModal .store-qr-modal-inner { background: #0f1d4c; border-color: rgba(255, 255, 255, 0.1); }
+        #storeQrModal .store-qr-modal-img { background: #fff; }
+        #storeQrModal .store-qr-modal-url { color: #8cc8ff; }
+        th { background: #101f54; }
+        td { border-bottom-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.9); }
+        tr:hover td { background: rgba(255,255,255,0.03); }
+        .member-detail {
+            margin-top: 6px;
+            font-size: 12px;
+            line-height: 1.45;
+            color: rgba(255,255,255,0.78);
+            word-break: break-all;
+        }
+        .member-detail--muted { color: rgba(255,255,255,0.52); }
+        .member-photo-row {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .member-photo {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: #0f1d4c;
+            cursor: zoom-in;
+        }
+        .member-image-preview-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10050;
+            background: rgba(0,0,0,0.88);
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            box-sizing: border-box;
+            cursor: zoom-out;
+        }
+        .member-image-preview-overlay.show { display: flex; }
+        .member-image-preview-box {
+            max-width: calc(100vw - 48px);
+            max-height: calc(100vh - 48px);
+            position: relative;
+        }
+        .member-image-preview-box img {
+            display: block;
+            max-width: calc(100vw - 48px);
+            max-height: calc(100vh - 48px);
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+        }
+        .member-image-preview-hint {
+            position: absolute;
+            bottom: -36px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 13px;
+            color: rgba(255,255,255,0.75);
+        }
+        .modal-prices-box { background: #0b153d; border: 1px solid rgba(255,255,255,0.12); color: #fff; }
+        .modal-prices-box .field label { color: #fff; }
+        .modal-prices-box .field input,
+        .modal-prices-box .field textarea { background: #0f1d4c; border-color: rgba(255,255,255,0.14); color: #fff; }
+        #storePricesModal .modal-price-toggle {
+            border-color: rgba(255, 255, 255, 0.14);
+            background: rgba(0, 0, 0, 0.22);
+        }
+        #storePricesModal .modal-toggle-btn { color: rgba(255, 255, 255, 0.72); }
+        #storePricesModal .modal-toggle-btn + .modal-toggle-btn { border-left-color: rgba(255, 255, 255, 0.14); }
+        #storePricesModal .modal-toggle-btn.is-active {
+            background: #2a74ff;
+            color: #fff;
+        }
+        #createStoreModal .modal-price-toggle {
+            border-color: rgba(255, 255, 255, 0.14);
+            background: rgba(0, 0, 0, 0.22);
+        }
+        #createStoreModal .modal-toggle-btn { color: rgba(255, 255, 255, 0.72); }
+        #createStoreModal .modal-toggle-btn + .modal-toggle-btn { border-left-color: rgba(255, 255, 255, 0.14); }
+        #createStoreModal .modal-toggle-btn.is-active {
+            background: #2a74ff;
+            color: #fff;
+        }
+        .modal-prices-box .field-hint { color: rgba(255, 255, 255, 0.55); }
+        .modal-prices-box .btn-cancel-prices { background: #3a4365; color: #fff; }
+        .settlement-section {
+            margin-top: 16px;
+            background: #0b153d;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 18px 20px;
+        }
+        .settlement-title {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .settlement-date-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 14px;
+            margin: 0 0 16px 0;
+        }
+        .settlement-date-bar label {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.88);
+        }
+        .settlement-date-bar input[type="date"] {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: #0f1d4c;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .settlement-date-bar input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.85);
+            opacity: 0.85;
+            cursor: pointer;
+        }
+        .settlement-date-sep {
+            color: rgba(255,255,255,0.45);
+            font-size: 14px;
+        }
+        .settlement-date-bar .settlement-store-search {
+            min-width: 180px;
+            max-width: 320px;
+            flex: 1 1 200px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: #0f1d4c;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .settlement-date-bar .settlement-store-search::placeholder {
+            color: rgba(255,255,255,0.45);
+        }
+        .settlement-date-bar .settlement-store-search:focus {
+            outline: none;
+            border-color: rgba(42, 116, 255, 0.65);
+            box-shadow: 0 0 0 2px rgba(42, 116, 255, 0.2);
+        }
+        .btn-settlement-query {
+            padding: 8px 18px;
+            margin-left: 4px;
+            background: #2a74ff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-settlement-query:hover { opacity: 0.92; }
+        .table--settlement { min-width: 1280px; }
+        /* 정산표: 구간별 연한 배경 (가맹명 / 문자인증 / 신분증 인증 / 계좌(1원) 인증 / 합계) */
+        .table--settlement thead tr:first-child th:nth-child(1) { background: rgba(255, 255, 255, 0.07) !important; }
+        .table--settlement thead tr:first-child th:nth-child(2) { background: rgba(96, 165, 250, 0.22) !important; }
+        .table--settlement thead tr:first-child th:nth-child(3) { background: rgba(52, 211, 153, 0.2) !important; }
+        .table--settlement thead tr:first-child th:nth-child(4) { background: rgba(251, 191, 36, 0.18) !important; }
+        .table--settlement thead tr:first-child th:nth-child(5) { background: rgba(140, 200, 255, 0.18) !important; }
+        .table--settlement thead tr:nth-child(2) th:nth-child(1),
+        .table--settlement thead tr:nth-child(2) th:nth-child(2),
+        .table--settlement thead tr:nth-child(2) th:nth-child(3) { background: rgba(96, 165, 250, 0.18) !important; }
+        .table--settlement thead tr:nth-child(2) th:nth-child(4),
+        .table--settlement thead tr:nth-child(2) th:nth-child(5),
+        .table--settlement thead tr:nth-child(2) th:nth-child(6) { background: rgba(52, 211, 153, 0.16) !important; }
+        .table--settlement thead tr:nth-child(2) th:nth-child(7),
+        .table--settlement thead tr:nth-child(2) th:nth-child(8),
+        .table--settlement thead tr:nth-child(2) th:nth-child(9) { background: rgba(251, 191, 36, 0.15) !important; }
+        .table--settlement tbody td:nth-child(1) { background: rgba(255, 255, 255, 0.045); }
+        .table--settlement tbody td:nth-child(2),
+        .table--settlement tbody td:nth-child(3),
+        .table--settlement tbody td:nth-child(4) { background: rgba(96, 165, 250, 0.1); }
+        .table--settlement tbody td:nth-child(5),
+        .table--settlement tbody td:nth-child(6),
+        .table--settlement tbody td:nth-child(7) { background: rgba(52, 211, 153, 0.09); }
+        .table--settlement tbody td:nth-child(8),
+        .table--settlement tbody td:nth-child(9),
+        .table--settlement tbody td:nth-child(10) { background: rgba(251, 191, 36, 0.09); }
+        .table--settlement tbody td:nth-child(11) { background: rgba(140, 200, 255, 0.09); }
+        .table--settlement tbody tr:hover td:nth-child(1) { background: rgba(255, 255, 255, 0.09); }
+        .table--settlement tbody tr:hover td:nth-child(2),
+        .table--settlement tbody tr:hover td:nth-child(3),
+        .table--settlement tbody tr:hover td:nth-child(4) { background: rgba(96, 165, 250, 0.2); }
+        .table--settlement tbody tr:hover td:nth-child(5),
+        .table--settlement tbody tr:hover td:nth-child(6),
+        .table--settlement tbody tr:hover td:nth-child(7) { background: rgba(52, 211, 153, 0.18); }
+        .table--settlement tbody tr:hover td:nth-child(8),
+        .table--settlement tbody tr:hover td:nth-child(9),
+        .table--settlement tbody tr:hover td:nth-child(10) { background: rgba(251, 191, 36, 0.16); }
+        .table--settlement tbody tr:hover td:nth-child(11) { background: rgba(140, 200, 255, 0.16); }
+        .table--settlement th,
+        .table--settlement td { text-align: center; }
+        .table--settlement .settlement-th-store,
+        .table--settlement .settlement-th-total { vertical-align: middle; }
+        .table--settlement .settlement-group-head { font-weight: 700; }
+        .table--settlement thead tr + tr th { font-size: 11px; }
+        .table--settlement .td-total-fee { font-weight: 700; color: #8cc8ff; }
+        .table--settlement tfoot td {
+            font-weight: 700;
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+            padding-top: 14px;
+            padding-bottom: 14px;
+        }
+        .table--settlement tfoot td.settlement-td-dash {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.45);
+        }
+        .table--settlement tfoot td:nth-child(1) { background: rgba(255, 255, 255, 0.08); }
+        .table--settlement tfoot td:nth-child(2),
+        .table--settlement tfoot td:nth-child(3),
+        .table--settlement tfoot td:nth-child(4) { background: rgba(96, 165, 250, 0.16); }
+        .table--settlement tfoot td:nth-child(5),
+        .table--settlement tfoot td:nth-child(6),
+        .table--settlement tfoot td:nth-child(7) { background: rgba(52, 211, 153, 0.14); }
+        .table--settlement tfoot td:nth-child(8),
+        .table--settlement tfoot td:nth-child(9),
+        .table--settlement tfoot td:nth-child(10) { background: rgba(251, 191, 36, 0.14); }
+        .table--settlement tfoot td:nth-child(11) { background: rgba(140, 200, 255, 0.14); }
+        #section-point-ledger .point-ledger-section {
+            text-align: center;
+        }
+        #section-point-ledger .settlement-title {
+            text-align: center;
+        }
+        #section-point-ledger .point-ledger-toolbar {
+            justify-content: center;
+        }
+        #section-point-ledger .point-ledger-kind-select,
+        #section-point-ledger .point-ledger-status-select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: #0f1d4c;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+            min-width: 120px;
+            cursor: pointer;
+        }
+        #section-point-ledger .point-ledger-kind-select:focus,
+        #section-point-ledger .point-ledger-status-select:focus {
+            outline: none;
+            border-color: rgba(42, 116, 255, 0.65);
+        }
+        #section-point-ledger .point-ledger-date-input {
+            position: relative;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: #0f1d4c;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+            min-width: 158px;
+            box-sizing: border-box;
+            color-scheme: dark;
+            cursor: pointer;
+        }
+        #section-point-ledger .point-ledger-date-input:focus {
+            outline: none;
+            border-color: rgba(42, 116, 255, 0.65);
+        }
+        /* Chromium/WebKit: 날짜 숫자 영역 클릭해도 달력이 열리도록 히트 영역을 필드 전체로 확장 */
+        #section-point-ledger .point-ledger-date-input::-webkit-calendar-picker-indicator {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            cursor: pointer;
+            opacity: 0.01;
+            background: transparent;
+        }
+        #section-point-ledger .point-ledger-date-sep {
+            color: rgba(255, 255, 255, 0.55);
+            font-weight: 600;
+            padding: 0 2px;
+        }
+        #section-point-ledger .table-scroll {
+            overflow-x: auto;
+            overflow-y: visible;
+        }
+        .table--point-ledger {
+            min-width: 1120px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table--point-ledger th {
+            font-size: 12px;
+            padding: 12px 10px;
+            white-space: nowrap;
+            text-align: center;
+        }
+        .table--point-ledger td {
+            padding: 11px 10px;
+            font-size: 13px;
+            vertical-align: middle;
+            text-align: center;
+        }
+        .table--point-ledger .td-point-ledger-grant { color: #86efac; font-weight: 600; }
+        .table--point-ledger .td-point-ledger-deduct { color: #fca5a5; font-weight: 600; }
+        .table--point-ledger .td-point-ledger-amt-grant { color: #86efac; font-weight: 700; font-variant-numeric: tabular-nums; }
+        .table--point-ledger .td-point-ledger-amt-deduct { color: #fca5a5; font-weight: 700; font-variant-numeric: tabular-nums; }
+        .table--point-ledger .td-point-ledger-balance { font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, 0.88); font-weight: 600; }
+        .table--point-ledger .td-point-ledger-status {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            vertical-align: middle;
+            overflow: visible;
+            position: relative;
+        }
+        .table--point-ledger tr.point-ledger-row-popup-open {
+            position: relative;
+            z-index: 40;
+        }
+        .table--point-ledger tr.point-ledger-row-popup-open td {
+            background: #0b153d;
+        }
+        .table--point-ledger .point-ledger-status-label { font-weight: 600; }
+        .table--point-ledger .point-ledger-status-label--done { color: #86efac; }
+        .table--point-ledger .point-ledger-status-label--cancel { color: #fca5a5; }
+        .table--point-ledger .point-ledger-status-label--wait { color: #fcd34d; }
+        .table--point-ledger .point-ledger-status-label--fail { color: #fb923c; }
+        .table--point-ledger .point-ledger-status-label--default { color: rgba(255, 255, 255, 0.82); }
+        .table--point-ledger .point-ledger-pending-wrap {
+            position: relative;
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 auto;
+        }
+        .table--point-ledger .point-ledger-pending-open {
+            cursor: pointer;
+            font: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            color: #fde047;
+            background: rgba(250, 204, 21, 0.12);
+            border: 1px solid rgba(250, 204, 21, 0.45);
+            border-radius: 6px;
+            padding: 5px 12px;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .table--point-ledger .point-ledger-pending-open:hover {
+            background: rgba(250, 204, 21, 0.2);
+            border-color: rgba(250, 204, 21, 0.65);
+        }
+        .table--point-ledger .point-ledger-pending-choices {
+            position: absolute;
+            left: 50%;
+            top: 100%;
+            transform: translateX(-50%);
+            margin-top: 8px;
+            z-index: 50;
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 12px;
+            min-width: 140px;
+            box-sizing: border-box;
+            background: linear-gradient(180deg, rgba(22, 36, 86, 0.98) 0%, rgba(12, 22, 58, 0.99) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 10px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.2);
+        }
+        .table--point-ledger .point-ledger-pending-choices::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            margin-left: -7px;
+            border: 7px solid transparent;
+            border-bottom-color: rgba(22, 36, 86, 0.98);
+            filter: drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.08));
+        }
+        .table--point-ledger .point-ledger-pending-choices[hidden] { display: none !important; }
+        .table--point-ledger .point-ledger-pending-choice {
+            cursor: pointer;
+            font: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 5px;
+            padding: 4px 10px;
+            border: 1px solid transparent;
+        }
+        .table--point-ledger .point-ledger-pending-choice--ok {
+            color: #bbf7d0;
+            background: rgba(34, 197, 94, 0.22);
+            border-color: rgba(34, 197, 94, 0.45);
+        }
+        .table--point-ledger .point-ledger-pending-choice--ok:hover { background: rgba(34, 197, 94, 0.32); }
+        .table--point-ledger .point-ledger-pending-choice--cancel {
+            color: #fecaca;
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(248, 113, 113, 0.45);
+        }
+        .table--point-ledger .point-ledger-pending-choice--cancel:hover { background: rgba(239, 68, 68, 0.3); }
+        .table--point-ledger .td-point-ledger-note {
+            text-align: center;
+            max-width: 360px;
+            vertical-align: middle;
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.88);
+            word-break: break-all;
+            line-height: 1.35;
+        }
+        .table--point-ledger .td-point-ledger-dash { color: rgba(255, 255, 255, 0.4); font-weight: 600; }
+        .table--point-ledger .td-point-ledger-date {
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.88);
+        }
+        .sidebar-badge {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            background: #ef4444;
+            color: #fff;
+            vertical-align: middle;
+        }
+        #section-account-queue .table--account-queue { min-width: 960px; }
+        #section-account-queue .account-queue-wrap { margin-top: 8px; }
+        #section-account-queue .hq-code-input {
+            width: 88px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: #0f1d4c;
+            color: #fff;
+            font-size: 15px;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+        #section-account-queue .btn-hq-confirm {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            background: #2a74ff;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        #section-account-queue .btn-hq-confirm:disabled { opacity: 0.45; cursor: not-allowed; }
+        #section-account-queue .account-queue-status { font-size: 12px; font-weight: 600; }
+        #section-account-queue .account-queue-status--pending { color: #fbbf24; }
+        #section-account-queue .account-queue-status--sent { color: #86efac; }
+
+        @media (max-width: 1000px) {
+            .dashboard-shell { display: block; }
+            .dashboard-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        }
     </style>
 </head>
 <body>
+    <div class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <h2 class="sidebar-title">Admin Dashboard</h2>
+        <p class="sidebar-sub">본사 ADMIN</p>
+        <nav class="sidebar-menu">
+            <div class="menu-item active" data-view="overview">현황판</div>
+            <div class="menu-item" data-view="stores">가맹점 관리</div>
+            <div class="menu-item" data-view="members">회원 목록</div>
+            <div class="menu-item" data-view="accountQueue">계좌인증난 <span class="sidebar-badge" id="accountQueueBadge" style="display:none;">0</span></div>
+            <div class="menu-item" data-view="settlement">수수료 통계</div>
+            <div class="menu-item" data-view="pointLedger">포인트 내역</div>
+        </nav>
+    </aside>
+    <div class="dashboard-main">
     <header class="admin-header">
         <h1>본사 어드민</h1>
         <p>가맹점별 KYC 회원 현황 조회</p>
     </header>
     <main class="admin-body">
+        <section id="section-overview" class="dashboard-section active">
         <div class="summary-cards">
             <div class="summary-card">
                 <div class="num" id="totalStores">0</div>
@@ -210,81 +1348,98 @@
                 <div class="label">KYC 인증 완료</div>
             </div>
         </div>
+        </section>
 
-        <div class="create-store-section" id="createStoreSection">
-            <div class="section-header">
-                <h2 class="section-title">가맹점 등록</h2>
-                <button type="button" class="btn-toggle-register" id="btnToggleRegister">펼치기</button>
+        <section id="section-account-queue" class="dashboard-section">
+            <h2 class="section-title">계좌인증난</h2>
+            <p class="section-desc">회원이 계좌 정보를 제출하면 목록에 표시됩니다. 전용 계좌에서 1원 입금 시 적요에 넣은 <strong>숫자 4자리</strong>를 입력한 뒤 확인을 누르면, 회원 화면에 동일한 4자리가 표시되고 회원이 입력해 인증을 완료합니다.</p>
+            <div class="table-wrap account-queue-wrap">
+                <div class="table-scroll">
+                    <table class="table--account-queue">
+                        <thead>
+                            <tr>
+                                <th>가맹점</th>
+                                <th>회원명</th>
+                                <th>은행</th>
+                                <th>계좌번호</th>
+                                <th>예금주</th>
+                                <th>상태</th>
+                                <th>4자리 입력</th>
+                                <th>확인</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accountQueueBody"></tbody>
+                    </table>
+                </div>
             </div>
-            <div class="section-body" id="createStoreBody">
-            <form class="create-store-form" id="formCreateStore" autocomplete="off">
-                <div class="field">
-                    <label for="inputStoreId">가맹점 ID *</label>
-                    <input type="text" id="inputStoreId" placeholder="예: KNC, STORE_001" required autocomplete="off">
+        </section>
+
+        <section id="section-stores" class="dashboard-section">
+        <div class="store-section-bar">
+            <div class="create-store-toolbar">
+                <button type="button" class="btn-toggle-register" id="btnOpenCreateStoreModal">가맹점 생성</button>
+            </div>
+            <div class="store-list-filters">
+                <input type="search" id="storeListSearchInput" placeholder="가맹점 검색 (로그인 계정, 가맹명)" autocomplete="off" aria-label="가맹점 검색">
+                <div class="store-filter-status">
+                    <label for="storeListStatusFilter">상태</label>
+                    <select id="storeListStatusFilter" aria-label="가맹점 상태 필터">
+                        <option value="all" selected>전체</option>
+                        <option value="normal">정상</option>
+                        <option value="suspended">정지</option>
+                        <option value="withdrawn">탈퇴</option>
+                    </select>
                 </div>
-                <div class="field">
-                    <label for="inputStorePassword">가맹점 비밀번호 *</label>
-                    <input type="password" id="inputStorePassword" placeholder="가맹점 어드민 로그인용 비밀번호" required autocomplete="new-password">
-                </div>
-                <div class="field">
-                    <label for="inputStoreName">가맹점 이름 *</label>
-                    <input type="text" id="inputStoreName" placeholder="예: 강남점, 서초점" required autocomplete="off">
-                </div>
-                <div class="field" style="width:100%; margin-top:8px;">
-                    <span class="section-desc" style="display:block; margin-bottom:8px;">이용금액 (인증 단가 — 등록 시 함께 저장)</span>
-                </div>
-                <div class="create-store-prices-row">
-                    <div class="field">
-                        <label for="inputStorePriceSms">문자인증 단가 (원)</label>
-                        <input type="number" id="inputStorePriceSms" min="0" step="1" placeholder="100">
-                    </div>
-                    <div class="field">
-                        <label for="inputStorePriceIdDoc">신분증 인증 단가 (원)</label>
-                        <input type="number" id="inputStorePriceIdDoc" min="0" step="1" placeholder="200">
-                    </div>
-                    <div class="field">
-                        <label for="inputStorePriceAccount">1원 인증 단가 (원)</label>
-                        <input type="number" id="inputStorePriceAccount" min="0" step="1" placeholder="150">
-                    </div>
-                    <div class="field">
-                        <label for="inputStorePriceIntegrated">통합 (원)</label>
-                        <input type="number" id="inputStorePriceIntegrated" min="0" step="1" placeholder="0" title="설정 시 KYC 완료 1건당 이 금액으로 정산">
-                    </div>
-                </div>
-                <button type="submit" class="btn-register" id="btnRegister">등록</button>
-            </form>
             </div>
         </div>
 
         <div id="storeListSection">
-            <h2 class="section-title">가맹점 구분</h2>
-            <p class="section-desc">가맹점을 클릭하면 해당 가맹점 회원만 필터됩니다. "전체 보기"로 모든 회원을 볼 수 있습니다.</p>
-            <div class="store-filter-actions">
-                <button type="button" class="filter-btn active" id="btnFilterAll">전체 보기</button>
-                <span class="filter-sep">|</span>
-                <span class="filter-label">가맹점 선택:</span>
-            </div>
             <div class="store-list" id="storeList"></div>
         </div>
+        </section>
 
         <div id="storePricesModal" class="modal-overlay-prices" aria-hidden="true">
             <div class="modal-prices-box">
-                <h3 id="storePricesModalTitle">가맹점 금원 수정</h3>
+                <h3 id="storePricesModalTitle">수수료 수정</h3>
                 <div class="field">
-                    <label for="modalPriceSms">문자인증 단가 (원)</label>
-                    <input type="number" id="modalPriceSms" min="0" step="1">
+                    <label for="modalPriceSms">문자인증 단가 (USDT)</label>
+                    <div class="modal-price-row">
+                        <input type="number" id="modalPriceSms" min="0" step="0.5" inputmode="decimal">
+                        <div class="modal-price-toggle" data-toggle-row="sms" role="group" aria-label="문자 단가">
+                            <button type="button" class="modal-toggle-btn is-active" data-value="on">사용</button>
+                            <button type="button" class="modal-toggle-btn" data-value="off">미사용</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="field">
-                    <label for="modalPriceIdDoc">신분증 인증 단가 (원)</label>
-                    <input type="number" id="modalPriceIdDoc" min="0" step="1">
+                    <label for="modalPriceIdDoc">신분증 인증 단가 (USDT)</label>
+                    <div class="modal-price-row">
+                        <input type="number" id="modalPriceIdDoc" min="0" step="0.5" inputmode="decimal">
+                        <div class="modal-price-toggle" data-toggle-row="idDoc" role="group" aria-label="신분증 단가">
+                            <button type="button" class="modal-toggle-btn is-active" data-value="on">사용</button>
+                            <button type="button" class="modal-toggle-btn" data-value="off">미사용</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="field">
-                    <label for="modalPriceAccount">1원 인증 단가 (원)</label>
-                    <input type="number" id="modalPriceAccount" min="0" step="1">
+                    <label for="modalPriceAccount">계좌(1원) 인증 단가 (USDT)</label>
+                    <div class="modal-price-row">
+                        <input type="number" id="modalPriceAccount" min="0" step="0.5" inputmode="decimal">
+                        <div class="modal-price-toggle" data-toggle-row="account" role="group" aria-label="계좌 인증 단가">
+                            <button type="button" class="modal-toggle-btn is-active" data-value="on">사용</button>
+                            <button type="button" class="modal-toggle-btn" data-value="off">미사용</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="field">
-                    <label for="modalPriceIntegrated">통합 (원)</label>
-                    <input type="number" id="modalPriceIntegrated" min="0" step="1" title="설정 시 KYC 완료 1건당 이 금액으로 정산">
+                    <label for="modalPriceIntegrated">통합 (USDT)</label>
+                    <div class="modal-price-row">
+                        <input type="number" id="modalPriceIntegrated" min="0" step="0.5" inputmode="decimal" title="0.5 USDT 단위 · KYC 완료 1건당 정산">
+                        <div class="modal-price-toggle" data-toggle-row="integrated" role="group" aria-label="통합 단가">
+                            <button type="button" class="modal-toggle-btn is-active" data-value="on">사용</button>
+                            <button type="button" class="modal-toggle-btn" data-value="off">미사용</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="btn-wrap">
                     <button type="button" class="btn-save-prices-modal" id="btnModalSavePrices">저장</button>
@@ -293,6 +1448,164 @@
             </div>
         </div>
 
+        <div id="storeAccountModal" class="modal-overlay-prices" aria-hidden="true">
+            <div class="modal-prices-box">
+                <h3 id="storeAccountModalTitle"></h3>
+                <div class="field">
+                    <label for="modalAccountNewPassword">새로운 비밀번호</label>
+                    <input type="password" id="modalAccountNewPassword" autocomplete="new-password" placeholder="새로운 비밀번호 입력">
+                </div>
+                <div class="field">
+                    <label for="modalAccountNewPasswordConfirm">비밀번호 확인</label>
+                    <input type="password" id="modalAccountNewPasswordConfirm" autocomplete="new-password" placeholder="새로운 비밀번호 다시 입력">
+                </div>
+                <div class="field">
+                    <label for="modalAccountNote">비고</label>
+                    <textarea id="modalAccountNote" class="modal-account-note" rows="4" placeholder="관리 메모를 입력하세요"></textarea>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="btn-save-prices-modal" id="btnModalSaveAccount">저장</button>
+                    <button type="button" class="btn-cancel-prices" id="btnModalCancelAccount">취소</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="storeStatusModal" class="modal-overlay-prices" aria-hidden="true">
+            <div class="modal-prices-box">
+                <h3 id="storeStatusModalTitle"></h3>
+                <div class="store-status-pick-group" id="storeStatusPickGroup">
+                    <button type="button" class="store-status-option" data-status="normal">정상</button>
+                    <button type="button" class="store-status-option" data-status="suspended">정지</button>
+                    <button type="button" class="store-status-option" data-status="withdrawn">탈퇴</button>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="btn-save-prices-modal" id="btnModalSaveStoreStatus">확인</button>
+                    <button type="button" class="btn-cancel-prices" id="btnModalCancelStoreStatus">취소</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="storeQrModal" class="modal-overlay-prices" aria-hidden="true">
+            <div class="modal-prices-box" role="dialog" aria-labelledby="storeQrModalTitle">
+                <h3 id="storeQrModalTitle"></h3>
+                <div class="store-qr-modal-inner">
+                    <img id="storeQrModalImg" class="store-qr-modal-img" src="" alt="가맹점 KYC QR">
+                    <p id="storeQrModalUrl" class="store-qr-modal-url"></p>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="btn-copy-qr" id="btnStoreQrModalCopy">QR 복사하기</button>
+                    <button type="button" class="btn-cancel-prices" id="btnModalCloseStoreQr">취소</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="storePointModal" class="modal-overlay-prices" aria-hidden="true">
+            <div class="modal-prices-box modal-point-box" role="dialog" aria-modal="true" aria-labelledby="storePointModalTitle">
+                <h3 id="storePointModalTitle">포인트</h3>
+                <p class="store-point-modal-balance">보유 포인트 : <strong id="storePointModalBalance">0</strong> USDT</p>
+                <div class="store-point-action-row">
+                    <div class="modal-price-toggle" id="storePointKindToggle" role="group" aria-label="지급 또는 차감">
+                        <button type="button" class="modal-toggle-btn is-active" data-point-kind="grant">지급</button>
+                        <button type="button" class="modal-toggle-btn" data-point-kind="deduct">차감</button>
+                    </div>
+                </div>
+                <div class="field">
+                    <input type="number" id="storePointAmountInput" min="0" step="0.5" inputmode="decimal" placeholder="0.5 USDT 단위" aria-label="USDT 금액 (0.5 단위)">
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="btn-save-prices-modal" id="btnStorePointApply">확인</button>
+                    <button type="button" class="btn-cancel-prices" id="btnStorePointModalClose">취소</button>
+                </div>
+                <h4 class="store-point-history-title">지급 · 차감 내역</h4>
+                <div class="store-point-history-wrap">
+                    <table class="store-point-history-table">
+                        <colgroup>
+                            <col class="col-date" />
+                            <col class="col-kind" />
+                            <col class="col-amt" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>날짜</th>
+                                <th>지급/차감</th>
+                                <th>금액 (USDT)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="storePointHistoryBody"></tbody>
+                    </table>
+                </div>
+                <div class="store-point-history-pager" id="storePointHistoryPager" role="navigation" aria-label="내역 페이지">
+                    <button type="button" class="store-point-pager-btn" id="btnStorePointHistoryPrev">이전</button>
+                    <span class="store-point-pager-info" id="storePointHistoryPageInfo" aria-live="polite">1 / 1</span>
+                    <button type="button" class="store-point-pager-btn" id="btnStorePointHistoryNext">다음</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="createStoreModal" class="modal-overlay-prices" aria-hidden="true">
+            <div class="modal-prices-box" role="dialog" aria-modal="true" aria-label="가맹점 생성">
+                <form class="create-store-form" id="formCreateStore" autocomplete="off">
+                    <div class="field">
+                        <label for="inputStoreId">가맹점 로그인 계정 *</label>
+                        <input type="text" id="inputStoreId" placeholder="예: KNC, STORE_001" required autocomplete="off">
+                    </div>
+                    <div class="field">
+                        <label for="inputStorePassword">가맹점 로그인 비밀번호 *</label>
+                        <input type="password" id="inputStorePassword" placeholder="가맹점 어드민 로그인용 비밀번호" required autocomplete="new-password">
+                    </div>
+                    <div class="field">
+                        <label for="inputStoreName">가맹명 *</label>
+                        <input type="text" id="inputStoreName" placeholder="예: 강남점, 서초점" required autocomplete="off">
+                    </div>
+                    <div class="field">
+                        <label for="inputStorePriceSms">문자인증 단가 (USDT)</label>
+                        <div class="modal-price-row">
+                            <input type="number" id="inputStorePriceSms" min="0" step="0.5" inputmode="decimal" placeholder="1">
+                            <div class="modal-price-toggle" data-toggle-row="sms" role="group" aria-label="문자 단가">
+                                <button type="button" class="modal-toggle-btn is-active" data-value="on">사용</button>
+                                <button type="button" class="modal-toggle-btn" data-value="off">미사용</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="inputStorePriceIdDoc">신분증 인증 단가 (USDT)</label>
+                        <div class="modal-price-row">
+                            <input type="number" id="inputStorePriceIdDoc" min="0" step="0.5" inputmode="decimal" placeholder="2">
+                            <div class="modal-price-toggle" data-toggle-row="idDoc" role="group" aria-label="신분증 단가">
+                                <button type="button" class="modal-toggle-btn is-active" data-value="on">사용</button>
+                                <button type="button" class="modal-toggle-btn" data-value="off">미사용</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="inputStorePriceAccount">계좌(1원) 인증 단가 (USDT)</label>
+                        <div class="modal-price-row">
+                            <input type="number" id="inputStorePriceAccount" min="0" step="0.5" inputmode="decimal" placeholder="1.5">
+                            <div class="modal-price-toggle" data-toggle-row="account" role="group" aria-label="계좌 인증 단가">
+                                <button type="button" class="modal-toggle-btn is-active" data-value="on">사용</button>
+                                <button type="button" class="modal-toggle-btn" data-value="off">미사용</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="inputStorePriceIntegrated">통합 (USDT)</label>
+                        <div class="modal-price-row">
+                            <input type="number" id="inputStorePriceIntegrated" min="0" step="0.5" inputmode="decimal" placeholder="0" title="0.5 USDT 단위 · KYC 완료 1건당 정산">
+                            <div class="modal-price-toggle" data-toggle-row="integrated" role="group" aria-label="통합 단가">
+                                <button type="button" class="modal-toggle-btn is-active" data-value="on">사용</button>
+                                <button type="button" class="modal-toggle-btn" data-value="off">미사용</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btn-wrap">
+                        <button type="submit" class="btn-save-prices-modal" id="btnRegister">생성</button>
+                        <button type="button" class="btn-cancel-prices" id="btnCancelCreateStore">취소</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <section id="section-members" class="dashboard-section">
         <h2 class="section-title">전체 회원 현황 (문자·신분증·계좌 인증)</h2>
         <div class="table-wrap">
             <div class="table-scroll">
@@ -301,6 +1614,7 @@
                         <tr>
                             <th>가맹점</th>
                             <th>회원 (문자인증 이름)</th>
+                            <th>가입일시</th>
                             <th>문자인증</th>
                             <th>신분증 인증</th>
                             <th>계좌 인증</th>
@@ -311,26 +1625,578 @@
                 </table>
             </div>
         </div>
+        </section>
+        <section id="section-settlement" class="dashboard-section">
+        <section id="settlementSection" class="settlement-section">
+            <h3 class="settlement-title">수수료 통계</h3>
+            <div class="settlement-date-bar">
+                <label for="settlementDateFrom">시작일</label>
+                <input type="date" id="settlementDateFrom" autocomplete="off">
+                <span class="settlement-date-sep">~</span>
+                <label for="settlementDateTo">종료일</label>
+                <input type="date" id="settlementDateTo" autocomplete="off">
+                <label for="settlementStoreSearchInput">가맹점</label>
+                <input type="search" id="settlementStoreSearchInput" class="settlement-store-search" placeholder="가맹명·로그인 계정 검색" autocomplete="off" aria-label="수수료 통계 가맹점 검색">
+                <button type="button" class="btn-settlement-query" id="btnSettlementQuery">조회</button>
+            </div>
+            <div class="table-wrap">
+                <div class="table-scroll">
+                    <table class="table--settlement">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" class="settlement-th-store">가맹명</th>
+                                <th colspan="3" class="settlement-group-head">문자인증</th>
+                                <th colspan="3" class="settlement-group-head">신분증 인증</th>
+                                <th colspan="3" class="settlement-group-head">계좌(1원) 인증</th>
+                                <th rowspan="2" class="settlement-th-total">수수료 합계 (USDT)</th>
+                            </tr>
+                            <tr>
+                                <th>횟수</th>
+                                <th>단가 (USDT)</th>
+                                <th>수수료 (USDT)</th>
+                                <th>횟수</th>
+                                <th>단가 (USDT)</th>
+                                <th>수수료 (USDT)</th>
+                                <th>횟수</th>
+                                <th>단가 (USDT)</th>
+                                <th>수수료 (USDT)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="settlementList">
+                            <tr>
+                                <td>강남점</td>
+                                <td>142</td>
+                                <td>1</td>
+                                <td>142</td>
+                                <td>118</td>
+                                <td>2</td>
+                                <td>236</td>
+                                <td>96</td>
+                                <td>1.5</td>
+                                <td>144</td>
+                                <td class="td-total-fee">522</td>
+                            </tr>
+                            <tr>
+                                <td>서초점</td>
+                                <td>88</td>
+                                <td>1</td>
+                                <td>88</td>
+                                <td>74</td>
+                                <td>2</td>
+                                <td>148</td>
+                                <td>61</td>
+                                <td>1.5</td>
+                                <td>91.5</td>
+                                <td class="td-total-fee">327.5</td>
+                            </tr>
+                            <tr>
+                                <td>역삼점</td>
+                                <td>203</td>
+                                <td>1</td>
+                                <td>203</td>
+                                <td>165</td>
+                                <td>2</td>
+                                <td>330</td>
+                                <td>140</td>
+                                <td>1.5</td>
+                                <td>210</td>
+                                <td class="td-total-fee">743</td>
+                            </tr>
+                            <tr>
+                                <td>잠실점</td>
+                                <td>56</td>
+                                <td>1</td>
+                                <td>56</td>
+                                <td>42</td>
+                                <td>2</td>
+                                <td>84</td>
+                                <td>38</td>
+                                <td>1.5</td>
+                                <td>57</td>
+                                <td class="td-total-fee">197</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr id="settlementTableFootRow">
+                                <td>합계</td>
+                                <td>489</td>
+                                <td class="settlement-td-dash">—</td>
+                                <td>489</td>
+                                <td>399</td>
+                                <td class="settlement-td-dash">—</td>
+                                <td>798</td>
+                                <td>335</td>
+                                <td class="settlement-td-dash">—</td>
+                                <td>502.5</td>
+                                <td class="td-total-fee">1,789.5</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </section>
+        </section>
+        <section id="section-point-ledger" class="dashboard-section">
+        <section class="settlement-section point-ledger-section">
+            <h3 class="settlement-title">포인트 내역</h3>
+            <div class="settlement-date-bar point-ledger-toolbar">
+                <label for="pointLedgerDateFrom">시작일</label>
+                <input type="date" id="pointLedgerDateFrom" class="point-ledger-date-input" autocomplete="off" title="달력에서 시작일 선택">
+                <span class="point-ledger-date-sep">~</span>
+                <label for="pointLedgerDateTo">종료일</label>
+                <input type="date" id="pointLedgerDateTo" class="point-ledger-date-input" autocomplete="off" title="달력에서 종료일 선택">
+                <label for="pointLedgerKindFilter">구분 검색</label>
+                <select id="pointLedgerKindFilter" class="point-ledger-kind-select" aria-label="포인트 내역 구분 필터">
+                    <option value="all" selected>전체</option>
+                    <option value="grant">지급</option>
+                    <option value="deduct">차감</option>
+                </select>
+                <label for="pointLedgerStatusFilter">상태</label>
+                <select id="pointLedgerStatusFilter" class="point-ledger-status-select" aria-label="포인트 내역 상태 필터">
+                    <option value="all" selected>전체</option>
+                    <option value="완료">완료</option>
+                    <option value="대기">대기</option>
+                    <option value="처리중">처리중</option>
+                    <option value="실패">실패</option>
+                    <option value="취소">취소</option>
+                </select>
+                <label for="pointLedgerStoreSearch">가맹점</label>
+                <input type="search" id="pointLedgerStoreSearch" class="settlement-store-search" placeholder="가맹명·로그인 계정 검색" autocomplete="off" aria-label="포인트 내역 가맹점 검색">
+                <button type="button" class="btn-settlement-query" id="btnPointLedgerRefresh">새로고침</button>
+            </div>
+            <div class="table-wrap">
+                <div class="table-scroll">
+                    <table class="table--point-ledger">
+                        <thead>
+                            <tr>
+                                <th>날짜</th>
+                                <th>가맹명</th>
+                                <th>구분</th>
+                                <th>이전 금액</th>
+                                <th>변동 금액</th>
+                                <th>이후 금액</th>
+                                <th>지갑 주소</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pointLedgerListBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        </section>
     </main>
+    </div>
+    </div>
+    <div id="memberImagePreview" class="member-image-preview-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="member-image-preview-box">
+            <img id="memberImagePreviewImg" src="" alt="원본 이미지">
+            <span class="member-image-preview-hint">배경을 클릭하거나 Esc로 닫기</span>
+        </div>
+    </div>
     <script>
         window.ADMIN_API_BASE = window.ADMIN_API_BASE || (typeof location !== 'undefined' ? location.origin : '');
 
+        function demoMemberJoinedIso(daysAgo, hour, minute) {
+            var d = new Date();
+            d.setDate(d.getDate() - daysAgo);
+            d.setHours(hour != null ? hour : 14, minute != null ? minute : 0, 0, 0);
+            return d.toISOString();
+        }
+
         var storesFallback = [
-            { id: 'STORE_001', name: '강남점', members: [
-                { name: '김철수', sms: 'complete', idDoc: 'complete', account: 'complete' },
-                { name: '이영희', sms: 'complete', idDoc: 'complete', account: 'fail' }
+            { id: 'STORE_001', name: '강남점', pointBalance: 300, pointHistory: [
+                { at: '2025-03-18T10:00:00.000Z', kind: 'grant', amount: 500, note: 'TVzaRmEckn6AtJWGvdKmYnfsMZLdBbRVYg', status: '완료' },
+                { at: '2025-03-20T14:00:00.000Z', kind: 'deduct', amount: 200, note: 'TVzaRmEckn6AtJWGvdKmYnfsMZLdBbRVYg', status: '처리중' }
+            ], usage: { sms: { count: 142, amount: 142 }, idDoc: { count: 118, amount: 236 }, account: { count: 96, amount: 144 } }, totalAmount: 522, prices: { sms: 1, idDoc: 2, account: 1.5, integrated: 0, smsEnabled: true, idDocEnabled: true, accountEnabled: true, integratedEnabled: false }, suspended: false, withdrawn: false, members: [
+                { name: '김철수', joinedAt: demoMemberJoinedIso(20, 10, 12), sms: 'complete', idDoc: 'complete', account: 'complete' },
+                { name: '이영희', joinedAt: demoMemberJoinedIso(14, 16, 48), sms: 'complete', idDoc: 'complete', account: 'fail' }
             ]},
-            { id: 'STORE_002', name: '서초점', members: [
-                { name: '박민수', sms: 'complete', idDoc: 'fail', account: 'wait' },
-                { name: '정수진', sms: 'complete', idDoc: 'complete', account: 'complete' }
+            { id: 'STORE_002', name: '서초점', pointBalance: 100, pointHistory: [
+                { at: '2025-03-12T11:00:00.000Z', kind: 'grant', amount: 200, note: 'TVzaRmEckn6AtJWGvdKmYnfsMZLdBbRVYg', status: '완료' },
+                { at: '2025-03-16T15:30:00.000Z', kind: 'deduct', amount: 100, note: 'TVzaRmEckn6AtJWGvdKmYnfsMZLdBbRVYg', status: '취소' }
+            ], usage: { sms: { count: 88, amount: 88 }, idDoc: { count: 74, amount: 148 }, account: { count: 61, amount: 91.5 } }, totalAmount: 327.5, prices: { sms: 1, idDoc: 2, account: 1.5, integrated: 0, smsEnabled: true, idDocEnabled: true, accountEnabled: true, integratedEnabled: false }, suspended: false, withdrawn: false, members: [
+                { name: '박민수', joinedAt: demoMemberJoinedIso(10, 9, 5), sms: 'complete', idDoc: 'fail', account: 'wait' },
+                { name: '정수진', joinedAt: demoMemberJoinedIso(3, 13, 22), sms: 'complete', idDoc: 'complete', account: 'complete' }
             ]},
-            { id: 'STORE_003', name: '역삼점', members: [
-                { name: '최동훈', sms: 'complete', idDoc: 'complete', account: 'complete' }
+            { id: 'STORE_003', name: '역삼점', pointBalance: 3200, pointHistory: [
+                { at: '2025-03-12T09:20:00.000Z', kind: 'grant', amount: 5000, note: 'TVzaRmEckn6AtJWGvdKmYnfsMZLdBbRVYg', status: '완료' },
+                { at: '2025-03-19T08:45:00.000Z', kind: 'deduct', amount: 1800, note: 'TVzaRmEckn6AtJWGvdKmYnfsMZLdBbRVYg', status: '완료' }
+            ], usage: { sms: { count: 203, amount: 203 }, idDoc: { count: 165, amount: 330 }, account: { count: 140, amount: 210 } }, totalAmount: 743, prices: { sms: 1, idDoc: 2, account: 1.5, integrated: 0, smsEnabled: true, idDocEnabled: true, accountEnabled: true, integratedEnabled: false }, suspended: false, withdrawn: false, members: [
+                { name: '최동훈', joinedAt: demoMemberJoinedIso(1, 11, 33), sms: 'complete', idDoc: 'complete', account: 'complete' }
             ]}
         ];
 
         var stores = [];
         var selectedStoreId = null;
+        var settlementTfootSnapshot = '';
+
+        var ADMIN_DASHBOARD_VIEWS = ['overview', 'stores', 'members', 'accountQueue', 'settlement', 'pointLedger'];
+        var ADMIN_DASHBOARD_VIEW_KEY = 'adminHqDashboardView';
+
+        function persistDashboardView(view) {
+            try {
+                if (ADMIN_DASHBOARD_VIEWS.indexOf(view) !== -1) {
+                    sessionStorage.setItem(ADMIN_DASHBOARD_VIEW_KEY, view);
+                }
+            } catch (e) {}
+        }
+
+        function readPersistedDashboardView() {
+            try {
+                var v = sessionStorage.getItem(ADMIN_DASHBOARD_VIEW_KEY);
+                if (v && ADMIN_DASHBOARD_VIEWS.indexOf(v) !== -1) return v;
+            } catch (e) {}
+            return 'overview';
+        }
+
+        function switchDashboardView(view) {
+            var nextView = view || 'overview';
+            if (ADMIN_DASHBOARD_VIEWS.indexOf(nextView) === -1) nextView = 'overview';
+            document.querySelectorAll('.sidebar-menu .menu-item').forEach(function (item) {
+                item.classList.toggle('active', item.dataset.view === nextView);
+            });
+            document.getElementById('section-overview').classList.toggle('active', nextView === 'overview');
+            document.getElementById('section-stores').classList.toggle('active', nextView === 'stores');
+            document.getElementById('section-members').classList.toggle('active', nextView === 'members');
+            document.getElementById('section-settlement').classList.toggle('active', nextView === 'settlement');
+            document.getElementById('section-point-ledger').classList.toggle('active', nextView === 'pointLedger');
+            var secAq = document.getElementById('section-account-queue');
+            if (secAq) secAq.classList.toggle('active', nextView === 'accountQueue');
+            if (nextView === 'pointLedger') renderGlobalPointLedger();
+            if (nextView === 'accountQueue') {
+                loadAccountVerifyQueue();
+                try {
+                    if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
+                } catch (e2) {}
+            }
+            persistDashboardView(nextView);
+        }
+
+        var accountQueuePollTimer = null;
+        var lastAccountQueuePending = 0;
+        var accountQueueSkipNotify = true;
+
+        function loadAccountVerifyQueue() {
+            var api = window.ADMIN_API_BASE || '';
+            if (!api) {
+                document.getElementById('accountQueueBody').innerHTML = '<tr><td colspan="8" class="no-data">API 베이스가 없습니다.</td></tr>';
+                return;
+            }
+            fetch(api + '/api/account-verify')
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    var items = (data && data.items) ? data.items : [];
+                    renderAccountQueueTable(items);
+                    var pending = items.filter(function (x) { return x.status === 'pending'; }).length;
+                    var badge = document.getElementById('accountQueueBadge');
+                    if (badge) {
+                        if (pending > 0) {
+                            badge.style.display = 'inline-block';
+                            badge.textContent = String(pending);
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                    if (!accountQueueSkipNotify && pending > lastAccountQueuePending) {
+                        try {
+                            if (window.Notification && Notification.permission === 'granted') {
+                                new Notification('계좌 인증 요청', { body: '새 요청이 있습니다.' });
+                            }
+                        } catch (e) {}
+                        try {
+                            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                            var o = ctx.createOscillator();
+                            var g = ctx.createGain();
+                            o.connect(g);
+                            g.connect(ctx.destination);
+                            o.frequency.value = 880;
+                            g.gain.value = 0.05;
+                            o.start();
+                            setTimeout(function () { o.stop(); ctx.close(); }, 120);
+                        } catch (e2) {}
+                    }
+                    lastAccountQueuePending = pending;
+                    accountQueueSkipNotify = false;
+                })
+                .catch(function () {
+                    document.getElementById('accountQueueBody').innerHTML = '<tr><td colspan="8" class="no-data">목록을 불러오지 못했습니다.</td></tr>';
+                });
+        }
+
+        function renderAccountQueueTable(items) {
+            var tbody = document.getElementById('accountQueueBody');
+            if (!tbody) return;
+            if (!items || items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="no-data">대기 중인 계좌 인증이 없습니다.</td></tr>';
+                return;
+            }
+            function esc(t) {
+                return String(t == null ? '' : t)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+            tbody.innerHTML = items.map(function (row) {
+                var sid = esc(row.storeId);
+                var mname = esc(row.memberName);
+                var key = sid + '_' + mname;
+                var st = row.status || '';
+                var stLabel = st === 'pending' ? '<span class="account-queue-status account-queue-status--pending">입금 대기</span>' : '<span class="account-queue-status account-queue-status--sent">회원 입력 대기</span>';
+                var disabled = st !== 'pending' ? ' disabled' : '';
+                var inputId = 'hqCode_' + key.replace(/[^a-zA-Z0-9]/g, '_');
+                return '<tr data-store-id="' + sid + '" data-member="' + esc(row.memberName) + '">' +
+                    '<td>' + esc(row.storeName || row.storeId) + '</td>' +
+                    '<td>' + esc(row.memberName) + '</td>' +
+                    '<td>' + esc(row.bankName) + '</td>' +
+                    '<td>' + esc(row.accountNumber) + '</td>' +
+                    '<td>' + esc(row.accountHolder) + '</td>' +
+                    '<td>' + stLabel + '</td>' +
+                    '<td><input type="text" class="hq-code-input" id="' + inputId + '" maxlength="4" inputmode="numeric" placeholder="0000"' + disabled + ' aria-label="입금 4자리"></td>' +
+                    '<td><button type="button" class="btn-hq-confirm"' + disabled + ' data-input="' + inputId + '">확인</button></td>' +
+                    '</tr>';
+            }).join('');
+            tbody.querySelectorAll('.btn-hq-confirm').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var tr = btn.closest('tr');
+                    var storeId = tr.getAttribute('data-store-id');
+                    var memberName = tr.getAttribute('data-member');
+                    var input = document.getElementById(btn.getAttribute('data-input'));
+                    var code4 = (input && input.value) ? String(input.value).replace(/\D/g, '').slice(0, 4) : '';
+                    if (code4.length !== 4) {
+                        alert('숫자 4자리를 입력해 주세요.');
+                        return;
+                    }
+                    btn.disabled = true;
+                    fetch((window.ADMIN_API_BASE || '') + '/api/account-verify', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'hqSetDepositCode',
+                            storeId: storeId,
+                            memberName: memberName,
+                            code4: code4
+                        })
+                    })
+                        .then(function (r) { return r.json(); })
+                        .then(function (d) {
+                            if (d && d.ok) {
+                                loadAccountVerifyQueue();
+                            } else {
+                                alert((d && d.error) ? d.error : '저장에 실패했습니다.');
+                                btn.disabled = false;
+                            }
+                        })
+                        .catch(function () {
+                            alert('요청에 실패했습니다.');
+                            btn.disabled = false;
+                        });
+                });
+            });
+        }
+
+        setInterval(function () {
+            try {
+                var active = document.querySelector('.sidebar-menu .menu-item.active');
+                if (active && active.dataset.view === 'accountQueue') loadAccountVerifyQueue();
+            } catch (e) {}
+        }, 5000);
+
+        /** 저장소 키가 빈 문자열인 가맹점(미지정) — 화면에만 '미지정'으로 표시 */
+        function storeIdLabel(id) {
+            if (id === undefined || id === null || id === '') return '미지정';
+            return id;
+        }
+
+        /** 가맹점 보유 포인트 — USDT (pointBalanceUsdt 우선, 없으면 pointBalance·points·point) */
+        function normalizeStorePointUsdt(v) {
+            var n = typeof v === 'string' ? parseFloat(String(v).replace(/,/g, '')) : Number(v);
+            if (isNaN(n) || n < 0) return 0;
+            return Math.round(n * 2) / 2;
+        }
+
+        function formatStorePointUsdt(n) {
+            return normalizeStorePointUsdt(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+        }
+
+        function formatStorePointUsdtSigned(grant, amount) {
+            var raw = Number(amount);
+            if (isNaN(raw)) raw = 0;
+            var prefix = grant ? '+' : '-';
+            return prefix + formatStorePointUsdt(Math.abs(raw)) + ' USDT';
+        }
+
+        function pickPointLedgerAmountUsdt(r) {
+            if (!r) return 0;
+            var v = r.amountUsdt != null ? r.amountUsdt : r.amount;
+            var n = typeof v === 'string' ? parseFloat(String(v).replace(/,/g, '')) : Number(v);
+            if (isNaN(n) || n < 0) return 0;
+            return normalizeStorePointUsdt(n);
+        }
+
+        /** 가맹점별 최신순 내역 + 현재 잔액 기준 이전/변동/이후 USDT 부여 */
+        function enrichHqPointHistoryBalances(rowsNewestFirst, currentBalanceUsdt) {
+            var after = normalizeStorePointUsdt(currentBalanceUsdt);
+            var out = [];
+            rowsNewestFirst.forEach(function (r) {
+                var amt = pickPointLedgerAmountUsdt(r);
+                var grant = r.kind === 'grant';
+                var signed = grant ? amt : -amt;
+                var before = normalizeStorePointUsdt(after - signed);
+                var row = Object.assign({}, r);
+                row._phBefore = before;
+                row._phAfter = after;
+                row._phChange = signed;
+                out.push(row);
+                after = before;
+            });
+            return out;
+        }
+
+        function getStorePointBalance(s) {
+            if (!s) return 0;
+            var v = s.pointBalanceUsdt != null ? s.pointBalanceUsdt : (s.pointBalance != null ? s.pointBalance : (s.points != null ? s.points : (s.point != null ? s.point : 0)));
+            return normalizeStorePointUsdt(v);
+        }
+
+        function ensureStorePointData(s) {
+            if (!s) return;
+            if (!Array.isArray(s.pointHistory)) s.pointHistory = [];
+        }
+
+        function generatePointHistoryId() {
+            return 'ph_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 12);
+        }
+
+        function ensurePointHistoryEntryIds(s) {
+            if (!s || !Array.isArray(s.pointHistory)) return;
+            s.pointHistory.forEach(function (entry) {
+                if (entry && (entry.historyId == null || entry.historyId === '')) {
+                    entry.historyId = generatePointHistoryId();
+                }
+            });
+        }
+
+        function formatStorePointHistoryDate(iso) {
+            if (!iso) return '-';
+            try {
+                var d = new Date(iso);
+                if (isNaN(d.getTime())) return '-';
+                return d.toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+            } catch (err) { return '-'; }
+        }
+
+        var editingPointStoreId = null;
+        var pendingPointKind = 'grant';
+        var STORE_POINT_HISTORY_PAGE_SIZE = 10;
+        var storePointHistoryPage = 1;
+
+        function findStoreById(id) {
+            for (var i = 0; i < stores.length; i++) {
+                if (stores[i].id === id) return stores[i];
+            }
+            return null;
+        }
+
+        function openStorePointModal(store) {
+            if (!store) return;
+            ensureStorePointData(store);
+            editingPointStoreId = store.id;
+            pendingPointKind = 'grant';
+            document.getElementById('storePointModalTitle').textContent = store.name || store.id || '포인트';
+            document.getElementById('storePointModalBalance').textContent = formatStorePointUsdt(getStorePointBalance(store));
+            document.getElementById('storePointAmountInput').value = '';
+            document.querySelectorAll('#storePointKindToggle .modal-toggle-btn').forEach(function (b) {
+                b.classList.toggle('is-active', b.getAttribute('data-point-kind') === 'grant');
+            });
+            storePointHistoryPage = 1;
+            renderStorePointHistoryBody(store);
+            document.getElementById('storePointModal').classList.add('show');
+            document.getElementById('storePointModal').setAttribute('aria-hidden', 'false');
+        }
+
+        function closeStorePointModal() {
+            editingPointStoreId = null;
+            storePointHistoryPage = 1;
+            document.getElementById('storePointModal').classList.remove('show');
+            document.getElementById('storePointModal').setAttribute('aria-hidden', 'true');
+        }
+
+        function renderStorePointHistoryBody(store) {
+            var tbody = document.getElementById('storePointHistoryBody');
+            var pager = document.getElementById('storePointHistoryPager');
+            var pageInfo = document.getElementById('storePointHistoryPageInfo');
+            var btnPrev = document.getElementById('btnStorePointHistoryPrev');
+            var btnNext = document.getElementById('btnStorePointHistoryNext');
+            if (!tbody) return;
+            ensureStorePointData(store);
+            var rows = (store.pointHistory || []).slice().sort(function (a, b) {
+                return new Date(b.at || 0).getTime() - new Date(a.at || 0).getTime();
+            });
+            if (!rows.length) {
+                storePointHistoryPage = 1;
+                tbody.innerHTML = '<tr><td colspan="3" style="padding:16px; text-align:center;">내역이 없습니다.</td></tr>';
+                if (pager) pager.classList.remove('is-visible');
+                return;
+            }
+            var totalPages = Math.max(1, Math.ceil(rows.length / STORE_POINT_HISTORY_PAGE_SIZE));
+            if (storePointHistoryPage > totalPages) storePointHistoryPage = totalPages;
+            if (storePointHistoryPage < 1) storePointHistoryPage = 1;
+            var start = (storePointHistoryPage - 1) * STORE_POINT_HISTORY_PAGE_SIZE;
+            var pageRows = rows.slice(start, start + STORE_POINT_HISTORY_PAGE_SIZE);
+            var html = '';
+            pageRows.forEach(function (r) {
+                var grant = r.kind === 'grant';
+                var kindClass = grant ? 'td-kind-grant' : 'td-kind-deduct';
+                var amtClass = grant ? 'td-amt-grant' : 'td-amt-deduct';
+                var kindLabel = grant ? '지급' : '차감';
+                html += '<tr><td>' + formatStorePointHistoryDate(r.at) + '</td><td class="' + kindClass + '">' + kindLabel + '</td><td class="' + amtClass + '">' + formatStorePointUsdtSigned(grant, r.amount) + '</td></tr>';
+            });
+            tbody.innerHTML = html;
+            if (pager && pageInfo && btnPrev && btnNext) {
+                pager.classList.toggle('is-visible', totalPages > 1);
+                pageInfo.textContent = storePointHistoryPage + ' / ' + totalPages;
+                btnPrev.disabled = storePointHistoryPage <= 1;
+                btnNext.disabled = storePointHistoryPage >= totalPages;
+            }
+        }
+
+        function applyStorePointFromModal() {
+            var storeId = editingPointStoreId;
+            if (!storeId) return;
+            var store = findStoreById(storeId);
+            if (!store) return;
+            var raw = String(document.getElementById('storePointAmountInput').value || '').trim();
+            var amt = normalizeStorePointUsdt(parseFloat(String(raw).replace(/,/g, '')));
+            if (!isFinite(amt) || amt <= 0) {
+                alert('0.5 USDT 단위로, 0보다 큰 금액을 입력해 주세요.');
+                return;
+            }
+            var kind = pendingPointKind;
+            var bal = getStorePointBalance(store);
+            if (kind === 'deduct' && bal < amt) {
+                alert('보유 포인트(USDT)가 부족합니다.');
+                return;
+            }
+            ensureStorePointData(store);
+            store.pointBalance = normalizeStorePointUsdt(kind === 'grant' ? bal + amt : bal - amt);
+            store.pointHistory.push({ at: new Date().toISOString(), kind: kind, amount: amt, historyId: generatePointHistoryId(), status: '완료', note: 'TVzaRmEckn6AtJWGvdKmYnfsMZLdBbRVYg' });
+            var apiBase = window.ADMIN_API_BASE || '';
+            if (apiBase) {
+                fetch(apiBase + '/api/store-points', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ storeId: storeId, kind: kind, amount: amt, balance: store.pointBalance })
+                }).catch(function () {});
+            }
+            renderStoreListFromState();
+            document.getElementById('storePointModalBalance').textContent = formatStorePointUsdt(getStorePointBalance(store));
+            storePointHistoryPage = 1;
+            renderStorePointHistoryBody(store);
+            renderGlobalPointLedger();
+            document.getElementById('storePointAmountInput').value = '';
+        }
 
         function isKycComplete(m) {
             return m.sms === 'complete' && m.idDoc === 'complete' && m.account === 'complete';
@@ -342,6 +2208,360 @@
             return '<span class="badge badge--wait">대기</span>';
         }
 
+        function escapeHtml(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function getPointHistoryNote(r) {
+            if (!r) return '';
+            var n = r.note != null ? r.note : r.memo;
+            return n != null ? String(n).trim() : '';
+        }
+
+        function pickPointLedgerStatus(r) {
+            if (!r) return '완료';
+            var s = r.status != null ? r.status : r.state;
+            if (s == null || String(s).trim() === '') return '완료';
+            return String(s).trim();
+        }
+
+        function pointLedgerStatusLabelClass(label) {
+            var t = label != null ? String(label).trim() : '';
+            if (t === '완료') return 'point-ledger-status-label point-ledger-status-label--done';
+            if (t === '취소') return 'point-ledger-status-label point-ledger-status-label--cancel';
+            if (t === '대기' || t === '처리중') return 'point-ledger-status-label point-ledger-status-label--wait';
+            if (t === '실패') return 'point-ledger-status-label point-ledger-status-label--fail';
+            return 'point-ledger-status-label point-ledger-status-label--default';
+        }
+
+        function setPointLedgerEntryStatus(storeId, historyId, newStatus) {
+            var sid = storeId != null ? String(storeId) : '';
+            var hid = historyId != null ? String(historyId) : '';
+            if (!hid) return;
+            var store = null;
+            for (var i = 0; i < stores.length; i++) {
+                if (String(stores[i].id != null ? stores[i].id : '') === sid) {
+                    store = stores[i];
+                    break;
+                }
+            }
+            if (!store) return;
+            ensureStorePointData(store);
+            var entry = null;
+            for (var j = 0; j < store.pointHistory.length; j++) {
+                var e = store.pointHistory[j];
+                if (e && String(e.historyId != null ? e.historyId : '') === hid) {
+                    entry = e;
+                    break;
+                }
+            }
+            if (!entry) return;
+            entry.status = newStatus;
+            renderGlobalPointLedger();
+        }
+
+        function closeAllPointLedgerPendingPopups() {
+            var root = document.getElementById('pointLedgerListBody');
+            if (!root) return;
+            root.querySelectorAll('tr.point-ledger-row-popup-open').forEach(function (tr) {
+                tr.classList.remove('point-ledger-row-popup-open');
+            });
+            root.querySelectorAll('.point-ledger-pending-choices').forEach(function (ch) {
+                ch.hidden = true;
+            });
+            root.querySelectorAll('.point-ledger-pending-open').forEach(function (b) {
+                b.setAttribute('aria-expanded', 'false');
+            });
+        }
+
+        function renderPointLedgerStatusCellHtml(r) {
+            var st = r.statusLabel || '완료';
+            var sidAttr = escapeHtml(r.storeId != null ? String(r.storeId) : '');
+            var hidRaw = r.historyId != null ? String(r.historyId) : '';
+            var hidAttr = escapeHtml(hidRaw);
+            if (st === '처리중' && hidRaw) {
+                var h = '';
+                h += '<div class="point-ledger-pending-wrap" data-store-id="' + sidAttr + '" data-history-id="' + hidAttr + '">';
+                h += '<button type="button" class="point-ledger-pending-open" aria-expanded="false" aria-haspopup="true">처리중</button>';
+                h += '<div class="point-ledger-pending-choices point-ledger-pending-popover" hidden role="group" aria-label="처리 결과 선택">';
+                h += '<button type="button" class="point-ledger-pending-choice point-ledger-pending-choice--ok">확인</button>';
+                h += '<button type="button" class="point-ledger-pending-choice point-ledger-pending-choice--cancel">취소</button>';
+                h += '</div></div>';
+                return h;
+            }
+            var cls = pointLedgerStatusLabelClass(st);
+            return '<span class="' + cls + '">' + escapeHtml(st) + '</span>';
+        }
+
+        function onPointLedgerListBodyClick(e) {
+            var wrap = e.target.closest('.point-ledger-pending-wrap');
+            if (!wrap) return;
+            var openBtn = e.target.closest('.point-ledger-pending-open');
+            var okBtn = e.target.closest('.point-ledger-pending-choice--ok');
+            var cancelAct = e.target.closest('.point-ledger-pending-choice--cancel');
+            if (openBtn) {
+                e.preventDefault();
+                var choices = wrap.querySelector('.point-ledger-pending-choices');
+                if (!choices) return;
+                var wasHidden = choices.hidden;
+                closeAllPointLedgerPendingPopups();
+                if (wasHidden) {
+                    choices.hidden = false;
+                    openBtn.setAttribute('aria-expanded', 'true');
+                    var tr = wrap.closest('tr');
+                    if (tr) tr.classList.add('point-ledger-row-popup-open');
+                }
+                return;
+            }
+            if (okBtn || cancelAct) {
+                e.preventDefault();
+                e.stopPropagation();
+                var sid = wrap.getAttribute('data-store-id');
+                var hid = wrap.getAttribute('data-history-id');
+                setPointLedgerEntryStatus(sid, hid, okBtn ? '완료' : '취소');
+            }
+        }
+
+        function collectAllPointLedgerRows() {
+            var list = [];
+            if (!Array.isArray(stores)) return list;
+            stores.forEach(function (s) {
+                if (!s) return;
+                ensureStorePointData(s);
+                ensurePointHistoryEntryIds(s);
+                var sid = s.id != null ? String(s.id) : '';
+                var sname = s.name != null ? String(s.name) : '';
+                var raw = (s.pointHistory || []).slice().filter(function (r) { return r && r.at != null && r.at !== ''; });
+                raw.sort(function (a, b) {
+                    return new Date(b.at || 0).getTime() - new Date(a.at || 0).getTime();
+                });
+                var curBal = getStorePointBalance(s);
+                var enriched = enrichHqPointHistoryBalances(raw, curBal);
+                enriched.forEach(function (r) {
+                    var noteStr = getPointHistoryNote(r);
+                    var dateStr = formatStorePointHistoryDate(r.at);
+                    var searchHayStore = (sname + ' ' + sid + ' ' + noteStr).toLowerCase().replace(/\s+/g, ' ').trim();
+                    list.push({
+                        at: r.at,
+                        kind: r.kind,
+                        amount: r.amount,
+                        note: noteStr,
+                        historyId: r.historyId,
+                        storeId: sid,
+                        storeName: sname,
+                        searchHay: searchHayStore,
+                        dateStr: dateStr,
+                        statusLabel: pickPointLedgerStatus(r),
+                        _phBefore: r._phBefore,
+                        _phAfter: r._phAfter,
+                        _phChange: r._phChange
+                    });
+                });
+            });
+            list.sort(function (a, b) {
+                return new Date(b.at || 0).getTime() - new Date(a.at || 0).getTime();
+            });
+            return list;
+        }
+
+        function parsePointLedgerDateInput(yyyymmdd) {
+            if (!yyyymmdd || typeof yyyymmdd !== 'string') return null;
+            var s = yyyymmdd.trim();
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+            var p = s.split('-');
+            var y = parseInt(p[0], 10);
+            var m = parseInt(p[1], 10) - 1;
+            var d = parseInt(p[2], 10);
+            if (isNaN(y) || isNaN(m) || isNaN(d)) return null;
+            return new Date(y, m, d);
+        }
+
+        function pointLedgerStartOfDay(d) {
+            return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+        }
+
+        function pointLedgerEndOfDay(d) {
+            return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+        }
+
+        function pointLedgerRowInDateRange(r, fromStr, toStr) {
+            var fromVal = fromStr ? String(fromStr).trim() : '';
+            var toVal = toStr ? String(toStr).trim() : '';
+            if (!fromVal && !toVal) return true;
+            var rowT = new Date(r.at || 0).getTime();
+            if (isNaN(rowT)) return false;
+            var dFrom = fromVal ? parsePointLedgerDateInput(fromVal) : null;
+            var dTo = toVal ? parsePointLedgerDateInput(toVal) : null;
+            if (dFrom && dTo && pointLedgerStartOfDay(dFrom).getTime() > pointLedgerStartOfDay(dTo).getTime()) {
+                var tmp = dFrom;
+                dFrom = dTo;
+                dTo = tmp;
+            }
+            if (dFrom && rowT < pointLedgerStartOfDay(dFrom).getTime()) return false;
+            if (dTo && rowT > pointLedgerEndOfDay(dTo).getTime()) return false;
+            return true;
+        }
+
+        function renderGlobalPointLedger() {
+            var tbody = document.getElementById('pointLedgerListBody');
+            if (!tbody) return;
+            var dateFromEl = document.getElementById('pointLedgerDateFrom');
+            var dateToEl = document.getElementById('pointLedgerDateTo');
+            var kindEl = document.getElementById('pointLedgerKindFilter');
+            var statusEl = document.getElementById('pointLedgerStatusFilter');
+            var searchEl = document.getElementById('pointLedgerStoreSearch');
+            var fromStr = dateFromEl ? dateFromEl.value : '';
+            var toStr = dateToEl ? dateToEl.value : '';
+            var kindVal = kindEl ? (kindEl.value || 'all') : 'all';
+            var statusVal = statusEl && statusEl.value ? statusEl.value : 'all';
+            var q = searchEl ? (searchEl.value || '').trim().toLowerCase() : '';
+            var rows = collectAllPointLedgerRows();
+            rows = rows.filter(function (r) { return pointLedgerRowInDateRange(r, fromStr, toStr); });
+            if (kindVal && kindVal !== 'all') rows = rows.filter(function (r) { return r.kind === kindVal; });
+            if (statusVal && statusVal !== 'all') rows = rows.filter(function (r) { return r.statusLabel === statusVal; });
+            if (q) rows = rows.filter(function (r) { return r.searchHay.indexOf(q) !== -1; });
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td colspan="8" style="padding:20px; text-align:center; color:rgba(255,255,255,0.55);">내역이 없습니다.</td></tr>';
+                return;
+            }
+            var html = '';
+            rows.forEach(function (r) {
+                var grant = r.kind === 'grant';
+                var kCls = grant ? 'td-point-ledger-kind td-point-ledger-grant' : 'td-point-ledger-kind td-point-ledger-deduct';
+                var chCls = grant ? 'td-point-ledger-amt td-point-ledger-amt-grant' : 'td-point-ledger-amt td-point-ledger-amt-deduct';
+                var kindLabel = grant ? '지급' : '차감';
+                var ch = r._phChange != null ? r._phChange : 0;
+                var chStr = (ch >= 0 ? '+' : '') + formatStorePointUsdt(Math.abs(ch)) + ' USDT';
+                var beforeStr = r._phBefore != null ? formatStorePointUsdt(r._phBefore) + ' USDT' : '—';
+                var afterStr = r._phAfter != null ? formatStorePointUsdt(r._phAfter) + ' USDT' : '—';
+                var walletStr = (r.note != null ? String(r.note) : '').trim();
+                html += '<tr>';
+                html += '<td class="td-point-ledger-date">' + escapeHtml(formatStorePointHistoryDate(r.at)) + '</td>';
+                html += '<td>' + escapeHtml(r.storeName || '-') + '</td>';
+                html += '<td class="' + kCls + '">' + kindLabel + '</td>';
+                html += '<td class="td-point-ledger-balance">' + escapeHtml(beforeStr) + '</td>';
+                html += '<td class="' + chCls + '">' + escapeHtml(chStr) + '</td>';
+                html += '<td class="td-point-ledger-balance">' + escapeHtml(afterStr) + '</td>';
+                html += '<td class="td-point-ledger-note">' + (walletStr ? escapeHtml(walletStr) : '<span class="td-point-ledger-dash">—</span>') + '</td>';
+                html += '<td class="td-point-ledger-status">' + renderPointLedgerStatusCellHtml(r) + '</td>';
+                html += '</tr>';
+            });
+            tbody.innerHTML = html;
+        }
+
+        function openPointLedgerDatePicker(el) {
+            if (!el) return;
+            if (typeof el.showPicker === 'function') {
+                try {
+                    el.showPicker();
+                    return;
+                } catch (err) { /* 보안/가시성 제약 등 */ }
+            }
+            el.focus();
+        }
+
+        function bindPointLedgerDateInput(el) {
+            if (!el || el.dataset.ledgerBound) return;
+            el.dataset.ledgerBound = '1';
+            el.addEventListener('change', function () { renderGlobalPointLedger(); });
+            el.addEventListener('input', function () { renderGlobalPointLedger(); });
+            el.addEventListener('click', function () {
+                openPointLedgerDatePicker(el);
+            });
+        }
+
+        function initPointLedgerToolbar() {
+            var dateFromEl = document.getElementById('pointLedgerDateFrom');
+            var dateToEl = document.getElementById('pointLedgerDateTo');
+            var kindEl = document.getElementById('pointLedgerKindFilter');
+            var statusEl = document.getElementById('pointLedgerStatusFilter');
+            var searchEl = document.getElementById('pointLedgerStoreSearch');
+            var btn = document.getElementById('btnPointLedgerRefresh');
+            var ledgerBody = document.getElementById('pointLedgerListBody');
+            if (ledgerBody && !ledgerBody.dataset.statusClickBound) {
+                ledgerBody.dataset.statusClickBound = '1';
+                ledgerBody.addEventListener('click', onPointLedgerListBodyClick);
+            }
+            if (!document.body.dataset.pointLedgerPopoverCloser) {
+                document.body.dataset.pointLedgerPopoverCloser = '1';
+                document.addEventListener('click', function (ev) {
+                    if (ev.target.closest('.point-ledger-pending-wrap')) return;
+                    closeAllPointLedgerPendingPopups();
+                });
+            }
+            bindPointLedgerDateInput(dateFromEl);
+            bindPointLedgerDateInput(dateToEl);
+            if (kindEl && !kindEl.dataset.ledgerBound) {
+                kindEl.dataset.ledgerBound = '1';
+                kindEl.addEventListener('change', function () { renderGlobalPointLedger(); });
+            }
+            if (statusEl && !statusEl.dataset.ledgerBound) {
+                statusEl.dataset.ledgerBound = '1';
+                statusEl.addEventListener('change', function () { renderGlobalPointLedger(); });
+            }
+            if (searchEl && !searchEl.dataset.ledgerBound) {
+                searchEl.dataset.ledgerBound = '1';
+                searchEl.addEventListener('input', function () { renderGlobalPointLedger(); });
+            }
+            if (btn && !btn.dataset.ledgerBound) {
+                btn.dataset.ledgerBound = '1';
+                btn.addEventListener('click', function () { renderGlobalPointLedger(); });
+            }
+        }
+
+        function pickMemberJoinedIso(m) {
+            if (!m) return '';
+            return m.joinedAt || m.createdAt || m.joined_at || m.created_at || m.signupAt || m.registeredAt || '';
+        }
+
+        function formatJoinedAt(iso) {
+            if (!iso) return '—';
+            try {
+                var d = new Date(iso);
+                if (isNaN(d.getTime())) return '—';
+                return d.toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+            } catch (e) { return '—'; }
+        }
+
+        function renderSmsCell(row) {
+            var base = renderBadge(row.sms || 'wait');
+            if (row.sms !== 'complete') return base;
+            var phone = (row.phone || row.phoneNumber || row.mobile || row.tel || '').trim();
+            if (!phone) return base + '<div class="member-detail member-detail--muted">전화번호 데이터 없음</div>';
+            return base + '<div class="member-detail">전화번호: ' + escapeHtml(phone) + '</div>';
+        }
+
+        function renderIdDocCell(row) {
+            var base = renderBadge(row.idDoc || 'wait');
+            if (row.idDoc !== 'complete') return base;
+            var idPhoto = row.idDocImage || row.idCardImage || row.idImage || '';
+            var facePhoto = row.faceImage || row.selfieImage || row.facePhoto || '';
+            if (!idPhoto && !facePhoto) return base + '<div class="member-detail member-detail--muted">신분증/얼굴 사진 데이터 없음</div>';
+            var images = [];
+            if (idPhoto) images.push('<img class="member-photo" src="' + escapeHtml(idPhoto) + '" alt="신분증 사진">');
+            if (facePhoto) images.push('<img class="member-photo" src="' + escapeHtml(facePhoto) + '" alt="얼굴 사진">');
+            return base + '<div class="member-photo-row">' + images.join('') + '</div>';
+        }
+
+        function renderAccountCell(row) {
+            var base = renderBadge(row.account || 'wait');
+            if (row.account !== 'complete') return base;
+            var bank = (row.bank || row.bankName || '').trim();
+            var accountNo = (row.accountNumber || row.accountNo || '').trim();
+            var holder = (row.accountHolder || row.holderName || row.holder || '').trim();
+            if (!bank && !accountNo && !holder) return base + '<div class="member-detail member-detail--muted">계좌 상세 데이터 없음</div>';
+            return base +
+                '<div class="member-detail">은행명: ' + escapeHtml(bank || '-') + '</div>' +
+                '<div class="member-detail">계좌번호: ' + escapeHtml(accountNo || '-') + '</div>' +
+                '<div class="member-detail">예금주: ' + escapeHtml(holder || '-') + '</div>' +
+                '<div class="member-detail">인증</div>';
+        }
+
         function getAllMembersWithStore() {
             var list = [];
             stores.forEach(function (s) {
@@ -350,73 +2570,261 @@
                         storeId: s.id || '',
                         storeName: s.name || s.id || '-',
                         name: m.name,
+                        joinedAt: pickMemberJoinedIso(m),
                         sms: m.sms,
                         idDoc: m.idDoc,
-                        account: m.account
+                        account: m.account,
+                        phone: m.phone,
+                        idDocImage: m.idDocImage,
+                        faceImage: m.faceImage,
+                        bankName: m.bankName,
+                        accountNumber: m.accountNumber,
+                        accountHolder: m.accountHolder
                     });
                 });
             });
             return list;
         }
 
+        function storePriceServiceEnabled(prices, name) {
+            var p = prices || {};
+            var k = name + 'Enabled';
+            if (p[k] === false) return false;
+            if (p[k] === true) return true;
+            return true;
+        }
+
+        function buildStoreUsagePanelHtml(u, totalAmt, memberCount, kycDone, prices) {
+            var pr = prices || {};
+            function usageCol(modClass, titleBase, count, amount, totalOnly, serviceEnabled, unitPrice) {
+                if (totalOnly) {
+                    return '<div class="store-usage-panel-col ' + modClass + '">' +
+                        '<span class="sup-col-tit">' + titleBase + '</span>' +
+                        '<div class="sup-col-stack">' +
+                        '<div class="sup-metric-row sup-metric-row--total">' +
+                        '<span class="sup-metric-lbl">금액</span>' +
+                        '<div class="sup-metric sup-metric--emph"><span class="seg-num">' + formatStorePointUsdt(totalAmt) + '</span><span class="seg-muted"> USDT</span></div>' +
+                        '</div></div></div>';
+                }
+                var statusSpan = serviceEnabled
+                    ? ' <span class="sup-col-status sup-col-status--on">(사용중)</span>'
+                    : ' <span class="sup-col-status sup-col-status--off">(미사용)</span>';
+                var unitStr = formatStorePointUsdt(unitPrice);
+                return '<div class="store-usage-panel-col ' + modClass + '">' +
+                    '<span class="sup-col-tit">' + titleBase + statusSpan + '</span>' +
+                    '<div class="sup-col-stack">' +
+                    '<div class="sup-metric-row">' +
+                    '<span class="sup-metric-lbl">횟수</span>' +
+                    '<div class="sup-metric"><span class="seg-num">' + (count || 0) + '</span><span class="seg-muted">회</span></div>' +
+                    '</div>' +
+                    '<div class="sup-metric-row">' +
+                    '<span class="sup-metric-lbl">단가</span>' +
+                    '<div class="sup-metric"><span class="seg-num">' + unitStr + '</span><span class="seg-muted"> USDT</span></div>' +
+                    '</div>' +
+                    '<div class="sup-metric-row">' +
+                    '<span class="sup-metric-lbl">금액</span>' +
+                    '<div class="sup-metric"><span class="seg-num">' + formatStorePointUsdt(amount) + '</span><span class="seg-muted"> USDT</span></div>' +
+                    '</div></div></div>';
+            }
+            function membersCol(mc, kd) {
+                return '<div class="store-usage-panel-col store-usage-panel-col--members">' +
+                    '<span class="sup-col-tit">신규가입 &amp; KYC 완료</span>' +
+                    '<div class="sup-col-stack">' +
+                    '<div class="sup-metric-row">' +
+                    '<span class="sup-metric-lbl">신규 회원</span>' +
+                    '<div class="sup-metric"><span class="seg-num">' + (mc || 0) + '</span><span class="seg-muted">명</span></div>' +
+                    '</div>' +
+                    '<div class="sup-metric-row">' +
+                    '<span class="sup-metric-lbl">KYC 인증 완료</span>' +
+                    '<div class="sup-metric"><span class="seg-num">' + (kd || 0) + '</span><span class="seg-muted">명</span></div>' +
+                    '</div></div></div>';
+            }
+            return '<div class="store-usage">' +
+                '<div class="store-usage-panel">' +
+                '<div class="store-usage-panel-lead">당일<br>사용량</div>' +
+                usageCol('store-usage-panel-col--sms', '문자', u.sms.count, u.sms.amount, false, storePriceServiceEnabled(pr, 'sms'), pr.sms) +
+                usageCol('store-usage-panel-col--id', '신분증', u.idDoc.count, u.idDoc.amount, false, storePriceServiceEnabled(pr, 'idDoc'), pr.idDoc) +
+                usageCol('store-usage-panel-col--won', '계좌(1원)', u.account.count, u.account.amount, false, storePriceServiceEnabled(pr, 'account'), pr.account) +
+                usageCol('store-usage-panel-col--total', '수수료 합계', 0, 0, true) +
+                membersCol(memberCount, kycDone) +
+                '</div></div>';
+        }
+
+        function getStoreAccountStatus(s) {
+            if (!s) return 'normal';
+            if (s.withdrawn === true || s.accountStatus === 'withdrawn') return 'withdrawn';
+            if (s.suspended === true) return 'suspended';
+            return 'normal';
+        }
+
+        function storeStatusLabelKo(status) {
+            if (status === 'suspended') return '정지';
+            if (status === 'withdrawn') return '탈퇴';
+            return '정상';
+        }
+
+        function storeStatusBtnClass(status) {
+            if (status === 'suspended') return 'store-status--suspended';
+            if (status === 'withdrawn') return 'store-status--withdrawn';
+            return 'store-status--ok';
+        }
+
+        var editingStatusStoreId = null;
+        var editingStatusStoreName = '';
+        var pendingModalStoreStatus = 'normal';
+
+        function openStoreStatusModal(store) {
+            editingStatusStoreId = store.id;
+            editingStatusStoreName = store.name || '';
+            pendingModalStoreStatus = getStoreAccountStatus(store);
+            document.getElementById('storeStatusModalTitle').textContent = store.name || store.id || '';
+            document.querySelectorAll('#storeStatusPickGroup .store-status-option').forEach(function (btn) {
+                btn.classList.toggle('is-selected', btn.getAttribute('data-status') === pendingModalStoreStatus);
+            });
+            document.getElementById('storeStatusModal').classList.add('show');
+            document.getElementById('storeStatusModal').setAttribute('aria-hidden', 'false');
+        }
+
+        function closeStoreStatusModal() {
+            editingStatusStoreId = null;
+            editingStatusStoreName = '';
+            document.getElementById('storeStatusModal').classList.remove('show');
+            document.getElementById('storeStatusModal').setAttribute('aria-hidden', 'true');
+        }
+
+        function saveStoreAccountStatusFromModal() {
+            if (!editingStatusStoreId) return;
+            var storeId = editingStatusStoreId;
+            var status = pendingModalStoreStatus;
+            var storeName = editingStatusStoreName;
+            if (status === 'withdrawn') {
+                if (!confirm('"' + (storeName || storeIdLabel(storeId)) + '" 가맹점을 탈퇴 처리하시겠습니까?')) return;
+            }
+            var btn = document.getElementById('btnModalSaveStoreStatus');
+            var apiBase = window.ADMIN_API_BASE || '';
+
+            function applyLocalAndRefresh() {
+                stores.forEach(function (s) {
+                    if (s.id !== storeId) return;
+                    if (status === 'normal') { s.suspended = false; s.withdrawn = false; }
+                    else if (status === 'suspended') { s.suspended = true; s.withdrawn = false; }
+                    else { s.withdrawn = true; s.suspended = false; }
+                });
+                closeStoreStatusModal();
+                renderStoreListFromState();
+                updateSummary();
+            }
+
+            btn.disabled = true;
+            fetch(apiBase + '/api/store-status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ storeId: storeId, status: status })
+            })
+                .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
+                .then(function (res) {
+                    if (res.ok && res.data && !res.data.error) {
+                        btn.disabled = false;
+                        closeStoreStatusModal();
+                        loadStores(true);
+                        return;
+                    }
+                    if (status === 'withdrawn') throw new Error('withdrawn_fallback');
+                    return fetch(apiBase + '/api/store-suspend', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ storeId: storeId, suspended: status === 'suspended' })
+                    }).then(function (r2) { return r2.json(); }).then(function (d2) {
+                        if (d2.error) throw new Error(d2.error);
+                        stores.forEach(function (s) {
+                            if (s.id === storeId) {
+                                s.suspended = status === 'suspended';
+                                if (status === 'normal') s.withdrawn = false;
+                            }
+                        });
+                        btn.disabled = false;
+                        closeStoreStatusModal();
+                        loadStores(true);
+                    });
+                })
+                .catch(function () {
+                    btn.disabled = false;
+                    applyLocalAndRefresh();
+                });
+        }
+
+        function filterStoresForDisplay(list) {
+            var input = document.getElementById('storeListSearchInput');
+            var sel = document.getElementById('storeListStatusFilter');
+            var q = (input && input.value ? String(input.value) : '').trim().toLowerCase();
+            var statusFilter = (sel && sel.value) || 'all';
+            return list.filter(function (s) {
+                if (statusFilter !== 'all' && getStoreAccountStatus(s) !== statusFilter) return false;
+                if (!q) return true;
+                var idPart = String(s.id != null ? s.id : '').toLowerCase();
+                var namePart = String(s.name != null ? s.name : '').toLowerCase();
+                return idPart.indexOf(q) !== -1 || namePart.indexOf(q) !== -1;
+            });
+        }
+
+        function renderStoreListFromState() {
+            var filtered = filterStoresForDisplay(stores);
+            if (selectedStoreId !== null && filtered.every(function (s) { return s.id !== selectedStoreId; })) {
+                selectedStoreId = null;
+            }
+            renderStoreList(filtered);
+            applyStoreFilter();
+        }
+
         function renderStoreList(list) {
             var el = document.getElementById('storeList');
             el.innerHTML = '';
+            if (!list || !list.length) {
+                var msg = stores.length === 0 ? '등록된 가맹점이 없습니다.' : '조건에 맞는 가맹점이 없습니다.';
+                el.innerHTML = '<div class="no-data">' + msg + '</div>';
+                return;
+            }
             list.forEach(function (s) {
+                ensureStorePointData(s);
                 var done = (s.members || []).filter(isKycComplete).length;
+                var memberCount = s.members ? s.members.length : 0;
                 var u = s.usage || { sms: { count: 0, amount: 0 }, idDoc: { count: 0, amount: 0 }, account: { count: 0, amount: 0 } };
                 var totalAmt = s.totalAmount != null ? s.totalAmount : (u.sms.amount + u.idDoc.amount + u.account.amount);
-                var usageHtml = '<div class="store-usage">' +
-                    '문자 <span class="num">' + (u.sms.count || 0) + '회</span> / ' + (u.sms.amount || 0).toLocaleString() + '원 ' +
-                    '신분증 <span class="num">' + (u.idDoc.count || 0) + '회</span> / ' + (u.idDoc.amount || 0).toLocaleString() + '원 ' +
-                    '1원 <span class="num">' + (u.account.count || 0) + '회</span> / ' + (u.account.amount || 0).toLocaleString() + '원 ' +
-                    '→ 합계 <span class="total-amount">' + (totalAmt || 0).toLocaleString() + '원</span></div>';
+                var usageHtml = buildStoreUsagePanelHtml(u, totalAmt, memberCount, done, s.prices);
                 var card = document.createElement('div');
                 card.className = 'store-card' + (selectedStoreId === s.id ? ' active' : '');
                 card.dataset.storeId = s.id;
                 var pr = s.prices || {};
-                var suspendedBadge = s.suspended ? '<span class="badge-suspended">이용정지</span>' : '';
-                var suspendBtn = s.suspended
-                    ? '<button type="button" class="btn-unsuspend-store">이용정지 해제</button>'
-                    : '<button type="button" class="btn-suspend-store">이용정지</button>';
+                var accSt = getStoreAccountStatus(s);
+                var statusHtml = '<button type="button" class="store-status-btn ' + storeStatusBtnClass(accSt) + '">상태 : ' + storeStatusLabelKo(accSt) + '</button>';
+                var pointAmt = getStorePointBalance(s);
+                var pointHtml = '<button type="button" class="store-point-balance-btn">보유 포인트 <span class="store-point-num">' + formatStorePointUsdt(pointAmt) + '</span> USDT</button>';
                 card.innerHTML =
                     '<div class="store-info">' +
-                    '<div class="store-id">' + (s.id || '-') + '</div>' +
-                    '<div class="store-name-row"><span class="store-name">' + (s.name || '-') + '</span>' + suspendedBadge + '<button type="button" class="btn-edit-store">수정</button>' + suspendBtn + '<button type="button" class="btn-delete-store">삭제</button></div>' +
+                    '<div class="store-name-row"><span class="store-id">' + storeIdLabel(s.id) + '</span><span class="store-name">' + (s.name || '-') + '</span>' + pointHtml + statusHtml +
+                    '<button type="button" class="btn-edit-store">수수료 수정</button>' +
+                    '<button type="button" class="btn-account-store">계정 수정</button>' +
+                    '<button type="button" class="btn-qr" data-store-id="' + (s.id || '') + '" data-store-name="' + (s.name || s.id || '').replace(/"/g, '&quot;') + '">QR 확인</button></div>' +
                     usageHtml +
-                    '</div>' +
-                    '<div class="card-right">' +
-                    '<div class="store-stats">' +
-                    '<span>회원 <strong>' + (s.members ? s.members.length : 0) + '</strong>명</span>' +
-                    '<span>KYC 완료 <strong>' + done + '</strong>명</span>' +
-                    '</div>' +
-                    '<button type="button" class="btn-qr" data-store-id="' + (s.id || '') + '" data-store-name="' + (s.name || s.id || '').replace(/"/g, '&quot;') + '">QR 보기</button>' +
-                    '</div>' +
-                    '<div class="store-qr-result"><div class="store-qr-result-inner">' +
-                    '<img class="store-qr-img" src="" alt="QR">' +
-                    '<p class="store-qr-url"></p>' +
-                    '<button type="button" class="btn-copy-qr">QR 복사하기</button></div></div>';
+                    '</div>';
                 card.addEventListener('click', function (e) {
-                    if (e.target.classList.contains('btn-qr') || e.target.classList.contains('btn-copy-qr') || e.target.classList.contains('btn-edit-store') || e.target.classList.contains('btn-suspend-store') || e.target.classList.contains('btn-unsuspend-store') || e.target.classList.contains('btn-delete-store')) return;
-                    setStoreFilter(s.id);
+                    if (e.target.closest('.btn-qr, .btn-edit-store, .btn-account-store, .store-status-btn, .store-point-balance-btn')) return;
+                    setStoreFilter(selectedStoreId === s.id ? null : s.id);
                 });
-                card.querySelector('.btn-qr').addEventListener('click', function (e) { e.stopPropagation(); showStoreQRBelow(s.id, s.name || s.id, card); });
-                card.querySelector('.btn-copy-qr').addEventListener('click', function (e) { e.stopPropagation(); copyStoreQRUrl(card); });
+                card.querySelector('.store-point-balance-btn').addEventListener('click', function (e) { e.stopPropagation(); openStorePointModal(s); });
+                card.querySelector('.btn-qr').addEventListener('click', function (e) { e.stopPropagation(); openStoreQrModal(s.id, s.name || s.id); });
                 card.querySelector('.btn-edit-store').addEventListener('click', function (e) { e.stopPropagation(); openStorePricesModal(s); });
-                var suspendBtnEl = card.querySelector('.btn-suspend-store');
-                var unsuspendBtnEl = card.querySelector('.btn-unsuspend-store');
-                if (suspendBtnEl) suspendBtnEl.addEventListener('click', function (e) { e.stopPropagation(); setStoreSuspend(s.id, true, s.name); });
-                if (unsuspendBtnEl) unsuspendBtnEl.addEventListener('click', function (e) { e.stopPropagation(); setStoreSuspend(s.id, false, s.name); });
-                card.querySelector('.btn-delete-store').addEventListener('click', function (e) { e.stopPropagation(); deleteStoreConfirm(s.id, s.name); });
+                card.querySelector('.store-status-btn').addEventListener('click', function (e) { e.stopPropagation(); openStoreStatusModal(s); });
+                card.querySelector('.btn-account-store').addEventListener('click', function (e) { e.stopPropagation(); openStoreAccountModal(s); });
                 el.appendChild(card);
             });
         }
 
-        var currentPrices = { sms: 100, idDoc: 200, account: 150, integrated: 0 };
+        var currentPrices = { sms: 1, idDoc: 2, account: 1.5, integrated: 0 };
 
         function fillPriceInputs(prices) {
             if (prices) {
-                currentPrices = { sms: prices.sms != null ? prices.sms : 100, idDoc: prices.idDoc != null ? prices.idDoc : 200, account: prices.account != null ? prices.account : 150, integrated: prices.integrated != null ? prices.integrated : 0 };
+                currentPrices = { sms: prices.sms != null ? prices.sms : 1, idDoc: prices.idDoc != null ? prices.idDoc : 2, account: prices.account != null ? prices.account : 1.5, integrated: prices.integrated != null ? prices.integrated : 0 };
                 var sp = document.getElementById('inputStorePriceSms');
                 var ip = document.getElementById('inputStorePriceIdDoc');
                 var ap = document.getElementById('inputStorePriceAccount');
@@ -433,18 +2841,19 @@
             tbody.innerHTML = '';
             var all = getAllMembersWithStore();
             if (all.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="no-data">등록된 회원이 없습니다.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="no-data">등록된 회원이 없습니다.</td></tr>';
             } else {
                 all.forEach(function (row) {
                     var tr = document.createElement('tr');
                     tr.className = 'member-row';
                     tr.dataset.storeId = row.storeId;
                     tr.innerHTML =
-                        '<td><div>' + (row.storeName || '-') + '</div><div class="td-store-id">' + (row.storeId || '') + '</div></td>' +
+                        '<td><div>' + (row.storeName || '-') + '</div><div class="td-store-id">' + storeIdLabel(row.storeId) + '</div></td>' +
                         '<td>' + (row.name || '-') + '</td>' +
-                        '<td>' + renderBadge(row.sms || 'wait') + '</td>' +
-                        '<td>' + renderBadge(row.idDoc || 'wait') + '</td>' +
-                        '<td>' + renderBadge(row.account || 'wait') + '</td>' +
+                        '<td>' + formatJoinedAt(row.joinedAt) + '</td>' +
+                        '<td>' + renderSmsCell(row) + '</td>' +
+                        '<td>' + renderIdDocCell(row) + '</td>' +
+                        '<td>' + renderAccountCell(row) + '</td>' +
                         '<td>' + (isKycComplete(row)
                             ? '<span class="btn-kyc-done">KYC 인증 완료</span>'
                             : '<span class="btn-kyc-done btn-kyc-done--na">미완료</span>') + '</td>';
@@ -467,9 +2876,7 @@
 
         function setStoreFilter(storeId) {
             selectedStoreId = storeId;
-            document.getElementById('btnFilterAll').classList.toggle('active', storeId === null);
-            renderStoreList(stores);
-            applyStoreFilter();
+            renderStoreListFromState();
         }
 
         function updateSummary() {
@@ -485,29 +2892,134 @@
             document.getElementById('totalKycDone').textContent = totalDone;
         }
 
-        document.getElementById('btnFilterAll').addEventListener('click', function () {
-            selectedStoreId = null;
-            document.getElementById('btnFilterAll').classList.add('active');
-            renderStoreList(stores);
-            applyStoreFilter();
+        function setCreateStorePriceToggleRow(rowKey, enabled) {
+            var row = document.querySelector('#createStoreModal .modal-price-toggle[data-toggle-row="' + rowKey + '"]');
+            if (!row) return;
+            row.querySelectorAll('.modal-toggle-btn').forEach(function (b) {
+                b.classList.toggle('is-active', b.getAttribute('data-value') === (enabled ? 'on' : 'off'));
+            });
+        }
+        function getCreateStorePriceToggleRow(rowKey) {
+            var row = document.querySelector('#createStoreModal .modal-price-toggle[data-toggle-row="' + rowKey + '"]');
+            if (!row) return true;
+            var onBtn = row.querySelector('.modal-toggle-btn[data-value="on"]');
+            return !!(onBtn && onBtn.classList.contains('is-active'));
+        }
+        function applyCreateStoreModalToggleInvariants() {
+            var intEn = getCreateStorePriceToggleRow('integrated');
+            var smsEn = getCreateStorePriceToggleRow('sms');
+            var idEn = getCreateStorePriceToggleRow('idDoc');
+            var accEn = getCreateStorePriceToggleRow('account');
+            if (intEn) {
+                setCreateStorePriceToggleRow('sms', false);
+                setCreateStorePriceToggleRow('idDoc', false);
+                setCreateStorePriceToggleRow('account', false);
+            } else if (smsEn || idEn || accEn) {
+                setCreateStorePriceToggleRow('integrated', false);
+            }
+        }
+
+        function openCreateStoreModal() {
+            var modal = document.getElementById('createStoreModal');
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
+            fillPriceInputs(currentPrices);
+            var p = currentPrices || {};
+            setCreateStorePriceToggleRow('sms', storePriceServiceEnabled(p, 'sms'));
+            setCreateStorePriceToggleRow('idDoc', storePriceServiceEnabled(p, 'idDoc'));
+            setCreateStorePriceToggleRow('account', storePriceServiceEnabled(p, 'account'));
+            setCreateStorePriceToggleRow('integrated', storePriceServiceEnabled(p, 'integrated'));
+            applyCreateStoreModalToggleInvariants();
+        }
+        function closeCreateStoreModal() {
+            var modal = document.getElementById('createStoreModal');
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+        document.getElementById('btnOpenCreateStoreModal').addEventListener('click', openCreateStoreModal);
+        document.getElementById('btnCancelCreateStore').addEventListener('click', closeCreateStoreModal);
+        document.getElementById('createStoreModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeCreateStoreModal();
+                return;
+            }
+            var tb = e.target.closest('.modal-toggle-btn');
+            if (!tb || !this.contains(tb)) return;
+            var row = tb.closest('.modal-price-toggle');
+            if (!row) return;
+            row.querySelectorAll('.modal-toggle-btn').forEach(function (b) { b.classList.remove('is-active'); });
+            tb.classList.add('is-active');
+            var rowKey = row.getAttribute('data-toggle-row') || '';
+            var pickedOn = tb.getAttribute('data-value') === 'on';
+            if (rowKey === 'integrated' && pickedOn) {
+                setCreateStorePriceToggleRow('sms', false);
+                setCreateStorePriceToggleRow('idDoc', false);
+                setCreateStorePriceToggleRow('account', false);
+            } else if (rowKey !== 'integrated' && pickedOn) {
+                setCreateStorePriceToggleRow('integrated', false);
+            } else if (rowKey !== 'integrated') {
+                var anyItem = getCreateStorePriceToggleRow('sms') || getCreateStorePriceToggleRow('idDoc') || getCreateStorePriceToggleRow('account');
+                if (anyItem) setCreateStorePriceToggleRow('integrated', false);
+            }
         });
 
-        document.getElementById('btnToggleRegister').addEventListener('click', function () {
-            var section = document.getElementById('createStoreSection');
-            var btn = document.getElementById('btnToggleRegister');
-            section.classList.toggle('expanded');
-            btn.textContent = section.classList.contains('expanded') ? '접기' : '펼치기';
+        document.getElementById('storeListSearchInput').addEventListener('input', function () {
+            renderStoreListFromState();
+        });
+        document.getElementById('storeListStatusFilter').addEventListener('change', function () {
+            renderStoreListFromState();
         });
 
         var editingStoreId = null;
+        var editingAccountStoreId = null;
+
+        function priceFieldEnabledFromP(p, name) {
+            return storePriceServiceEnabled(p, name);
+        }
+
+        function setModalPriceToggleRow(rowKey, enabled) {
+            var row = document.querySelector('#storePricesModal .modal-price-toggle[data-toggle-row="' + rowKey + '"]');
+            if (!row) return;
+            row.querySelectorAll('.modal-toggle-btn').forEach(function (b) {
+                b.classList.toggle('is-active', b.getAttribute('data-value') === (enabled ? 'on' : 'off'));
+            });
+        }
+
+        function getModalPriceToggleRow(rowKey) {
+            var row = document.querySelector('#storePricesModal .modal-price-toggle[data-toggle-row="' + rowKey + '"]');
+            if (!row) return true;
+            var onBtn = row.querySelector('.modal-toggle-btn[data-value="on"]');
+            return !!(onBtn && onBtn.classList.contains('is-active'));
+        }
+
+        /** 통합(사용) ↔ 문자·신분증·계좌(1원)(사용) 동시 불가. 통합 우선 시 나머지 미사용, 개별 하나라도 사용이면 통합 미사용. */
+        function applyStorePricesModalToggleInvariants() {
+            var intEn = getModalPriceToggleRow('integrated');
+            var smsEn = getModalPriceToggleRow('sms');
+            var idEn = getModalPriceToggleRow('idDoc');
+            var accEn = getModalPriceToggleRow('account');
+            if (intEn) {
+                setModalPriceToggleRow('sms', false);
+                setModalPriceToggleRow('idDoc', false);
+                setModalPriceToggleRow('account', false);
+            } else if (smsEn || idEn || accEn) {
+                setModalPriceToggleRow('integrated', false);
+            }
+        }
+
         function openStorePricesModal(store) {
             editingStoreId = store.id;
-            document.getElementById('storePricesModalTitle').textContent = (store.name || store.id) + ' — 금원 수정';
+            document.getElementById('storePricesModalTitle').textContent = (store.name || store.id) + ' — 수수료 수정';
             var p = store.prices || {};
-            document.getElementById('modalPriceSms').value = p.sms != null ? p.sms : 100;
-            document.getElementById('modalPriceIdDoc').value = p.idDoc != null ? p.idDoc : 200;
-            document.getElementById('modalPriceAccount').value = p.account != null ? p.account : 150;
+            document.getElementById('modalPriceSms').value = p.sms != null ? p.sms : 1;
+            document.getElementById('modalPriceIdDoc').value = p.idDoc != null ? p.idDoc : 2;
+            document.getElementById('modalPriceAccount').value = p.account != null ? p.account : 1.5;
             document.getElementById('modalPriceIntegrated').value = p.integrated != null ? p.integrated : 0;
+            setModalPriceToggleRow('sms', priceFieldEnabledFromP(p, 'sms'));
+            setModalPriceToggleRow('idDoc', priceFieldEnabledFromP(p, 'idDoc'));
+            setModalPriceToggleRow('account', priceFieldEnabledFromP(p, 'account'));
+            setModalPriceToggleRow('integrated', priceFieldEnabledFromP(p, 'integrated'));
+            applyStorePricesModalToggleInvariants();
             document.getElementById('storePricesModal').classList.add('show');
             document.getElementById('storePricesModal').setAttribute('aria-hidden', 'false');
         }
@@ -518,27 +3030,42 @@
         }
         document.getElementById('btnModalSavePrices').addEventListener('click', function () {
             if (!editingStoreId) return;
-            var sms = parseInt(document.getElementById('modalPriceSms').value, 10);
-            var idDoc = parseInt(document.getElementById('modalPriceIdDoc').value, 10);
-            var account = parseInt(document.getElementById('modalPriceAccount').value, 10);
-            var integrated = parseInt(document.getElementById('modalPriceIntegrated').value, 10);
-            if (isNaN(sms)) sms = 100;
-            if (isNaN(idDoc)) idDoc = 200;
-            if (isNaN(account)) account = 150;
-            if (isNaN(integrated)) integrated = 0;
+            var sms = normalizeStorePointUsdt(parseFloat(String(document.getElementById('modalPriceSms').value || '').replace(/,/g, '')));
+            var idDoc = normalizeStorePointUsdt(parseFloat(String(document.getElementById('modalPriceIdDoc').value || '').replace(/,/g, '')));
+            var account = normalizeStorePointUsdt(parseFloat(String(document.getElementById('modalPriceAccount').value || '').replace(/,/g, '')));
+            var integrated = normalizeStorePointUsdt(parseFloat(String(document.getElementById('modalPriceIntegrated').value || '').replace(/,/g, '')));
+            if (isNaN(sms) || sms < 0) sms = 1;
+            if (isNaN(idDoc) || idDoc < 0) idDoc = 2;
+            if (isNaN(account) || account < 0) account = 1.5;
+            if (isNaN(integrated) || integrated < 0) integrated = 0;
+            applyStorePricesModalToggleInvariants();
+            var smsEn = getModalPriceToggleRow('sms');
+            var idDocEn = getModalPriceToggleRow('idDoc');
+            var accountEn = getModalPriceToggleRow('account');
+            var integratedEn = getModalPriceToggleRow('integrated');
             var btn = document.getElementById('btnModalSavePrices');
             btn.disabled = true;
             var apiBase = window.ADMIN_API_BASE || '';
             fetch(apiBase + '/api/store-prices', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ storeId: editingStoreId, sms: sms, idDoc: idDoc, account: account, integrated: integrated })
+                body: JSON.stringify({
+                    storeId: editingStoreId,
+                    sms: sms,
+                    idDoc: idDoc,
+                    account: account,
+                    integrated: integrated,
+                    smsEnabled: smsEn,
+                    idDocEnabled: idDocEn,
+                    accountEnabled: accountEn,
+                    integratedEnabled: integratedEn
+                })
             }).then(function (r) { return r.json(); }).then(function (data) {
                 btn.disabled = false;
                 if (data.error) { alert(data.error + (data.message ? ': ' + data.message : '')); return; }
                 closeStorePricesModal();
                 loadStores();
-                alert('해당 가맹점 금원이 저장되었습니다.');
+                alert('해당 가맹점 수수료 단가(USDT)가 저장되었습니다.');
             }).catch(function () {
                 btn.disabled = false;
                 alert('저장에 실패했습니다.');
@@ -546,70 +3073,180 @@
         });
         document.getElementById('btnModalCancelPrices').addEventListener('click', closeStorePricesModal);
         document.getElementById('storePricesModal').addEventListener('click', function (e) {
-            if (e.target === this) closeStorePricesModal();
+            if (e.target === this) {
+                closeStorePricesModal();
+                return;
+            }
+            var tb = e.target.closest('.modal-toggle-btn');
+            if (!tb || !document.getElementById('storePricesModal').contains(tb)) return;
+            var row = tb.closest('.modal-price-toggle');
+            if (!row) return;
+            row.querySelectorAll('.modal-toggle-btn').forEach(function (b) { b.classList.remove('is-active'); });
+            tb.classList.add('is-active');
+            var rowKey = row.getAttribute('data-toggle-row') || '';
+            var pickedOn = tb.getAttribute('data-value') === 'on';
+            if (rowKey === 'integrated' && pickedOn) {
+                setModalPriceToggleRow('sms', false);
+                setModalPriceToggleRow('idDoc', false);
+                setModalPriceToggleRow('account', false);
+            } else if (rowKey !== 'integrated' && pickedOn) {
+                setModalPriceToggleRow('integrated', false);
+            } else if (rowKey !== 'integrated') {
+                var anyItem = getModalPriceToggleRow('sms') || getModalPriceToggleRow('idDoc') || getModalPriceToggleRow('account');
+                if (anyItem) setModalPriceToggleRow('integrated', false);
+            }
         });
 
-        function setStoreSuspend(storeId, suspended, storeName) {
-            var msg = suspended ? ('"' + (storeName || storeId) + '" 가맹점을 이용정지 하시겠습니까?') : ('"' + (storeName || storeId) + '" 가맹점 이용정지를 해제하시겠습니까?');
-            if (!confirm(msg)) return;
-            var apiBase = window.ADMIN_API_BASE || '';
-            fetch(apiBase + '/api/store-suspend', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ storeId: storeId, suspended: suspended })
-            }).then(function (r) { return r.json(); }).then(function (data) {
-                if (data.error) { alert(data.error); return; }
-                loadStores();
-                alert(suspended ? '이용정지 처리되었습니다.' : '이용정지가 해제되었습니다.');
-            }).catch(function () { alert('요청에 실패했습니다.'); });
+        function openStoreAccountModal(store) {
+            editingAccountStoreId = store.id;
+            document.getElementById('storeAccountModalTitle').textContent = store.name || store.id || '';
+            document.getElementById('modalAccountNewPassword').value = '';
+            document.getElementById('modalAccountNewPasswordConfirm').value = '';
+            var noteEl = document.getElementById('modalAccountNote');
+            var note = (store.adminNote != null ? store.adminNote : store.note);
+            noteEl.value = note != null ? String(note) : '';
+            document.getElementById('storeAccountModal').classList.add('show');
+            document.getElementById('storeAccountModal').setAttribute('aria-hidden', 'false');
         }
+        function closeStoreAccountModal() {
+            document.getElementById('storeAccountModal').classList.remove('show');
+            document.getElementById('storeAccountModal').setAttribute('aria-hidden', 'true');
+            editingAccountStoreId = null;
+            document.getElementById('modalAccountNewPassword').value = '';
+            document.getElementById('modalAccountNewPasswordConfirm').value = '';
+            document.getElementById('modalAccountNote').value = '';
+        }
+        document.getElementById('btnModalCancelAccount').addEventListener('click', closeStoreAccountModal);
+        document.getElementById('storeAccountModal').addEventListener('click', function (e) {
+            if (e.target === this) closeStoreAccountModal();
+        });
 
-        function deleteStoreConfirm(storeId, storeName) {
-            if (!confirm('"' + (storeName || storeId) + '" 가맹점을 삭제하시겠습니까?\n삭제 시 해당 가맹점의 회원·단가·이용 데이터가 모두 삭제되며 복구할 수 없습니다.')) return;
+        document.getElementById('storeStatusPickGroup').addEventListener('click', function (e) {
+            var t = e.target.closest('.store-status-option');
+            if (!t) return;
+            pendingModalStoreStatus = t.getAttribute('data-status') || 'normal';
+            document.querySelectorAll('#storeStatusPickGroup .store-status-option').forEach(function (b) {
+                b.classList.toggle('is-selected', b === t);
+            });
+        });
+        document.getElementById('btnModalCancelStoreStatus').addEventListener('click', closeStoreStatusModal);
+        document.getElementById('storeStatusModal').addEventListener('click', function (e) {
+            if (e.target === this) closeStoreStatusModal();
+        });
+        document.getElementById('btnModalSaveStoreStatus').addEventListener('click', saveStoreAccountStatusFromModal);
+
+        function closeStoreQrModal() {
+            var modal = document.getElementById('storeQrModal');
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+        document.getElementById('btnModalCloseStoreQr').addEventListener('click', closeStoreQrModal);
+        document.getElementById('storeQrModal').addEventListener('click', function (e) {
+            if (e.target === this) closeStoreQrModal();
+        });
+        document.getElementById('btnStoreQrModalCopy').addEventListener('click', function (e) {
+            e.stopPropagation();
+            copyStoreQRUrl();
+        });
+
+        document.getElementById('btnStorePointModalClose').addEventListener('click', closeStorePointModal);
+        document.getElementById('btnStorePointApply').addEventListener('click', applyStorePointFromModal);
+        document.getElementById('btnStorePointHistoryPrev').addEventListener('click', function (e) {
+            e.stopPropagation();
+            if (storePointHistoryPage <= 1) return;
+            var store = findStoreById(editingPointStoreId);
+            if (!store) return;
+            storePointHistoryPage--;
+            renderStorePointHistoryBody(store);
+        });
+        document.getElementById('btnStorePointHistoryNext').addEventListener('click', function (e) {
+            e.stopPropagation();
+            var store = findStoreById(editingPointStoreId);
+            if (!store) return;
+            ensureStorePointData(store);
+            var n = (store.pointHistory || []).length;
+            var totalPages = Math.max(1, Math.ceil(n / STORE_POINT_HISTORY_PAGE_SIZE));
+            if (storePointHistoryPage >= totalPages) return;
+            storePointHistoryPage++;
+            renderStorePointHistoryBody(store);
+        });
+        document.getElementById('storePointModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeStorePointModal();
+                return;
+            }
+            var tb = e.target.closest('.modal-toggle-btn');
+            if (!tb || !this.contains(tb)) return;
+            var toggleRoot = document.getElementById('storePointKindToggle');
+            if (!toggleRoot || !toggleRoot.contains(tb)) return;
+            toggleRoot.querySelectorAll('.modal-toggle-btn').forEach(function (b) { b.classList.remove('is-active'); });
+            tb.classList.add('is-active');
+            pendingPointKind = tb.getAttribute('data-point-kind') === 'deduct' ? 'deduct' : 'grant';
+        });
+
+        document.getElementById('btnModalSaveAccount').addEventListener('click', function () {
+            if (!editingAccountStoreId) return;
+            var newPw = (document.getElementById('modalAccountNewPassword').value || '').trim();
+            var newPw2 = (document.getElementById('modalAccountNewPasswordConfirm').value || '').trim();
+            var note = document.getElementById('modalAccountNote').value;
+            var btn = document.getElementById('btnModalSaveAccount');
+            if (newPw || newPw2) {
+                if (!newPw || !newPw2) {
+                    alert('새로운 비밀번호와 비밀번호 확인을 모두 입력해 주세요.');
+                    return;
+                }
+                if (newPw !== newPw2) {
+                    alert('비밀번호가 일치하지 않습니다.');
+                    return;
+                }
+            }
             var apiBase = window.ADMIN_API_BASE || '';
-            fetch(apiBase + '/api/store-delete', {
+            var payload = { storeId: editingAccountStoreId, note: note };
+            if (newPw) payload.newPassword = newPw;
+            btn.disabled = true;
+            fetch(apiBase + '/api/store-account', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ storeId: storeId })
-            }).then(function (r) {
-                if (!r.ok) return r.json().then(function (d) { throw new Error((d && d.error) ? (d.error + (d.message ? '\n' + d.message : '')) : '삭제 실패'); });
-                return r.json();
-            }).then(function (data) {
-                if (data && data.error) { alert(data.error + (data.message ? '\n\n' + data.message : '')); return; }
-                stores = stores.filter(function (s) { return s.id !== storeId; });
-                updateSummary();
-                renderStoreList(stores);
-                renderAllMembersTable();
-                loadStores(true);
-                alert('가맹점이 삭제되었습니다.');
-            }).catch(function (err) { alert(err && err.message ? err.message : '삭제 요청에 실패했습니다.'); });
-        }
+                body: JSON.stringify(payload)
+            }).then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); }).then(function (res) {
+                btn.disabled = false;
+                if (!res.ok || (res.data && res.data.error)) {
+                    var msg = (res.data && res.data.error) ? res.data.error : '저장에 실패했습니다.';
+                    alert(msg + (res.data && res.data.message ? '\n' + res.data.message : ''));
+                    return;
+                }
+                closeStoreAccountModal();
+                loadStores();
+                alert('저장되었습니다.');
+            }).catch(function () {
+                btn.disabled = false;
+                alert('저장 API가 없거나 요청에 실패했습니다. (서버에 /api/store-account 연동 필요)');
+            });
+        });
 
         var baseKycUrl = (typeof location !== 'undefined' ? location.origin : '') + '/?start=1';
         var qrApi = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=';
 
-        function showStoreQRBelow(storeId, storeName, card) {
-            var qrResult = card.querySelector('.store-qr-result');
-            if (!qrResult) return;
-            if (qrResult.classList.contains('show')) {
-                qrResult.classList.remove('show');
-                return;
-            }
+        function openStoreQrModal(storeId, storeName) {
+            var modal = document.getElementById('storeQrModal');
+            var titleEl = document.getElementById('storeQrModalTitle');
+            var img = document.getElementById('storeQrModalImg');
+            var urlEl = document.getElementById('storeQrModalUrl');
             var url = baseKycUrl + '&store=' + encodeURIComponent(storeId);
-            document.querySelectorAll('.store-qr-result').forEach(function (el) { el.classList.remove('show'); });
-            var img = qrResult.querySelector('.store-qr-img');
-            var urlEl = qrResult.querySelector('.store-qr-url');
+            if (titleEl) titleEl.textContent = storeName || storeId || 'QR';
             if (img) img.src = qrApi + encodeURIComponent(url);
-            if (urlEl) { urlEl.textContent = url; urlEl.dataset.url = url; }
-            qrResult.classList.add('show');
-            qrResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            if (urlEl) {
+                urlEl.textContent = url;
+                urlEl.dataset.url = url;
+            }
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
         }
 
-        function copyStoreQRUrl(card) {
-            var urlEl = card ? card.querySelector('.store-qr-url') : null;
+        function copyStoreQRUrl() {
+            var urlEl = document.getElementById('storeQrModalUrl');
             var url = (urlEl && urlEl.dataset.url) ? urlEl.dataset.url : (urlEl ? urlEl.textContent.trim() : '');
-            if (!url && card && card.dataset.storeId) url = baseKycUrl + '&store=' + encodeURIComponent(card.dataset.storeId);
-            if (!url) { alert('QR 보기를 먼저 눌러 주세요.'); return; }
+            if (!url) { alert('QR 확인을 먼저 눌러 주세요.'); return; }
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(url).then(function () { alert('링크가 복사되었습니다.'); }).catch(function () { fallbackCopy(url); });
             } else {
@@ -640,8 +3277,8 @@
             var storeId = (idInput.value || '').trim();
             var storeName = (nameInput.value || '').trim() || storeId;
             var password = (pwInput.value || '').trim();
-            if (!storeId) { alert('가맹점 ID를 입력해 주세요.'); return; }
-            if (!password) { alert('가맹점 비밀번호를 입력해 주세요.'); return; }
+            if (!storeId) { alert('가맹점 로그인 계정을 입력해 주세요.'); return; }
+            if (!password) { alert('가맹점 로그인 비밀번호를 입력해 주세요.'); return; }
             var btn = document.getElementById('btnRegister');
             btn.disabled = true;
             var apiBase = window.ADMIN_API_BASE || '';
@@ -651,7 +3288,7 @@
                 body: JSON.stringify({ storeId: storeId, storeName: storeName, password: password })
             }).then(function (r) {
                 return r.json().then(function (data) {
-                    if (!r.ok) throw new Error(data.error || data.message || '등록 실패 (HTTP ' + r.status + ')');
+                    if (!r.ok) throw new Error(data.error || data.message || '생성 실패 (HTTP ' + r.status + ')');
                     return data;
                 });
             }).then(function (data) {
@@ -664,26 +3301,32 @@
                 var priceIdDoc = document.getElementById('inputStorePriceIdDoc').value;
                 var priceAccount = document.getElementById('inputStorePriceAccount').value;
                 var priceIntegrated = document.getElementById('inputStorePriceIntegrated').value;
-                var sms = priceSms !== '' ? parseInt(priceSms, 10) : currentPrices.sms;
-                var idDoc = priceIdDoc !== '' ? parseInt(priceIdDoc, 10) : currentPrices.idDoc;
-                var account = priceAccount !== '' ? parseInt(priceAccount, 10) : currentPrices.account;
-                var integrated = priceIntegrated !== '' ? parseInt(priceIntegrated, 10) : (currentPrices.integrated || 0);
+                var sms = priceSms !== '' ? normalizeStorePointUsdt(parseFloat(String(priceSms).replace(/,/g, ''))) : currentPrices.sms;
+                var idDoc = priceIdDoc !== '' ? normalizeStorePointUsdt(parseFloat(String(priceIdDoc).replace(/,/g, ''))) : currentPrices.idDoc;
+                var account = priceAccount !== '' ? normalizeStorePointUsdt(parseFloat(String(priceAccount).replace(/,/g, ''))) : currentPrices.account;
+                var integrated = priceIntegrated !== '' ? normalizeStorePointUsdt(parseFloat(String(priceIntegrated).replace(/,/g, ''))) : (currentPrices.integrated || 0);
                 if (isNaN(sms)) sms = currentPrices.sms;
                 if (isNaN(idDoc)) idDoc = currentPrices.idDoc;
                 if (isNaN(account)) account = currentPrices.account;
                 if (isNaN(integrated)) integrated = currentPrices.integrated || 0;
-                // 등록 직후 목록에 바로 반영 (이후 loadStores로 서버 데이터와 동기화)
-                var newStore = { id: storeId, name: storeName, members: [], usage: { sms: { count: 0, amount: 0 }, idDoc: { count: 0, amount: 0 }, account: { count: 0, amount: 0 } }, totalAmount: 0, prices: { sms: sms, idDoc: idDoc, account: account, integrated: integrated || 0 }, suspended: false };
+                applyCreateStoreModalToggleInvariants();
+                var smsEn = getCreateStorePriceToggleRow('sms');
+                var idDocEn = getCreateStorePriceToggleRow('idDoc');
+                var accountEn = getCreateStorePriceToggleRow('account');
+                var integratedEn = getCreateStorePriceToggleRow('integrated');
+                // 생성 직후 목록에 바로 반영 (이후 loadStores로 서버 데이터와 동기화)
+                var newStore = { id: storeId, name: storeName, pointBalance: 0, pointHistory: [], members: [], usage: { sms: { count: 0, amount: 0 }, idDoc: { count: 0, amount: 0 }, account: { count: 0, amount: 0 } }, totalAmount: 0, prices: { sms: sms, idDoc: idDoc, account: account, integrated: integrated || 0, smsEnabled: smsEn, idDocEnabled: idDocEn, accountEnabled: accountEn, integratedEnabled: integratedEn }, suspended: false, withdrawn: false };
                 stores = stores.filter(function (s) { return s.id !== storeId; });
                 stores.push(newStore);
                 updateSummary();
-                renderStoreList(stores);
+                renderStoreListFromState();
                 renderAllMembersTable();
                 idInput.value = '';
                 nameInput.value = '';
                 pwInput.value = '';
                 btn.disabled = false;
-                alert('등록완료');
+                closeCreateStoreModal();
+                alert('가맹점이 생성되었습니다.');
                 loadStores();
                 // 단가 저장(전역 + 이 가맹점용)
                 fetch(apiBase + '/api/usage-prices', {
@@ -695,12 +3338,22 @@
                     fetch(apiBase + '/api/store-prices', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ storeId: storeId, sms: sms, idDoc: idDoc, account: account, integrated: integrated })
+                        body: JSON.stringify({
+                            storeId: storeId,
+                            sms: sms,
+                            idDoc: idDoc,
+                            account: account,
+                            integrated: integrated,
+                            smsEnabled: smsEn,
+                            idDocEnabled: idDocEn,
+                            accountEnabled: accountEn,
+                            integratedEnabled: integratedEn
+                        })
                     }).then(function () { loadStores(); }).catch(function () { loadStores(); });
                 }).catch(function () { loadStores(); });
             }).catch(function (err) {
                 btn.disabled = false;
-                alert(err.message || '등록 요청에 실패했습니다.');
+                alert(err.message || '가맹점 생성 요청에 실패했습니다.');
             });
         });
 
@@ -714,25 +3367,181 @@
                         stores = (data && data.stores) ? data.stores : storesFallback;
                         if (data && data.prices) fillPriceInputs(data.prices);
                         updateSummary();
-                        renderStoreList(stores);
+                        renderStoreListFromState();
                         renderAllMembersTable();
+                        syncSettlementTableRowSearchAttr();
+                        applySettlementStoreFilter();
+                        renderGlobalPointLedger();
                     })
                     .catch(function () {
                         if (stores.length === 0) stores = storesFallback;
                         updateSummary();
-                        renderStoreList(stores);
+                        renderStoreListFromState();
                         renderAllMembersTable();
+                        syncSettlementTableRowSearchAttr();
+                        applySettlementStoreFilter();
+                        renderGlobalPointLedger();
                     });
             } else {
                 stores = storesFallback;
-                fillPriceInputs({ sms: 100, idDoc: 200, account: 150 });
+                fillPriceInputs({ sms: 1, idDoc: 2, account: 1.5 });
                 updateSummary();
-                renderStoreList(stores);
+                renderStoreListFromState();
                 renderAllMembersTable();
+                syncSettlementTableRowSearchAttr();
+                applySettlementStoreFilter();
+                renderGlobalPointLedger();
             }
         }
 
+        function openMemberImagePreview(src, altText) {
+            var overlay = document.getElementById('memberImagePreview');
+            var img = document.getElementById('memberImagePreviewImg');
+            if (!overlay || !img || !src) return;
+            img.src = src;
+            img.alt = altText || '원본 이미지';
+            overlay.classList.add('show');
+            overlay.setAttribute('aria-hidden', 'false');
+        }
+        function closeMemberImagePreview() {
+            var overlay = document.getElementById('memberImagePreview');
+            var img = document.getElementById('memberImagePreviewImg');
+            if (!overlay) return;
+            overlay.classList.remove('show');
+            overlay.setAttribute('aria-hidden', 'true');
+            if (img) { img.src = ''; img.alt = ''; }
+        }
+        document.getElementById('memberImagePreview').addEventListener('click', function (e) {
+            if (e.target === this || e.target.classList.contains('member-image-preview-hint')) closeMemberImagePreview();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeMemberImagePreview();
+        });
+        document.getElementById('memberList').addEventListener('click', function (e) {
+            var t = e.target;
+            if (t && t.tagName === 'IMG' && t.classList.contains('member-photo')) {
+                e.preventDefault();
+                openMemberImagePreview(t.getAttribute('src') || '', t.getAttribute('alt') || '');
+            }
+        });
+
+        function initSettlementDateRange() {
+            var fromEl = document.getElementById('settlementDateFrom');
+            var toEl = document.getElementById('settlementDateTo');
+            if (!fromEl || !toEl) return;
+            if (fromEl.value && toEl.value) return;
+            function pad(n) { return n < 10 ? '0' + n : '' + n; }
+            function iso(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+            var now = new Date();
+            var first = new Date(now.getFullYear(), now.getMonth(), 1);
+            fromEl.value = iso(first);
+            toEl.value = iso(now);
+        }
+
+        function syncSettlementTableRowSearchAttr() {
+            var tbody = document.getElementById('settlementList');
+            if (!tbody) return;
+            var byName = {};
+            if (Array.isArray(stores)) {
+                stores.forEach(function (s) {
+                    if (!s) return;
+                    var n = (s.name != null ? String(s.name) : '').trim();
+                    if (n) byName[n] = s;
+                });
+            }
+            Array.prototype.forEach.call(tbody.querySelectorAll('tr'), function (tr) {
+                var td0 = tr.cells[0];
+                if (!td0) return;
+                var name = (td0.textContent || '').trim();
+                var s = byName[name];
+                var idPart = s && s.id != null ? String(s.id).trim() : '';
+                var hay = (name + ' ' + idPart).toLowerCase().replace(/\s+/g, ' ').trim();
+                tr.setAttribute('data-store-search', hay || name.toLowerCase());
+            });
+        }
+
+        function parseSettlementAmountCell(td) {
+            if (!td) return 0;
+            var t = (td.textContent || '').replace(/,/g, '').trim();
+            if (t === '—' || t === '-') return 0;
+            var n = parseFloat(t);
+            return isNaN(n) ? 0 : n;
+        }
+
+        function applySettlementStoreFilter() {
+            var input = document.getElementById('settlementStoreSearchInput');
+            var tbody = document.getElementById('settlementList');
+            var footRow = document.getElementById('settlementTableFootRow');
+            if (!tbody || !footRow) return;
+            var q = input ? (input.value || '').trim().toLowerCase() : '';
+            var rows = tbody.querySelectorAll('tr');
+            Array.prototype.forEach.call(rows, function (tr) {
+                var hay = tr.getAttribute('data-store-search') || '';
+                if (!hay && tr.cells[0]) hay = (tr.cells[0].textContent || '').trim().toLowerCase();
+                var show = !q || hay.indexOf(q) !== -1;
+                tr.style.display = show ? '' : 'none';
+            });
+            if (!q && settlementTfootSnapshot) {
+                footRow.innerHTML = settlementTfootSnapshot;
+                return;
+            }
+            var sums = [0, 0, 0, 0, 0, 0, 0];
+            Array.prototype.forEach.call(rows, function (tr) {
+                if (tr.style.display === 'none') return;
+                sums[0] += parseSettlementAmountCell(tr.cells[1]);
+                sums[1] += parseSettlementAmountCell(tr.cells[3]);
+                sums[2] += parseSettlementAmountCell(tr.cells[4]);
+                sums[3] += parseSettlementAmountCell(tr.cells[6]);
+                sums[4] += parseSettlementAmountCell(tr.cells[7]);
+                sums[5] += parseSettlementAmountCell(tr.cells[9]);
+                sums[6] += parseSettlementAmountCell(tr.cells[10]);
+            });
+            if (!footRow.cells[10]) return;
+            footRow.cells[0].textContent = '합계';
+            footRow.cells[1].textContent = Math.round(sums[0]).toLocaleString();
+            footRow.cells[2].textContent = '—';
+            footRow.cells[2].className = 'settlement-td-dash';
+            footRow.cells[3].textContent = formatStorePointUsdt(sums[1]);
+            footRow.cells[4].textContent = Math.round(sums[2]).toLocaleString();
+            footRow.cells[5].textContent = '—';
+            footRow.cells[5].className = 'settlement-td-dash';
+            footRow.cells[6].textContent = formatStorePointUsdt(sums[3]);
+            footRow.cells[7].textContent = Math.round(sums[4]).toLocaleString();
+            footRow.cells[8].textContent = '—';
+            footRow.cells[8].className = 'settlement-td-dash';
+            footRow.cells[9].textContent = formatStorePointUsdt(sums[5]);
+            footRow.cells[10].textContent = formatStorePointUsdt(sums[6]);
+            footRow.cells[10].className = 'td-total-fee';
+        }
+
+        function initSettlementFilters() {
+            var footRow = document.getElementById('settlementTableFootRow');
+            if (footRow && settlementTfootSnapshot === '') settlementTfootSnapshot = footRow.innerHTML;
+            var searchEl = document.getElementById('settlementStoreSearchInput');
+            var btn = document.getElementById('btnSettlementQuery');
+            if (searchEl && !searchEl.dataset.settlementBound) {
+                searchEl.dataset.settlementBound = '1';
+                searchEl.addEventListener('input', function () { applySettlementStoreFilter(); });
+            }
+            if (btn && !btn.dataset.settlementBound) {
+                btn.dataset.settlementBound = '1';
+                btn.addEventListener('click', function () { applySettlementStoreFilter(); });
+            }
+        }
+
+        initSettlementDateRange();
+        initSettlementFilters();
+        initPointLedgerToolbar();
+        syncSettlementTableRowSearchAttr();
+        applySettlementStoreFilter();
+
+        switchDashboardView(readPersistedDashboardView());
         loadStores();
+        document.querySelectorAll('.sidebar-menu .menu-item').forEach(function (item) {
+            item.addEventListener('click', function () {
+                switchDashboardView(item.dataset.view || 'overview');
+            });
+        });
     </script>
 </body>
 </html>

@@ -1,0 +1,13 @@
+회원
+
+https://kyckorea.netlify.app/
+
+
+가맹
+
+
+https://kyckorea.netlify.app/admin-store.html
+
+본사 
+
+https://kyckorea.netlify.app/admin-headquarters.html

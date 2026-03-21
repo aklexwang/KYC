@@ -32,7 +32,8 @@ exports.handler = async (event, context) => {
         ? completedCount * Number(prices.integrated)
         : usage.sms.amount + usage.idDoc.amount + usage.account.amount;
       return {
-        id: id || '미지정',
+        // 실제 저장 키(빈 문자열 = 가맹점 미지정). 삭제·단가 API와 동일해야 함.
+        id,
         name: (namesObj[id] !== undefined && namesObj[id] !== '') ? namesObj[id] : (id || '미지정'),
         members: Array.isArray(members) ? members : [],
         usage,
