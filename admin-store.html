@@ -300,7 +300,45 @@
         }
         .menu-item.active { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.18); }
         .menu-item { cursor: pointer; }
-        .dashboard-main { flex: 1; min-width: 0; padding: 20px 20px 30px; }
+        .sidebar-store-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.82);
+            margin: -8px 0 14px 0;
+            line-height: 1.35;
+            word-break: break-all;
+        }
+        .dashboard-main { flex: 1; min-width: 0; padding: 20px 20px 30px; position: relative; }
+        .low-balance-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            z-index: 40;
+            background: rgba(2, 11, 43, 0.78);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            pointer-events: none;
+        }
+        .dashboard-main--low-balance .low-balance-overlay { display: flex; }
+        .low-balance-overlay-text {
+            font-size: clamp(24px, 5vw, 40px);
+            font-weight: 800;
+            color: #fbbf24;
+            letter-spacing: -0.03em;
+            text-align: center;
+            padding: 0 16px;
+            box-sizing: border-box;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.45);
+        }
+        .dashboard-main--low-balance .admin-body { pointer-events: none; user-select: none; opacity: 0.35; }
+        .dashboard-main--low-balance .admin-header { position: relative; z-index: 50; pointer-events: auto; opacity: 1; }
+        .sidebar-menu.menu-locked .menu-item {
+            pointer-events: none;
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+        .sidebar-menu.menu-locked .menu-item.active { opacity: 0.4; }
         .admin-header {
             background: transparent;
             box-shadow: none;
@@ -802,6 +840,7 @@
     <div class="dashboard-shell">
         <aside class="dashboard-sidebar">
             <h2 class="sidebar-title">Admin Dashboard</h2>
+            <p class="sidebar-store-name" id="sidebarStoreNameLine">—</p>
             <div class="sidebar-point-card is-loading" id="sidebarPointCard" aria-live="polite">
                 <p class="sidebar-point-label">보유 포인트</p>
                 <p class="sidebar-point-value">
@@ -817,7 +856,10 @@
                 <div class="menu-item" data-view="pointHistory">포인트 내역</div>
             </nav>
         </aside>
-        <div class="dashboard-main">
+        <div class="dashboard-main" id="dashboardMain">
+            <div id="lowBalanceOverlay" class="low-balance-overlay" aria-hidden="true">
+                <p class="low-balance-overlay-text">충전 후 이용하세요</p>
+            </div>
             <header class="admin-header">
                 <div class="header-row">
                     <div>
@@ -1031,6 +1073,8 @@
             window.STORE_RECHARGE_WALLET = 'TVzaRmEckn6AtJWGvdKmYnfsMZLdBbRVYg';
         }
         window.ADMIN_STORE_ID = '';
+        var MIN_USDT_FOR_USE = 100;
+        var lastKnownStoreUsdt = null;
 
         /** 표시명 AAA → 저장소 키 STORE_001 (본사에서 부여한 ID와 동일하게 로그인) */
         function resolveStoreIdForLogin(raw) {
@@ -1368,6 +1412,19 @@
             if (card) card.classList.toggle('is-loading', !!loading);
         }
 
+        function applyStoreUsdtGate(usdtNum) {
+            var n = typeof usdtNum === 'number' && !isNaN(usdtNum) ? usdtNum : normalizePointBalanceUsdt(usdtNum);
+            lastKnownStoreUsdt = n;
+            var main = document.getElementById('dashboardMain');
+            var nav = document.querySelector('.sidebar-menu');
+            var ov = document.getElementById('lowBalanceOverlay');
+            if (!main || !nav) return;
+            var low = n < MIN_USDT_FOR_USE;
+            main.classList.toggle('dashboard-main--low-balance', low);
+            nav.classList.toggle('menu-locked', low);
+            if (ov) ov.setAttribute('aria-hidden', low ? 'false' : 'true');
+        }
+
         function setSidebarPointBalanceDisplay(n) {
             var el = document.getElementById('sidebarPointBalance');
             if (!el) return;
@@ -1391,6 +1448,7 @@
             setSidebarPointLoading(true);
             if (hintBalance !== undefined && hintBalance !== null && String(hintBalance).trim() !== '') {
                 setSidebarPointBalanceDisplay(hintBalance);
+                applyStoreUsdtGate(hintBalance);
                 setSidebarPointLoading(false);
                 return;
             }
@@ -1398,9 +1456,11 @@
             var sid = window.ADMIN_STORE_ID;
             if (!apiBase || !sid) {
                 setSidebarPointBalanceDisplay(null);
+                applyStoreUsdtGate(0);
                 setSidebarPointLoading(false);
                 return;
             }
+            applyStoreUsdtGate(0);
             fetch(apiBase + '/api/stores')
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
@@ -1415,15 +1475,19 @@
                     if (found) {
                         var bal = pickStoreBalanceUsdt(found);
                         setSidebarPointBalanceDisplay(bal !== null ? bal : 0);
+                        applyStoreUsdtGate(bal !== null ? bal : 0);
                     } else {
                         setSidebarPointBalanceDisplay(0);
+                        applyStoreUsdtGate(0);
                     }
                 })
                 .catch(function () {
                     if (sid === 'STORE_001') {
                         setSidebarPointBalanceDisplay(182.5);
+                        applyStoreUsdtGate(182.5);
                     } else {
                         setSidebarPointBalanceDisplay(null);
+                        applyStoreUsdtGate(0);
                     }
                 })
                 .then(function () {
@@ -1640,6 +1704,7 @@
             window.ADMIN_STORE_ID = '';
             setSidebarPointBalanceDisplay(null);
             setSidebarPointLoading(true);
+            applyStoreUsdtGate(0);
         }
 
         var baseKycUrl = (typeof location !== 'undefined' ? location.origin : '') + '/?start=1';
@@ -1647,6 +1712,9 @@
 
         function switchDashboardView(view) {
             var nextView = view || 'overview';
+            if (lastKnownStoreUsdt < MIN_USDT_FOR_USE && nextView !== 'overview') {
+                nextView = 'overview';
+            }
             document.querySelectorAll('.sidebar-menu .menu-item').forEach(function (item) {
                 item.classList.toggle('active', item.dataset.view === nextView);
             });
@@ -1669,6 +1737,8 @@
             window.ADMIN_STORE_ID = storeId || '';
             var headerStoreNameEl = document.getElementById('headerStoreName');
             if (headerStoreNameEl) headerStoreNameEl.textContent = storeName || storeId || '';
+            var sideName = document.getElementById('sidebarStoreNameLine');
+            if (sideName) sideName.textContent = storeName || storeId || '—';
             document.getElementById('loginWrap').style.display = 'none';
             document.getElementById('dashboardWrap').classList.add('show');
             switchDashboardView('overview');
