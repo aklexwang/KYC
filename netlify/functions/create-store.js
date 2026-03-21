@@ -1,4 +1,11 @@
-const { getKycData, setKycData, setStorePassword, getStorageErrorHelp } = require('./storage');
+const {
+  getKycData,
+  setKycData,
+  setStorePassword,
+  getStorageErrorHelp,
+  setStoreAllowedIpsForStore,
+  normalizeAllowedIpsInput,
+} = require('./storage');
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -34,6 +41,8 @@ exports.handler = async (event, context) => {
     namesObj[storeId] = storeName;
     await setKycData(event, dataObj, namesObj);
     await setStorePassword(event, storeId, password);
+    const allowedIps = normalizeAllowedIpsInput(body.allowedIps != null ? body.allowedIps : body.whitelistIp);
+    await setStoreAllowedIpsForStore(event, storeId, allowedIps);
   } catch (err) {
     console.error('create-store error', err);
     const help = getStorageErrorHelp();

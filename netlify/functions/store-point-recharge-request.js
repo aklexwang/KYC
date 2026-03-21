@@ -16,6 +16,7 @@ function genHistoryId() {
   return `ph_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 12)}`;
 }
 
+/** 가맹점 USDT 충전(입금) 신청 — 본사 지갑 입금 확인 후 포인트 반영용. kind=deposit 으로 기록 */
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: CORS, body: '' };
@@ -36,10 +37,7 @@ exports.handler = async (event) => {
   }
 
   const storeId = typeof body.storeId === 'string' ? body.storeId.trim() : '';
-  const rawKind = typeof body.kind === 'string' ? body.kind.trim() : '';
-  const kind = rawKind === 'deduct' ? 'deduct' : (rawKind === 'deposit' ? 'deposit' : 'grant');
-  const amt = normalizeUsdt(body.amount);
-  const noteRaw = typeof body.note === 'string' ? body.note.trim() : '';
+  const amt = normalizeUsdt(body.usdt != null ? body.usdt : body.amount);
 
   if (!storeId) {
     return {
@@ -52,7 +50,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 400,
       headers: { ...CORS, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'amount required' }),
+      body: JSON.stringify({ error: 'usdt amount required' }),
     };
   }
 
@@ -62,43 +60,38 @@ exports.handler = async (event) => {
     let bal = Number(cur.pointBalanceUsdt != null ? cur.pointBalanceUsdt : cur.pointBalance);
     if (!isFinite(bal)) bal = 0;
     bal = Math.round(bal * 2) / 2;
-    const nextBal = kind === 'deduct' ? bal - amt : bal + amt;
-    if (nextBal < 0) {
-      return {
-        statusCode: 400,
-        headers: { ...CORS, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Insufficient balance' }),
-      };
-    }
+    const nextBal = Math.round((bal + amt) * 2) / 2;
+
     const hist = Array.isArray(cur.pointHistory) ? cur.pointHistory.slice() : [];
-    const entry = {
+    hist.push({
       at: new Date().toISOString(),
-      kind,
+      kind: 'deposit',
       amount: amt,
       historyId: genHistoryId(),
       status: '완료',
-    };
-    if (noteRaw) entry.note = noteRaw;
-    hist.push(entry);
-    const rounded = Math.round(nextBal * 2) / 2;
+      note: '가맹점 USDT 충전(입금)',
+    });
+
     map[storeId] = {
-      pointBalanceUsdt: rounded,
+      pointBalanceUsdt: nextBal,
       pointHistory: hist,
     };
     await setStorePointsMap(event, map);
+
     return {
       statusCode: 200,
       headers: { ...CORS, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         ok: true,
+        message: '충전이 반영되었습니다. (입금 내역이 포인트 내역에 기록됩니다.)',
         storeId,
-        pointBalanceUsdt: rounded,
-        pointBalance: rounded,
+        pointBalanceUsdt: nextBal,
+        pointBalance: nextBal,
         pointHistory: map[storeId].pointHistory,
       }),
     };
   } catch (err) {
-    console.error('store-points error', err);
+    console.error('store-point-recharge-request error', err);
     const help = getStorageErrorHelp();
     return {
       statusCode: 500,

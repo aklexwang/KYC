@@ -534,6 +534,15 @@
             box-shadow: 0 2px 12px rgba(2, 132, 199, 0.42);
         }
         .store-card .store-name-row > button.btn-qr:hover { filter: brightness(1.07); }
+        .store-card .store-name-row > button.btn-store-ip {
+            border-color: rgba(245, 158, 11, 0.85);
+            background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(217, 119, 6, 0.4);
+        }
+        .store-card .store-name-row > button.btn-store-ip:hover { filter: brightness(1.07); }
+        #storeAllowedIpModal .modal-prices-box { max-width: min(520px, 100%); }
+        #storeAllowedIpModal .store-ip-modal-desc { margin: 0 0 12px 0; color: #6e6e73; line-height: 1.5; }
         .modal-overlay-prices { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 9999; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
         .modal-overlay-prices.show { display: flex; }
         .modal-prices-box { background: #fff; border-radius: 16px; padding: 24px; max-width: 400px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,.15); }
@@ -638,6 +647,18 @@
             width: 100%;
             min-width: 0;
             box-sizing: border-box;
+        }
+        #createStoreModal .create-store-form > .field > textarea {
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            min-height: 80px;
+            padding: 10px 14px;
+            border: 1px solid #E5E5EA;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
         }
         #createStoreModal .modal-prices-box .btn-wrap { margin-top: 8px; justify-content: flex-end; flex-wrap: wrap; }
         #createStoreModal .modal-price-toggle {
@@ -922,6 +943,13 @@
             color: #fff;
             box-shadow: 0 2px 14px rgba(14, 165, 233, 0.45);
         }
+        .store-card .store-name-row > button.btn-store-ip {
+            border-color: rgba(251, 191, 36, 0.65);
+            background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+            color: #fff;
+            box-shadow: 0 2px 14px rgba(217, 119, 6, 0.45);
+        }
+        #storeAllowedIpModal .store-ip-modal-desc { color: rgba(255, 255, 255, 0.78); }
         #storeQrModal .store-qr-modal-inner { background: #0f1d4c; border-color: rgba(255, 255, 255, 0.1); }
         #storeQrModal .store-qr-modal-img { background: #fff; }
         #storeQrModal .store-qr-modal-url { color: #8cc8ff; }
@@ -1603,6 +1631,21 @@
             </div>
         </div>
 
+        <div id="storeAllowedIpModal" class="modal-overlay-prices" aria-hidden="true">
+            <div class="modal-prices-box" role="dialog" aria-modal="true" aria-labelledby="storeAllowedIpModalTitle">
+                <h3 id="storeAllowedIpModalTitle">IP 설정</h3>
+                <p class="section-desc store-ip-modal-desc">접속 허용 IP를 쉼표 또는 줄바꿈으로 입력하세요. (IPv4, CIDR 예: 192.168.0.0/24)</p>
+                <div class="field">
+                    <label for="storeAllowedIpTextarea">허용 IP 목록</label>
+                    <textarea id="storeAllowedIpTextarea" rows="6" placeholder="203.0.113.1&#10;192.168.1.0/24" spellcheck="false"></textarea>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="btn-save-prices-modal" id="btnStoreAllowedIpSave">저장</button>
+                    <button type="button" class="btn-cancel-prices" id="btnStoreAllowedIpCancel">취소</button>
+                </div>
+            </div>
+        </div>
+
         <div id="storePointModal" class="modal-overlay-prices" aria-hidden="true">
             <div class="modal-prices-box modal-point-box" role="dialog" aria-modal="true" aria-labelledby="storePointModalTitle">
                 <h3 id="storePointModalTitle">포인트</h3>
@@ -1660,6 +1703,10 @@
                     <div class="field">
                         <label for="inputStoreName">가맹명 *</label>
                         <input type="text" id="inputStoreName" placeholder="예: 강남점, 서초점" required autocomplete="off">
+                    </div>
+                    <div class="field">
+                        <label for="inputStoreAllowedIps">허용 IP (화이트리스트)</label>
+                        <textarea id="inputStoreAllowedIps" rows="3" placeholder="쉼표 또는 줄바꿈으로 구분 (예: 203.0.113.1, 192.168.0.0/24)" autocomplete="off" spellcheck="false"></textarea>
                     </div>
                     <div class="field">
                         <label for="inputStorePriceSms">문자인증 단가 (USDT)</label>
@@ -3173,15 +3220,18 @@
                     '<div class="store-name-row"><span class="store-id">' + storeIdLabel(s.id) + '</span><span class="store-name">' + (s.name || '-') + '</span>' + pointHtml + statusHtml +
                     '<button type="button" class="btn-edit-store">수수료 수정</button>' +
                     '<button type="button" class="btn-account-store">계정 수정</button>' +
-                    '<button type="button" class="btn-qr" data-store-id="' + (s.id || '') + '" data-store-name="' + (s.name || s.id || '').replace(/"/g, '&quot;') + '">QR 확인</button></div>' +
+                    '<button type="button" class="btn-qr" data-store-id="' + (s.id || '') + '" data-store-name="' + (s.name || s.id || '').replace(/"/g, '&quot;') + '">QR 확인</button>' +
+                    '<button type="button" class="btn-store-ip">IP 설정</button></div>' +
                     usageHtml +
                     '</div>';
                 card.addEventListener('click', function (e) {
-                    if (e.target.closest('.btn-qr, .btn-edit-store, .btn-account-store, .store-status-btn, .store-point-balance-btn')) return;
+                    if (e.target.closest('.btn-qr, .btn-store-ip, .btn-edit-store, .btn-account-store, .store-status-btn, .store-point-balance-btn')) return;
                     setStoreFilter(selectedStoreId === s.id ? null : s.id);
                 });
                 card.querySelector('.store-point-balance-btn').addEventListener('click', function (e) { e.stopPropagation(); openStorePointModal(s); });
                 card.querySelector('.btn-qr').addEventListener('click', function (e) { e.stopPropagation(); openStoreQrModal(s.id, s.name || s.id); });
+                var btnIpEl = card.querySelector('.btn-store-ip');
+                if (btnIpEl) btnIpEl.addEventListener('click', function (e) { e.stopPropagation(); openStoreAllowedIpModal(s); });
                 card.querySelector('.btn-edit-store').addEventListener('click', function (e) { e.stopPropagation(); openStorePricesModal(s); });
                 card.querySelector('.store-status-btn').addEventListener('click', function (e) { e.stopPropagation(); openStoreStatusModal(s); });
                 card.querySelector('.btn-account-store').addEventListener('click', function (e) { e.stopPropagation(); openStoreAccountModal(s); });
@@ -3639,6 +3689,75 @@
             document.body.removeChild(ta);
         }
 
+        function parseAllowedIpsText(t) {
+            if (!t || typeof t !== 'string') return [];
+            return t.split(/[\n,;]+/).map(function (s) { return s.trim(); }).filter(Boolean)
+                .filter(function (v, i, a) { return a.indexOf(v) === i; });
+        }
+        var editingAllowedIpStore = null;
+        function openStoreAllowedIpModal(store) {
+            editingAllowedIpStore = store;
+            var title = document.getElementById('storeAllowedIpModalTitle');
+            var ta = document.getElementById('storeAllowedIpTextarea');
+            var modal = document.getElementById('storeAllowedIpModal');
+            if (title) title.textContent = (store.name || store.id) + ' · IP 설정';
+            var ips = Array.isArray(store.allowedIps) ? store.allowedIps : [];
+            if (ta) ta.value = ips.join('\n');
+            if (modal) {
+                modal.classList.add('show');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+        }
+        function closeStoreAllowedIpModal() {
+            editingAllowedIpStore = null;
+            var modal = document.getElementById('storeAllowedIpModal');
+            if (modal) {
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        }
+        function saveStoreAllowedIpsFromModal() {
+            var apiBase = window.ADMIN_API_BASE || '';
+            var store = editingAllowedIpStore;
+            var ta = document.getElementById('storeAllowedIpTextarea');
+            if (!store) { closeStoreAllowedIpModal(); return; }
+            if (!apiBase) { alert('API 주소가 설정되지 않았습니다.'); return; }
+            var allowedIps = parseAllowedIpsText(ta ? ta.value || '' : '');
+            var btn = document.getElementById('btnStoreAllowedIpSave');
+            if (btn) btn.disabled = true;
+            fetch(apiBase + '/api/store-allowed-ips', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ storeId: store.id, allowedIps: allowedIps })
+            }).then(function (r) { return r.json(); }).then(function (data) {
+                if (btn) btn.disabled = false;
+                if (data && data.error) { alert(data.error + (data.message ? '\n' + data.message : '')); return; }
+                closeStoreAllowedIpModal();
+                loadStores(true);
+                alert('허용 IP가 저장되었습니다.');
+            }).catch(function () {
+                if (btn) btn.disabled = false;
+                alert('저장에 실패했습니다.');
+            });
+        }
+        (function bindStoreAllowedIpModal() {
+            var saveBtn = document.getElementById('btnStoreAllowedIpSave');
+            var cancelBtn = document.getElementById('btnStoreAllowedIpCancel');
+            var modalEl = document.getElementById('storeAllowedIpModal');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    saveStoreAllowedIpsFromModal();
+                });
+            }
+            if (cancelBtn) cancelBtn.addEventListener('click', closeStoreAllowedIpModal);
+            if (modalEl) {
+                modalEl.addEventListener('click', function (e) {
+                    if (e.target === modalEl) closeStoreAllowedIpModal();
+                });
+            }
+        })();
+
         document.getElementById('formCreateStore').addEventListener('submit', function (e) {
             e.preventDefault();
             var idInput = document.getElementById('inputStoreId');
@@ -3647,6 +3766,8 @@
             var storeId = (idInput.value || '').trim();
             var storeName = (nameInput.value || '').trim() || storeId;
             var password = (pwInput.value || '').trim();
+            var ipInput = document.getElementById('inputStoreAllowedIps');
+            var allowedIps = ipInput ? parseAllowedIpsText(ipInput.value || '') : [];
             if (!storeId) { alert('가맹점 로그인 계정을 입력해 주세요.'); return; }
             if (!password) { alert('가맹점 로그인 비밀번호를 입력해 주세요.'); return; }
             var btn = document.getElementById('btnRegister');
@@ -3655,7 +3776,7 @@
             fetch(apiBase + '/api/create-store', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ storeId: storeId, storeName: storeName, password: password })
+                body: JSON.stringify({ storeId: storeId, storeName: storeName, password: password, allowedIps: allowedIps })
             }).then(function (r) {
                 return r.json().then(function (data) {
                     if (!r.ok) throw new Error(data.error || data.message || '생성 실패 (HTTP ' + r.status + ')');
@@ -3685,7 +3806,7 @@
                 var accountEn = getCreateStorePriceToggleRow('account');
                 var integratedEn = getCreateStorePriceToggleRow('integrated');
                 // 생성 직후 목록에 바로 반영 (이후 loadStores로 서버 데이터와 동기화)
-                var newStore = { id: storeId, name: storeName, pointBalance: 0, pointHistory: [], members: [], usage: { sms: { count: 0, amount: 0 }, idDoc: { count: 0, amount: 0 }, account: { count: 0, amount: 0 } }, totalAmount: 0, prices: { sms: sms, idDoc: idDoc, account: account, integrated: integrated || 0, smsEnabled: smsEn, idDocEnabled: idDocEn, accountEnabled: accountEn, integratedEnabled: integratedEn }, suspended: false, withdrawn: false };
+                var newStore = { id: storeId, name: storeName, pointBalance: 0, pointHistory: [], members: [], usage: { sms: { count: 0, amount: 0 }, idDoc: { count: 0, amount: 0 }, account: { count: 0, amount: 0 } }, totalAmount: 0, prices: { sms: sms, idDoc: idDoc, account: account, integrated: integrated || 0, smsEnabled: smsEn, idDocEnabled: idDocEn, accountEnabled: accountEn, integratedEnabled: integratedEn }, suspended: false, withdrawn: false, allowedIps: allowedIps };
                 stores = stores.filter(function (s) { return s.id !== storeId; });
                 stores.push(newStore);
                 updateSummary();
@@ -3694,6 +3815,7 @@
                 idInput.value = '';
                 nameInput.value = '';
                 pwInput.value = '';
+                if (ipInput) ipInput.value = '';
                 btn.disabled = false;
                 closeCreateStoreModal();
                 alert('가맹점이 생성되었습니다.');

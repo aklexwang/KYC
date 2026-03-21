@@ -5,6 +5,7 @@ const {
   getStorePrices,
   getSuspendedStores,
   getStorePointsMap,
+  getStoreAllowedIpsMap,
   getStorageErrorHelp,
 } = require('./storage');
 
@@ -15,15 +16,17 @@ exports.handler = async (event, context) => {
   if (event.httpMethod !== 'GET') return { statusCode: 405, headers: CORS, body: '' };
 
   try {
-    const [kycResult, globalPrices, counts, storePricesMap, suspendedMap, pointsMap] = await Promise.all([
+    const [kycResult, globalPrices, counts, storePricesMap, suspendedMap, pointsMap, allowedIpsMap] = await Promise.all([
       getKycData(event),
       getUsagePrices(event).catch(() => ({ sms: 100, idDoc: 200, account: 150, integrated: 0 })),
       getUsageCounts(event).catch(() => ({})),
       getStorePrices(event).catch(() => ({})),
       getSuspendedStores(event).catch(() => ({})),
       getStorePointsMap(event).catch(() => ({})),
+      getStoreAllowedIpsMap(event).catch(() => ({})),
     ]);
     const pointsByStore = typeof pointsMap === 'object' && pointsMap !== null ? pointsMap : {};
+    const ipsByStore = typeof allowedIpsMap === 'object' && allowedIpsMap !== null ? allowedIpsMap : {};
     const { data, names } = kycResult;
     const dataObj = typeof data === 'object' && data !== null ? data : {};
     const namesObj = typeof names === 'object' && names !== null ? names : {};
@@ -45,6 +48,7 @@ exports.handler = async (event, context) => {
       const pbRaw = pt.pointBalanceUsdt != null ? pt.pointBalanceUsdt : pt.pointBalance;
       const pb = pbRaw != null && !isNaN(Number(pbRaw)) ? Math.round(Number(pbRaw) * 2) / 2 : 0;
       const ph = Array.isArray(pt.pointHistory) ? pt.pointHistory : [];
+      const allowedIps = Array.isArray(ipsByStore[id]) ? ipsByStore[id] : [];
       return {
         // 실제 저장 키(빈 문자열 = 가맹점 미지정). 삭제·단가 API와 동일해야 함.
         id,
@@ -57,6 +61,7 @@ exports.handler = async (event, context) => {
         pointBalanceUsdt: pb,
         pointBalance: pb,
         pointHistory: ph,
+        allowedIps,
       };
     });
     return {

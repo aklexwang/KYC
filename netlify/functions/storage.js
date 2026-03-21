@@ -341,6 +341,56 @@ async function setStorePointsMap(event, map) {
   await store.set('store_points', JSON.stringify(obj));
 }
 
+/** 쉼표·줄바꿈·세미콜론으로 구분된 IP/CIDR 문자열을 정규화 */
+function normalizeAllowedIpsInput(input) {
+  if (input == null) return [];
+  if (Array.isArray(input)) {
+    return [...new Set(input.map((s) => String(s).trim()).filter(Boolean))];
+  }
+  const str = String(input);
+  return [...new Set(str.split(/[\n,;]+/).map((s) => s.trim()).filter(Boolean))];
+}
+
+async function getStoreAllowedIpsMap(event) {
+  if (USE_UPSTASH) {
+    const p = await upstashGet('kyc_store_allowed_ips');
+    return p && typeof p === 'object' ? p : {};
+  }
+  const store = await blobsGetStore(event);
+  const raw = await store.get('store_allowed_ips');
+  if (!raw) return {};
+  try {
+    const p = JSON.parse(raw);
+    return typeof p === 'object' && p !== null ? p : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+async function setStoreAllowedIpsMap(event, map) {
+  const obj = typeof map === 'object' && map !== null ? map : {};
+  if (USE_UPSTASH) {
+    await upstashSet('kyc_store_allowed_ips', obj);
+    return;
+  }
+  const store = await blobsGetStore(event);
+  await store.set('store_allowed_ips', JSON.stringify(obj));
+}
+
+async function setStoreAllowedIpsForStore(event, storeId, ips) {
+  const sid = String(storeId).trim();
+  if (!sid) return;
+  const list = normalizeAllowedIpsInput(ips);
+  const map = await getStoreAllowedIpsMap(event);
+  const next = { ...map };
+  if (list.length === 0) {
+    delete next[sid];
+  } else {
+    next[sid] = list;
+  }
+  await setStoreAllowedIpsMap(event, next);
+}
+
 async function deleteStore(event, storeId) {
   if (storeId == null) return;
   let sid = String(storeId).trim();
@@ -349,15 +399,17 @@ async function deleteStore(event, storeId) {
   const keysToPurge = new Set([sid]);
   if (sid === '') keysToPurge.add('미지정');
 
-  const [kycData, passwords, storePrices, counts, suspended, pointsMapRaw] = await Promise.all([
+  const [kycData, passwords, storePrices, counts, suspended, pointsMapRaw, allowedIpsMapRaw] = await Promise.all([
     getKycData(event),
     getStorePasswords(event),
     getStorePrices(event),
     getUsageCounts(event),
     getSuspendedStores(event),
     getStorePointsMap(event).catch(() => ({})),
+    getStoreAllowedIpsMap(event).catch(() => ({})),
   ]);
   const pointsMap = typeof pointsMapRaw === 'object' && pointsMapRaw !== null ? { ...pointsMapRaw } : {};
+  const allowedIpsMap = typeof allowedIpsMapRaw === 'object' && allowedIpsMapRaw !== null ? { ...allowedIpsMapRaw } : {};
   const data = { ...kycData.data };
   const namesObj = { ...kycData.names };
   const pw = { ...passwords };
@@ -372,6 +424,7 @@ async function deleteStore(event, storeId) {
     delete cnt[k];
     delete susp[k];
     delete pointsMap[k];
+    delete allowedIpsMap[k];
   });
   await setKycData(event, data, namesObj);
   await setStorePasswords(event, pw);
@@ -386,6 +439,7 @@ async function deleteStore(event, storeId) {
     await store.set('suspended_stores', JSON.stringify(susp));
   }
   await setStorePointsMap(event, pointsMap);
+  await setStoreAllowedIpsMap(event, allowedIpsMap);
 }
 
 function getStorageErrorHelp() {
@@ -449,5 +503,8 @@ module.exports = {
   setStorePointsMap,
   getStoreGateMinUsdt,
   setStoreGateMinUsdt,
+  getStoreAllowedIpsMap,
+  setStoreAllowedIpsForStore,
+  normalizeAllowedIpsInput,
   USE_UPSTASH,
 };

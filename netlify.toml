@@ -27,6 +27,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/store-allowed-ips"
+  to = "/.netlify/functions/store-allowed-ips"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/usage-prices"
   to = "/.netlify/functions/usage-prices"
   status = 200
@@ -53,6 +59,12 @@
 [[redirects]]
   from = "/api/store-gate-config"
   to = "/.netlify/functions/store-gate-config"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/store-point-recharge-request"
+  to = "/.netlify/functions/store-point-recharge-request"
   status = 200
   force = true
 
