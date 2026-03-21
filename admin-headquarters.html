@@ -705,6 +705,46 @@
         .summary-card:nth-child(1) { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
         .summary-card:nth-child(2) { background: linear-gradient(135deg, #1da1f2 0%, #10c5f5 100%); }
         .summary-card:nth-child(3) { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); }
+        .overview-chart-wrap {
+            margin-top: 8px;
+            margin-bottom: 4px;
+            padding: 22px 22px 16px;
+            border-radius: 18px;
+            background: linear-gradient(165deg, rgba(11, 21, 61, 0.98) 0%, rgba(8, 15, 40, 0.99) 45%, rgba(5, 12, 28, 1) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow:
+                0 20px 50px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.07);
+        }
+        .overview-chart-head { margin-bottom: 14px; }
+        .overview-chart-title {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f8fafc;
+            letter-spacing: -0.03em;
+        }
+        .overview-chart-desc {
+            margin: 0;
+            font-size: 13px;
+            color: rgba(226, 232, 240, 0.78);
+            line-height: 1.55;
+            max-width: 800px;
+        }
+        .overview-chart-desc strong { color: #fde68a; font-weight: 700; }
+        .overview-chart-canvas-box {
+            position: relative;
+            height: min(340px, 46vh);
+            min-height: 260px;
+            width: 100%;
+        }
+        .overview-chart-footnote {
+            margin: 0;
+            padding-top: 10px;
+            font-size: 12px;
+            color: rgba(148, 163, 184, 0.9);
+            text-align: right;
+        }
         .store-card, .table-wrap { background: #0b153d; border: 1px solid rgba(255,255,255,0.08); box-shadow: none; }
         .section-title, td:first-child, td:nth-child(2) { color: #fff; }
         .section-desc, .store-stats span, .td-store-id { color: rgba(255,255,255,0.72); }
@@ -1362,6 +1402,7 @@
             .dashboard-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="dashboard-shell">
@@ -1400,6 +1441,16 @@
                 <div class="num" id="totalKycDone">0</div>
                 <div class="label">KYC 인증 완료</div>
             </div>
+        </div>
+        <div class="overview-chart-wrap" id="overviewChartWrap">
+            <div class="overview-chart-head">
+                <h3 class="overview-chart-title">포인트 내역 · 본사 수익 추이</h3>
+                <p class="overview-chart-desc">최근 30일간 가맹점 포인트 <strong>지급</strong>·<strong>차감</strong>을 일별로 집계합니다. 차감은 가맹점에서 회수한 USDT, 지급은 가맹점에 지급한 USDT입니다. (취소 건은 제외)</p>
+            </div>
+            <div class="overview-chart-canvas-box">
+                <canvas id="hqRevenueChart" aria-label="포인트 일별 지급 차감 차트"></canvas>
+            </div>
+            <p class="overview-chart-footnote" id="overviewChartFootnote"></p>
         </div>
         </section>
 
@@ -1901,6 +1952,7 @@
         ];
 
         var stores = [];
+        var hqRevenueChartInstance = null;
         var selectedStoreId = null;
         var settlementTfootSnapshot = '';
 
@@ -1945,6 +1997,9 @@
                 try {
                     if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
                 } catch (e2) {}
+            }
+            if (nextView === 'overview') {
+                setTimeout(function () { updateOverviewRevenueChart(); }, 0);
             }
             persistDashboardView(nextView);
         }
@@ -2470,6 +2525,159 @@
                 return new Date(b.at || 0).getTime() - new Date(a.at || 0).getTime();
             });
             return list;
+        }
+
+        function overviewPointRowCountsForChart(r) {
+            var st = r.statusLabel || '완료';
+            if (st === '취소') return false;
+            return true;
+        }
+
+        function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
+        function getOverviewLastNDayKeys(n) {
+            var keys = [];
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            for (var i = n - 1; i >= 0; i--) {
+                var d = new Date(today);
+                d.setDate(d.getDate() - i);
+                keys.push(d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()));
+            }
+            return keys;
+        }
+
+        function aggregateOverviewPointByDay(rows) {
+            var grant = {};
+            var deduct = {};
+            rows.forEach(function (r) {
+                if (!overviewPointRowCountsForChart(r)) return;
+                var d = new Date(r.at);
+                if (isNaN(d.getTime())) return;
+                var key = d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+                var amt = Math.abs(Number(r.amount));
+                if (!isFinite(amt)) return;
+                if (r.kind === 'grant') grant[key] = (grant[key] || 0) + amt;
+                else if (r.kind === 'deduct') deduct[key] = (deduct[key] || 0) + amt;
+            });
+            return { grant: grant, deduct: deduct };
+        }
+
+        function updateOverviewRevenueChart() {
+            var canvas = document.getElementById('hqRevenueChart');
+            var foot = document.getElementById('overviewChartFootnote');
+            if (!canvas || typeof Chart === 'undefined') return;
+            var rows = collectAllPointLedgerRows();
+            var agg = aggregateOverviewPointByDay(rows);
+            var keys = getOverviewLastNDayKeys(30);
+            var grantData = keys.map(function (k) { return Math.round((agg.grant[k] || 0) * 10) / 10; });
+            var deductData = keys.map(function (k) { return Math.round((agg.deduct[k] || 0) * 10) / 10; });
+            var displayLabels = keys.map(function (k) {
+                var p = k.split('-');
+                return p[1] + '/' + p[2];
+            });
+            var ctx = canvas.getContext('2d');
+            if (hqRevenueChartInstance) {
+                hqRevenueChartInstance.destroy();
+                hqRevenueChartInstance = null;
+            }
+            var g = ctx.createLinearGradient(0, 0, 0, canvas.parentElement.clientHeight || 280);
+            g.addColorStop(0, 'rgba(52, 211, 153, 0.35)');
+            g.addColorStop(1, 'rgba(52, 211, 153, 0.02)');
+            var g2 = ctx.createLinearGradient(0, 0, 0, canvas.parentElement.clientHeight || 280);
+            g2.addColorStop(0, 'rgba(251, 191, 36, 0.22)');
+            g2.addColorStop(1, 'rgba(251, 191, 36, 0.02)');
+            var totalGrant = grantData.reduce(function (a, b) { return a + b; }, 0);
+            var totalDeduct = deductData.reduce(function (a, b) { return a + b; }, 0);
+            if (foot) {
+                foot.textContent = '30일 합계 · 지급 ' + totalGrant.toLocaleString('en-US', { maximumFractionDigits: 1 }) + ' USDT · 차감 ' + totalDeduct.toLocaleString('en-US', { maximumFractionDigits: 1 }) + ' USDT';
+            }
+            hqRevenueChartInstance = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: displayLabels,
+                    datasets: [
+                        {
+                            label: '차감 (USDT)',
+                            data: deductData,
+                            borderColor: 'rgba(52, 211, 153, 1)',
+                            backgroundColor: g,
+                            fill: true,
+                            tension: 0.38,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                            borderWidth: 2.5,
+                            pointBackgroundColor: 'rgba(52, 211, 153, 1)',
+                            pointBorderColor: '#022c22',
+                        },
+                        {
+                            label: '지급 (USDT)',
+                            data: grantData,
+                            borderColor: 'rgba(251, 191, 36, 0.95)',
+                            backgroundColor: g2,
+                            fill: true,
+                            tension: 0.38,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(251, 191, 36, 1)',
+                            pointBorderColor: '#422006',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                color: 'rgba(226, 232, 240, 0.92)',
+                                font: { size: 12, weight: '600' },
+                                usePointStyle: true,
+                                padding: 16,
+                            },
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.94)',
+                            titleColor: '#f1f5f9',
+                            bodyColor: '#e2e8f0',
+                            borderColor: 'rgba(148, 163, 184, 0.35)',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                label: function (ctx) {
+                                    var v = ctx.parsed.y != null ? ctx.parsed.y : 0;
+                                    return ctx.dataset.label + ': ' + v.toLocaleString('en-US', { maximumFractionDigits: 1 }) + ' USDT';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.06)', drawBorder: false },
+                            ticks: {
+                                color: 'rgba(148, 163, 184, 0.95)',
+                                maxRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: 12,
+                                font: { size: 11 },
+                            },
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.06)', drawBorder: false },
+                            ticks: {
+                                color: 'rgba(148, 163, 184, 0.95)',
+                                font: { size: 11 },
+                                callback: function (v) { return v.toLocaleString('en-US', { maximumFractionDigits: 1 }); },
+                            },
+                        },
+                    },
+                },
+            });
         }
 
         function parsePointLedgerDateInput(yyyymmdd) {
@@ -3534,6 +3742,7 @@
                         syncSettlementTableRowSearchAttr();
                         applySettlementStoreFilter();
                         renderGlobalPointLedger();
+                        updateOverviewRevenueChart();
                     })
                     .catch(function () {
                         if (stores.length === 0) stores = storesFallback;
@@ -3543,6 +3752,7 @@
                         syncSettlementTableRowSearchAttr();
                         applySettlementStoreFilter();
                         renderGlobalPointLedger();
+                        updateOverviewRevenueChart();
                     });
             } else {
                 stores = storesFallback;
@@ -3553,6 +3763,7 @@
                 syncSettlementTableRowSearchAttr();
                 applySettlementStoreFilter();
                 renderGlobalPointLedger();
+                updateOverviewRevenueChart();
             }
         }
 
