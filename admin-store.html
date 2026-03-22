@@ -816,6 +816,34 @@
             cursor: not-allowed;
             filter: none;
         }
+        .modal-recharge-status-phase {
+            padding: 8px 4px 4px;
+        }
+        .modal-recharge-status-msg {
+            margin: 0 0 20px 0;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.55;
+            color: rgba(255, 255, 255, 0.95);
+            text-align: center;
+        }
+        .btn-recharge-status-ok {
+            width: 100%;
+            max-width: 280px;
+            margin: 0 auto;
+            display: block;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            background: linear-gradient(180deg, #2a74ff 0%, #1e5ad8 100%);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(42, 116, 255, 0.35);
+        }
+        .btn-recharge-status-ok:hover { filter: brightness(1.05); }
     </style>
 </head>
 <body>
@@ -1044,20 +1072,26 @@
     <div id="pointRechargeModal" class="modal-recharge-overlay" aria-hidden="true">
         <div class="modal-recharge-box" role="dialog" aria-modal="true" aria-labelledby="pointRechargeTitle">
             <h3 id="pointRechargeTitle">포인트 충전</h3>
-            <div class="modal-recharge-field">
-                <label for="pointRechargeUsdtInput">구매 USDT</label>
-                <input type="number" id="pointRechargeUsdtInput" min="0" step="0.5" inputmode="decimal" placeholder="0.5 USDT 단위" autocomplete="off">
-            </div>
-            <div class="modal-recharge-wallet">
-                <span class="modal-recharge-wallet-label">USDT ( TRC20 ) 지갑 주소</span>
-                <div class="modal-recharge-wallet-row">
-                    <div class="modal-recharge-wallet-addr" id="pointRechargeWalletAddr"></div>
-                    <button type="button" class="btn-recharge-copy-wallet" id="btnCopyRechargeWallet" aria-label="지갑 주소 복사">복사</button>
+            <div id="pointRechargeFormPhase">
+                <div class="modal-recharge-field">
+                    <label for="pointRechargeUsdtInput">구매 USDT</label>
+                    <input type="number" id="pointRechargeUsdtInput" min="0" step="0.5" inputmode="decimal" placeholder="0.5 USDT 단위" autocomplete="off">
+                </div>
+                <div class="modal-recharge-wallet">
+                    <span class="modal-recharge-wallet-label">USDT ( TRC20 ) 지갑 주소</span>
+                    <div class="modal-recharge-wallet-row">
+                        <div class="modal-recharge-wallet-addr" id="pointRechargeWalletAddr"></div>
+                        <button type="button" class="btn-recharge-copy-wallet" id="btnCopyRechargeWallet" aria-label="지갑 주소 복사">복사</button>
+                    </div>
+                </div>
+                <div class="modal-recharge-actions">
+                    <button type="button" class="btn-recharge-cancel" id="btnPointRechargeCancel">취소</button>
+                    <button type="button" class="btn-recharge-submit" id="btnPointRechargeSubmit">신청</button>
                 </div>
             </div>
-            <div class="modal-recharge-actions">
-                <button type="button" class="btn-recharge-cancel" id="btnPointRechargeCancel">취소</button>
-                <button type="button" class="btn-recharge-submit" id="btnPointRechargeSubmit">신청</button>
+            <div id="pointRechargeStatusPhase" class="modal-recharge-status-phase" hidden>
+                <p id="pointRechargeStatusMessage" class="modal-recharge-status-msg"></p>
+                <button type="button" class="btn-recharge-status-ok" id="btnPointRechargeStatusOk" hidden>확인</button>
             </div>
         </div>
     </div>
@@ -1801,11 +1835,73 @@
             return r;
         }
 
+        var pointRechargePollTimer = null;
+
+        function stopPointRechargePoll() {
+            if (pointRechargePollTimer) {
+                clearInterval(pointRechargePollTimer);
+                pointRechargePollTimer = null;
+            }
+        }
+
+        function showPointRechargeFormPhase() {
+            var formPh = document.getElementById('pointRechargeFormPhase');
+            var statPh = document.getElementById('pointRechargeStatusPhase');
+            var okBtn = document.getElementById('btnPointRechargeStatusOk');
+            if (formPh) formPh.hidden = false;
+            if (statPh) statPh.hidden = true;
+            if (okBtn) okBtn.hidden = true;
+        }
+
+        function showPointRechargeStatusMessage(msg, showOkButton) {
+            var formPh = document.getElementById('pointRechargeFormPhase');
+            var statPh = document.getElementById('pointRechargeStatusPhase');
+            var msgEl = document.getElementById('pointRechargeStatusMessage');
+            var okBtn = document.getElementById('btnPointRechargeStatusOk');
+            if (formPh) formPh.hidden = true;
+            if (statPh) statPh.hidden = false;
+            if (msgEl) msgEl.textContent = msg || '';
+            if (okBtn) okBtn.hidden = !showOkButton;
+        }
+
+        function startPointRechargeStatusPoll(storeId, historyId) {
+            stopPointRechargePoll();
+            var api = window.ADMIN_API_BASE || '';
+            if (!api || !storeId || !historyId) return;
+            showPointRechargeStatusMessage('확인중입니다.', false);
+            function pollOnce() {
+                var url = api + '/api/store-point-recharge-resolve?storeId=' + encodeURIComponent(storeId) + '&historyId=' + encodeURIComponent(historyId);
+                fetch(url)
+                    .then(function (r) { return r.json().catch(function () { return {}; }); })
+                    .then(function (data) {
+                        if (!data || !data.ok) return;
+                        var st = data.status != null ? String(data.status).trim() : '';
+                        if (st === '진행중' || st === '처리중') return;
+                        stopPointRechargePoll();
+                        if (st === '완료') {
+                            showPointRechargeStatusMessage('충전되었습니다.', true);
+                            loadStorePointBalance();
+                        } else if (st === '취소') {
+                            showPointRechargeStatusMessage('취소되었습니다. 텔레그램으로 문의하세요.', true);
+                        } else {
+                            showPointRechargeStatusMessage('처리가 완료되었습니다.', true);
+                        }
+                    })
+                    .catch(function () {});
+            }
+            pollOnce();
+            pointRechargePollTimer = setInterval(pollOnce, 3000);
+        }
+
         function openPointRechargeModal() {
             var modal = document.getElementById('pointRechargeModal');
             var input = document.getElementById('pointRechargeUsdtInput');
             var walletEl = document.getElementById('pointRechargeWalletAddr');
             if (!modal || !input) return;
+            stopPointRechargePoll();
+            showPointRechargeFormPhase();
+            var sub = document.getElementById('btnPointRechargeSubmit');
+            if (sub) sub.disabled = false;
             input.value = '';
             if (walletEl) {
                 var w = (window.STORE_RECHARGE_WALLET || '').trim();
@@ -1819,6 +1915,10 @@
         function closePointRechargeModal() {
             var modal = document.getElementById('pointRechargeModal');
             if (!modal) return;
+            stopPointRechargePoll();
+            showPointRechargeFormPhase();
+            var sub = document.getElementById('btnPointRechargeSubmit');
+            if (sub) sub.disabled = false;
             modal.classList.remove('show');
             modal.setAttribute('aria-hidden', 'true');
         }
@@ -1859,6 +1959,11 @@
                     .then(function (data) {
                         if (btn) btn.disabled = false;
                         if (data && data.ok) {
+                            var hid = data.historyId != null ? String(data.historyId) : '';
+                            if (hid) {
+                                startPointRechargeStatusPoll(storeId, hid);
+                                return;
+                            }
                             alert(data.message || '충전 신청이 접수되었습니다.');
                             closePointRechargeModal();
                             loadStorePointBalance();
@@ -1986,7 +2091,10 @@
         document.getElementById('btnPointRechargeCancel').addEventListener('click', closePointRechargeModal);
         document.getElementById('btnPointRechargeSubmit').addEventListener('click', submitPointRecharge);
         document.getElementById('pointRechargeModal').addEventListener('click', function (e) {
-            if (e.target === this) closePointRechargeModal();
+            if (e.target === this) {
+                var formPh = document.getElementById('pointRechargeFormPhase');
+                if (formPh && !formPh.hidden) closePointRechargeModal();
+            }
         });
         document.querySelector('.modal-recharge-box').addEventListener('click', function (e) {
             e.stopPropagation();
@@ -1994,7 +2102,15 @@
         document.addEventListener('keydown', function (e) {
             if (e.key !== 'Escape') return;
             var m = document.getElementById('pointRechargeModal');
-            if (m && m.classList.contains('show')) closePointRechargeModal();
+            if (!m || !m.classList.contains('show')) return;
+            var formPh = document.getElementById('pointRechargeFormPhase');
+            var okBtn = document.getElementById('btnPointRechargeStatusOk');
+            if (formPh && !formPh.hidden) closePointRechargeModal();
+            else if (okBtn && !okBtn.hidden) closePointRechargeModal();
+        });
+
+        document.getElementById('btnPointRechargeStatusOk').addEventListener('click', function () {
+            closePointRechargeModal();
         });
 
         document.getElementById('btnSidebarPointCharge').addEventListener('click', openPointRechargeModal);

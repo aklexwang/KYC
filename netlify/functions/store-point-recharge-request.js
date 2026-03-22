@@ -60,20 +60,21 @@ exports.handler = async (event) => {
     let bal = Number(cur.pointBalanceUsdt != null ? cur.pointBalanceUsdt : cur.pointBalance);
     if (!isFinite(bal)) bal = 0;
     bal = Math.round(bal * 2) / 2;
-    const nextBal = Math.round((bal + amt) * 2) / 2;
 
+    const wallet = typeof body.wallet === 'string' ? body.wallet.trim() : '';
+    const historyId = genHistoryId();
     const hist = Array.isArray(cur.pointHistory) ? cur.pointHistory.slice() : [];
     hist.push({
       at: new Date().toISOString(),
       kind: 'deposit',
       amount: amt,
-      historyId: genHistoryId(),
-      status: '완료',
-      note: '가맹점 USDT 충전(입금)',
+      historyId,
+      status: '진행중',
+      note: wallet || '가맹점 USDT 충전(입금)',
     });
 
     map[storeId] = {
-      pointBalanceUsdt: nextBal,
+      pointBalanceUsdt: bal,
       pointHistory: hist,
     };
     await setStorePointsMap(event, map);
@@ -83,10 +84,12 @@ exports.handler = async (event) => {
       headers: { ...CORS, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         ok: true,
-        message: '충전이 반영되었습니다. (입금 내역이 포인트 내역에 기록됩니다.)',
+        message: '충전 신청이 접수되었습니다. 본사 확인 후 포인트가 반영됩니다.',
         storeId,
-        pointBalanceUsdt: nextBal,
-        pointBalance: nextBal,
+        historyId,
+        status: '진행중',
+        pointBalanceUsdt: bal,
+        pointBalance: bal,
         pointHistory: map[storeId].pointHistory,
       }),
     };

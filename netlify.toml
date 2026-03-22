@@ -69,6 +69,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/store-point-recharge-resolve"
+  to = "/.netlify/functions/store-point-recharge-resolve"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/store-suspend"
   to = "/.netlify/functions/store-suspend"
   status = 200

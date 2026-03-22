@@ -1270,6 +1270,7 @@
         }
         .table--point-ledger .td-point-ledger-grant { color: #86efac; font-weight: 600; }
         .table--point-ledger .td-point-ledger-deduct { color: #fca5a5; font-weight: 600; }
+        .table--point-ledger .td-point-ledger-deposit { color: #7dd3fc; font-weight: 600; }
         .table--point-ledger .td-point-ledger-amt-grant { color: #86efac; font-weight: 700; font-variant-numeric: tabular-nums; }
         .table--point-ledger .td-point-ledger-amt-deduct { color: #fca5a5; font-weight: 700; font-variant-numeric: tabular-nums; }
         .table--point-ledger .td-point-ledger-balance { font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, 0.88); font-weight: 600; }
@@ -1396,6 +1397,48 @@
             color: #fff;
             vertical-align: middle;
         }
+        .sidebar-badge--point-pending {
+            display: none;
+            margin-left: 8px;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+            box-sizing: border-box;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            line-height: 22px;
+            text-align: center;
+            color: #fff;
+            background: linear-gradient(145deg, #38bdf8 0%, #0ea5e9 55%, #0284c7 100%);
+            border: 2px solid rgba(250, 204, 21, 0.95);
+            vertical-align: middle;
+            box-shadow:
+                0 0 0 1px rgba(14, 165, 233, 0.35),
+                0 0 12px 3px rgba(56, 189, 248, 0.55);
+            animation: sidebar-point-badge-pulse 1.25s ease-in-out infinite;
+        }
+        .sidebar-badge--point-pending.is-visible {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @keyframes sidebar-point-badge-pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow:
+                    0 0 0 1px rgba(14, 165, 233, 0.35),
+                    0 0 10px 2px rgba(56, 189, 248, 0.45),
+                    0 0 0 2px rgba(250, 204, 21, 0.85);
+            }
+            50% {
+                transform: scale(1.08);
+                box-shadow:
+                    0 0 0 2px rgba(14, 165, 233, 0.5),
+                    0 0 18px 5px rgba(56, 189, 248, 0.85),
+                    0 0 0 3px rgba(250, 204, 21, 1);
+            }
+        }
         #section-account-queue .table--account-queue { min-width: 960px; }
         #section-account-queue .account-queue-wrap { margin-top: 8px; }
         #section-account-queue .hq-code-input {
@@ -1441,9 +1484,9 @@
             <div class="menu-item active" data-view="overview">현황판</div>
             <div class="menu-item" data-view="stores">가맹점 관리</div>
             <div class="menu-item" data-view="members">회원 목록</div>
-            <div class="menu-item" data-view="accountQueue">계좌인증난 <span class="sidebar-badge" id="accountQueueBadge" style="display:none;">0</span></div>
+            <div class="menu-item" data-view="accountQueue">1원인증관리 <span class="sidebar-badge" id="accountQueueBadge" style="display:none;">0</span></div>
             <div class="menu-item" data-view="settlement">수수료 통계</div>
-            <div class="menu-item" data-view="pointLedger">포인트 내역</div>
+            <div class="menu-item" data-view="pointLedger">포인트 내역<span class="sidebar-badge sidebar-badge--point-pending" id="pointLedgerPendingBadge" aria-live="polite">0</span></div>
         </nav>
         <nav class="sidebar-menu sidebar-menu--settings">
             <div class="menu-item" data-view="settings">설정</div>
@@ -1483,7 +1526,7 @@
         </section>
 
         <section id="section-account-queue" class="dashboard-section">
-            <h2 class="section-title">계좌인증난</h2>
+            <h2 class="section-title">1원인증관리</h2>
             <p class="section-desc">회원이 계좌 정보를 제출하면 목록에 표시됩니다. 전용 계좌에서 1원 입금 시 적요에 넣은 <strong>숫자 4자리</strong>를 입력한 뒤 확인을 누르면, 회원 화면에 동일한 4자리가 표시되고 회원이 입력해 인증을 완료합니다.</p>
             <div class="table-wrap account-queue-wrap">
                 <div class="table-scroll">
@@ -1907,6 +1950,7 @@
                 <label for="pointLedgerKindFilter">구분 검색</label>
                 <select id="pointLedgerKindFilter" class="point-ledger-kind-select" aria-label="포인트 내역 구분 필터">
                     <option value="all" selected>전체</option>
+                    <option value="deposit">충전</option>
                     <option value="grant">지급</option>
                     <option value="deduct">차감</option>
                 </select>
@@ -1916,6 +1960,7 @@
                     <option value="완료">완료</option>
                     <option value="대기">대기</option>
                     <option value="처리중">처리중</option>
+                    <option value="진행중">진행중</option>
                     <option value="실패">실패</option>
                     <option value="취소">취소</option>
                 </select>
@@ -1978,7 +2023,7 @@
         var storesFallback = [
             { id: 'STORE_001', name: '강남점', pointBalance: 300, pointHistory: [
                 { at: '2025-03-18T10:00:00.000Z', kind: 'grant', amount: 500, note: 'TVzaRmEckn6AtJWGvdKmYnfsMZLdBbRVYg', status: '완료' },
-                { at: '2025-03-20T14:00:00.000Z', kind: 'deduct', amount: 200, note: 'TVzaRmEckn6AtJWGvdKmYnfsMZLdBbRVYg', status: '처리중' }
+                { at: '2025-03-20T14:00:00.000Z', kind: 'deposit', amount: 200, note: 'TVzaRmEckn6AtJWGvdKmYnfsMZLdBbRVYg', status: '진행중', historyId: 'ph_demo_pending_1' }
             ], usage: { sms: { count: 142, amount: 142 }, idDoc: { count: 118, amount: 236 }, account: { count: 96, amount: 144 } }, totalAmount: 522, prices: { sms: 1, idDoc: 2, account: 1.5, integrated: 0, smsEnabled: true, idDocEnabled: true, accountEnabled: true, integratedEnabled: false }, suspended: false, withdrawn: false, members: [
                 { name: '김철수', joinedAt: demoMemberJoinedIso(20, 10, 12), sms: 'complete', idDoc: 'complete', account: 'complete' },
                 { name: '이영희', joinedAt: demoMemberJoinedIso(14, 16, 48), sms: 'complete', idDoc: 'complete', account: 'fail' }
@@ -2037,7 +2082,12 @@
             if (secSet) secSet.classList.toggle('active', nextView === 'settings');
             var secAq = document.getElementById('section-account-queue');
             if (secAq) secAq.classList.toggle('active', nextView === 'accountQueue');
-            if (nextView === 'pointLedger') renderGlobalPointLedger();
+            if (nextView === 'pointLedger') {
+                renderGlobalPointLedger();
+                try {
+                    if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
+                } catch (eN) {}
+            }
             if (nextView === 'settings') loadHqStoreGateSettings();
             if (nextView === 'accountQueue') {
                 loadAccountVerifyQueue();
@@ -2054,6 +2104,41 @@
         var accountQueuePollTimer = null;
         var lastAccountQueuePending = 0;
         var accountQueueSkipNotify = true;
+
+        var lastPointRechargePendingCount = 0;
+        var pointRechargeSkipNotify = true;
+
+        function countPendingDepositRecharges(storesArr) {
+            var n = 0;
+            if (!Array.isArray(storesArr)) return 0;
+            storesArr.forEach(function (s) {
+                if (!s || !Array.isArray(s.pointHistory)) return;
+                s.pointHistory.forEach(function (e) {
+                    if (!e || e.kind !== 'deposit') return;
+                    var st = e.status != null ? String(e.status).trim() : '';
+                    if (st === '진행중' || st === '처리중') n++;
+                });
+            });
+            return n;
+        }
+
+        function updatePointLedgerPendingBadge(storesArr) {
+            var n = countPendingDepositRecharges(storesArr);
+            var el = document.getElementById('pointLedgerPendingBadge');
+            if (el) {
+                el.textContent = n > 99 ? '99+' : String(n);
+                el.classList.toggle('is-visible', n > 0);
+            }
+            if (!pointRechargeSkipNotify && n > lastPointRechargePendingCount) {
+                try {
+                    if (window.Notification && Notification.permission === 'granted') {
+                        new Notification('포인트 충전 신청', { body: '새 충전 신청이 있습니다.' });
+                    }
+                } catch (e) {}
+            }
+            lastPointRechargePendingCount = n;
+            pointRechargeSkipNotify = false;
+        }
 
         function loadAccountVerifyQueue() {
             var api = window.ADMIN_API_BASE || '';
@@ -2181,6 +2266,12 @@
             } catch (e) {}
         }, 5000);
 
+        setInterval(function () {
+            try {
+                if (window.ADMIN_API_BASE) loadStores(true);
+            } catch (e2) {}
+        }, 10000);
+
         /** 저장소 키가 빈 문자열인 가맹점(미지정) — 화면에만 '미지정'으로 표시 */
         function storeIdLabel(id) {
             if (id === undefined || id === null || id === '') return '미지정';
@@ -2220,7 +2311,17 @@
             rowsNewestFirst.forEach(function (r) {
                 var amt = pickPointLedgerAmountUsdt(r);
                 var grant = r.kind === 'grant';
-                var signed = grant ? amt : -amt;
+                var st = pickPointLedgerStatus(r);
+                var signed;
+                if (r.kind === 'deposit') {
+                    if (st === '진행중' || st === '처리중' || st === '취소') {
+                        signed = 0;
+                    } else {
+                        signed = amt;
+                    }
+                } else {
+                    signed = grant ? amt : -amt;
+                }
                 var before = normalizeStorePointUsdt(after - signed);
                 var row = Object.assign({}, r);
                 row._phBefore = before;
@@ -2439,15 +2540,39 @@
             var t = label != null ? String(label).trim() : '';
             if (t === '완료') return 'point-ledger-status-label point-ledger-status-label--done';
             if (t === '취소') return 'point-ledger-status-label point-ledger-status-label--cancel';
-            if (t === '대기' || t === '처리중') return 'point-ledger-status-label point-ledger-status-label--wait';
+            if (t === '대기' || t === '처리중' || t === '진행중') return 'point-ledger-status-label point-ledger-status-label--wait';
             if (t === '실패') return 'point-ledger-status-label point-ledger-status-label--fail';
             return 'point-ledger-status-label point-ledger-status-label--default';
         }
 
-        function setPointLedgerEntryStatus(storeId, historyId, newStatus) {
+        function setPointLedgerEntryStatus(storeId, historyId, newStatus, entryKind) {
             var sid = storeId != null ? String(storeId) : '';
             var hid = historyId != null ? String(historyId) : '';
+            var kind = entryKind != null ? String(entryKind) : '';
             if (!hid) return;
+            var apiBase = window.ADMIN_API_BASE || '';
+            if (kind === 'deposit' && apiBase) {
+                var decision = newStatus === '완료' ? 'complete' : 'cancel';
+                fetch(apiBase + '/api/store-point-recharge-resolve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ storeId: sid, historyId: hid, decision: decision })
+                })
+                    .then(function (r) {
+                        return r.json().catch(function () { return {}; }).then(function (data) {
+                            if (r.ok && data && data.ok) {
+                                closeAllPointLedgerPendingPopups();
+                                loadStores(true);
+                                return;
+                            }
+                            alert((data && data.error) ? String(data.error) : '처리에 실패했습니다.');
+                        });
+                    })
+                    .catch(function () {
+                        alert('처리에 실패했습니다.');
+                    });
+                return;
+            }
             var store = null;
             for (var i = 0; i < stores.length; i++) {
                 if (String(stores[i].id != null ? stores[i].id : '') === sid) {
@@ -2467,6 +2592,7 @@
             }
             if (!entry) return;
             entry.status = newStatus;
+            closeAllPointLedgerPendingPopups();
             renderGlobalPointLedger();
         }
 
@@ -2489,10 +2615,11 @@
             var sidAttr = escapeHtml(r.storeId != null ? String(r.storeId) : '');
             var hidRaw = r.historyId != null ? String(r.historyId) : '';
             var hidAttr = escapeHtml(hidRaw);
-            if (st === '처리중' && hidRaw) {
+            var kindAttr = escapeHtml(r.kind != null ? String(r.kind) : '');
+            if ((st === '진행중' || st === '처리중') && hidRaw) {
                 var h = '';
-                h += '<div class="point-ledger-pending-wrap" data-store-id="' + sidAttr + '" data-history-id="' + hidAttr + '">';
-                h += '<button type="button" class="point-ledger-pending-open" aria-expanded="false" aria-haspopup="true">처리중</button>';
+                h += '<div class="point-ledger-pending-wrap" data-store-id="' + sidAttr + '" data-history-id="' + hidAttr + '" data-entry-kind="' + kindAttr + '">';
+                h += '<button type="button" class="point-ledger-pending-open" aria-expanded="false" aria-haspopup="true">진행중</button>';
                 h += '<div class="point-ledger-pending-choices point-ledger-pending-popover" hidden role="group" aria-label="처리 결과 선택">';
                 h += '<button type="button" class="point-ledger-pending-choice point-ledger-pending-choice--ok">확인</button>';
                 h += '<button type="button" class="point-ledger-pending-choice point-ledger-pending-choice--cancel">취소</button>';
@@ -2528,7 +2655,8 @@
                 e.stopPropagation();
                 var sid = wrap.getAttribute('data-store-id');
                 var hid = wrap.getAttribute('data-history-id');
-                setPointLedgerEntryStatus(sid, hid, okBtn ? '완료' : '취소');
+                var ek = wrap.getAttribute('data-entry-kind') || '';
+                setPointLedgerEntryStatus(sid, hid, okBtn ? '완료' : '취소', ek);
             }
         }
 
@@ -2577,6 +2705,7 @@
         function overviewPointRowCountsForChart(r) {
             var st = r.statusLabel || '완료';
             if (st === '취소') return false;
+            if (r.kind === 'deposit' && (st === '진행중' || st === '처리중')) return false;
             return true;
         }
 
@@ -2606,6 +2735,7 @@
                 if (!isFinite(amt)) return;
                 if (r.kind === 'grant') grant[key] = (grant[key] || 0) + amt;
                 else if (r.kind === 'deduct') deduct[key] = (deduct[key] || 0) + amt;
+                else if (r.kind === 'deposit') grant[key] = (grant[key] || 0) + amt;
             });
             return { grant: grant, deduct: deduct };
         }
@@ -2790,11 +2920,14 @@
             var html = '';
             rows.forEach(function (r) {
                 var grant = r.kind === 'grant';
-                var kCls = grant ? 'td-point-ledger-kind td-point-ledger-grant' : 'td-point-ledger-kind td-point-ledger-deduct';
-                var chCls = grant ? 'td-point-ledger-amt td-point-ledger-amt-grant' : 'td-point-ledger-amt td-point-ledger-amt-deduct';
-                var kindLabel = grant ? '지급' : '차감';
+                var isDeposit = r.kind === 'deposit';
+                var kCls = isDeposit ? 'td-point-ledger-kind td-point-ledger-deposit' : (grant ? 'td-point-ledger-kind td-point-ledger-grant' : 'td-point-ledger-kind td-point-ledger-deduct');
+                var chCls = (grant || isDeposit) ? 'td-point-ledger-amt td-point-ledger-amt-grant' : 'td-point-ledger-amt td-point-ledger-amt-deduct';
+                var kindLabel = isDeposit ? '충전' : (grant ? '지급' : '차감');
                 var ch = r._phChange != null ? r._phChange : 0;
-                var chStr = (ch >= 0 ? '+' : '') + formatStorePointUsdt(Math.abs(ch)) + ' USDT';
+                var chStr = isDeposit && ch === 0
+                    ? ('+' + formatStorePointUsdt(pickPointLedgerAmountUsdt(r)) + ' USDT')
+                    : ((ch >= 0 ? '+' : '') + formatStorePointUsdt(Math.abs(ch)) + ' USDT');
                 var beforeStr = r._phBefore != null ? formatStorePointUsdt(r._phBefore) + ' USDT' : '—';
                 var afterStr = r._phAfter != null ? formatStorePointUsdt(r._phAfter) + ' USDT' : '—';
                 var walletStr = (r.note != null ? String(r.note) : '').trim();
@@ -3858,6 +3991,7 @@
                     .then(function (data) {
                         stores = (data && data.stores) ? data.stores : storesFallback;
                         if (data && data.prices) fillPriceInputs(data.prices);
+                        updatePointLedgerPendingBadge(stores);
                         updateSummary();
                         renderStoreListFromState();
                         renderAllMembersTable();
@@ -3868,6 +4002,7 @@
                     })
                     .catch(function () {
                         if (stores.length === 0) stores = storesFallback;
+                        updatePointLedgerPendingBadge(stores);
                         updateSummary();
                         renderStoreListFromState();
                         renderAllMembersTable();
@@ -3879,6 +4014,7 @@
             } else {
                 stores = storesFallback;
                 fillPriceInputs({ sms: 1, idDoc: 2, account: 1.5 });
+                updatePointLedgerPendingBadge(stores);
                 updateSummary();
                 renderStoreListFromState();
                 renderAllMembersTable();
