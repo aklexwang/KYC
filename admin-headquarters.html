@@ -1932,10 +1932,11 @@
         }
         .settings-hq-admins-panel .hq-admin-add-form .field {
             display: flex;
-            flex-direction: column;
-            gap: 4px;
+            flex-direction: row;
+            align-items: center;
+            gap: 6px;
         }
-        .settings-hq-admins-panel .hq-admin-add-form label { font-size: 12px; font-weight: 600; color: #5c5c5c; }
+        .settings-hq-admins-panel .hq-admin-add-form label { font-size: 12px; font-weight: 600; color: #5c5c5c; white-space: nowrap; }
         .settings-hq-admins-panel .hq-admin-add-form input {
             padding: 8px 12px;
             border-radius: 8px;
@@ -2600,7 +2601,6 @@
         <section id="section-settings" class="dashboard-section">
         <div class="settings-panel">
             <h3 class="settlement-title">USDT 설정</h3>
-            <p class="section-desc settings-desc">가맹점 어드민에서 보유 USDT가 아래 숫자 <strong>미만</strong>이면 &quot;충전 후 이용하세요&quot;가 표시되고 메뉴가 잠깁니다. (예: 100이면 100 USDT 미만일 때, 400이면 400 USDT 미만일 때)</p>
             <div class="settings-usdt-row">
                 <label for="hqStoreGateMinUsdt">최소 보유 USDT (기준값)</label>
                 <input type="number" id="hqStoreGateMinUsdt" min="0" step="0.5" inputmode="decimal" placeholder="100" aria-label="가맹점 이용 최소 USDT">
@@ -2610,7 +2610,6 @@
         </div>
         <div class="settings-panel settings-hq-admins-panel">
             <h3 class="settlement-title">본사 관리자 계정</h3>
-            <p class="section-desc settings-desc">1원 인증에서 입금 4자리를 보낸 사람이 닉네임으로 기록됩니다. 마지막 한 명은 삭제할 수 없으며, 본인 계정은 여기서 삭제할 수 없습니다.</p>
             <div class="hq-admin-add-form">
                 <div class="field">
                     <label for="hqAdminAddId">아이디</label>
