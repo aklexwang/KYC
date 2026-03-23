@@ -1495,10 +1495,21 @@
             border-radius: 14px;
             padding: 16px 14px 14px;
             box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+        }
+        .hq-oc-card:hover {
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.16), 0 8px 28px rgba(0, 0, 0, 0.35);
+            background: linear-gradient(165deg, rgba(26, 40, 70, 0.96) 0%, rgba(13, 21, 42, 0.99) 100%);
         }
         .hq-oc-card--alert {
             border-color: rgba(217, 119, 6, 0.55);
             box-shadow: 0 0 0 1px rgba(217, 119, 6, 0.15), 0 8px 28px rgba(0, 0, 0, 0.35);
+        }
+        .hq-oc-card--alert:hover {
+            border-color: rgba(251, 191, 36, 0.7);
+            box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.22), 0 8px 28px rgba(0, 0, 0, 0.35);
+            background: linear-gradient(165deg, rgba(62, 37, 17, 0.75) 0%, rgba(22, 20, 30, 0.98) 100%);
         }
         .hq-oc-card .hq-oc-label {
             font-size: 12px;
@@ -1599,11 +1610,24 @@
             background: rgba(15, 23, 42, 0.65);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #e2e8f0;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
+        }
+        .hq-ov-pill:hover {
+            border-color: rgba(59, 130, 246, 0.52);
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.15);
+            background: rgba(37, 99, 235, 0.2);
+            color: #dbeafe;
         }
         .hq-ov-pill--live {
             background: rgba(120, 53, 15, 0.45);
             border-color: rgba(251, 191, 36, 0.35);
             color: #fde68a;
+        }
+        .hq-ov-pill--live:hover {
+            background: rgba(120, 53, 15, 0.58);
+            border-color: rgba(251, 191, 36, 0.55);
+            color: #fde68a;
+            box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.2);
         }
         .hq-overview-recent {
             background: linear-gradient(165deg, rgba(22, 33, 58, 0.92) 0%, rgba(12, 18, 35, 0.96) 100%);
@@ -1987,9 +2011,7 @@
             <div class="menu-item" data-view="accountQueue">1원인증관리 <span class="sidebar-badge" id="accountQueueBadge" style="display:none;">0</span></div>
             <div class="menu-item" data-view="settlement">수수료 통계</div>
             <div class="menu-item" data-view="pointLedger">포인트 내역<span class="sidebar-badge sidebar-badge--point-pending" id="pointLedgerPendingBadge" aria-live="polite">0</span></div>
-        </nav>
-        <nav class="sidebar-menu sidebar-menu--settings">
-            <div class="menu-item" data-view="settings">설정</div>
+            <div class="menu-item" data-view="settings">본사 어드민 설정</div>
         </nav>
     </aside>
     <div class="dashboard-main">
