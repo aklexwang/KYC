@@ -2072,16 +2072,18 @@
         }
         .settings-hq-admins-panel .hq-admin-add-form {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px 12px;
+            flex-wrap: nowrap;
+            gap: 10px;
             align-items: flex-end;
             margin-bottom: 16px;
         }
         .settings-hq-admins-panel .hq-admin-add-form .field {
             display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 6px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+            flex: 1 1 0;
+            min-width: 0;
         }
         .settings-hq-admins-panel .hq-admin-add-form label { font-size: 12px; font-weight: 600; color: #5c5c5c; white-space: nowrap; }
         .settings-hq-admins-panel .hq-admin-add-form input {
@@ -2089,8 +2091,13 @@
             border-radius: 8px;
             border: 1px solid #E5E5EA;
             font-size: 14px;
-            min-width: 120px;
+            width: 100%;
+            min-width: 0;
             font-family: inherit;
+        }
+        .settings-hq-admins-panel .hq-admin-add-form #btnHqAdminAdd {
+            flex: 0 0 auto;
+            white-space: nowrap;
         }
         .table--hq-admins { min-width: 480px; width: 100%; border-collapse: collapse; margin-top: 8px; }
         .table--hq-admins th { background: #1A2F4A; color: #fff; font-size: 12px; padding: 10px 12px; text-align: left; }
