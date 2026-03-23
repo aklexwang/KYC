@@ -4231,9 +4231,13 @@
         function renderSmsCell(row) {
             var base = renderBadge(row.sms || 'wait');
             if (row.sms !== 'complete') return base;
+            var smsName = (row.smsName || row.verifiedName || row.name || '').trim();
             var phone = (row.phone || row.phoneNumber || row.mobile || row.tel || '').trim();
-            if (!phone) return base + '<div class="member-detail member-detail--muted">전화번호 데이터 없음</div>';
-            return base + '<div class="member-detail">전화번호: ' + escapeHtml(phone) + '</div>';
+            var details = '';
+            if (smsName) details += '<div class="member-detail">이름: ' + escapeHtml(smsName) + '</div>';
+            if (phone) details += '<div class="member-detail">전화번호: ' + escapeHtml(phone) + '</div>';
+            if (!details) details = '<div class="member-detail member-detail--muted">문자인증 상세 데이터 없음</div>';
+            return base + details;
         }
 
         function renderIdDocCell(row) {
@@ -4272,6 +4276,7 @@
                         name: m.name,
                         joinedAt: pickMemberJoinedIso(m),
                         sms: m.sms,
+                        smsName: m.smsName || m.verifiedName || m.name || '',
                         idDoc: m.idDoc,
                         account: m.account,
                         phone: m.phone || m.phoneNumber || m.mobile || m.tel || '',
