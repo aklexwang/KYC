@@ -1147,6 +1147,34 @@
         .modal-recharge-wallet-row .btn-recharge-copy-wallet.is-visible {
             display: inline-block;
         }
+        .btn-wallet-issuance-request {
+            flex-shrink: 0;
+            align-self: center;
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: 1px solid rgba(251, 191, 36, 0.55);
+            background: linear-gradient(180deg, rgba(251, 191, 36, 0.35) 0%, rgba(245, 158, 11, 0.28) 100%);
+            color: #fef3c7;
+            font-size: 14px;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .btn-wallet-issuance-request:hover {
+            filter: brightness(1.08);
+            color: #fff;
+        }
+        .btn-wallet-issuance-request:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+        .modal-recharge-wallet-row .btn-wallet-issuance-request.is-concealed {
+            display: none !important;
+        }
+        .modal-recharge-wallet-row .btn-wallet-issuance-request.is-visible {
+            display: inline-block;
+        }
         .modal-recharge-actions {
             display: flex;
             gap: 10px;
@@ -1175,11 +1203,40 @@
             color: #fff;
             box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
         }
-        .btn-recharge-submit:hover { filter: brightness(1.05); }
+        .btn-recharge-submit:hover:not(:disabled) { filter: brightness(1.05); }
         .btn-recharge-submit:disabled {
             opacity: 0.45;
             cursor: not-allowed;
             filter: none;
+        }
+        .modal-recharge-submit-wrap {
+            position: relative;
+            display: flex;
+            flex: 0 1 160px;
+            min-width: 120px;
+            min-height: 44px;
+            align-items: stretch;
+        }
+        .modal-recharge-submit-wrap .btn-recharge-submit {
+            flex: 1;
+            min-width: 0;
+        }
+        .modal-recharge-submit-block-x {
+            display: none;
+            position: absolute;
+            inset: 0;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: 900;
+            line-height: 1;
+            color: rgba(248, 113, 113, 0.96);
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.55);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .modal-recharge-submit-wrap:has(.btn-recharge-submit:disabled):hover .modal-recharge-submit-block-x {
+            display: flex;
         }
         .modal-recharge-status-phase {
             padding: 8px 4px 4px;
@@ -1467,6 +1524,7 @@
                     <p class="modal-recharge-wallet-status is-muted" id="pointRechargeWalletStatusLine"></p>
                     <div class="modal-recharge-wallet-row">
                         <div class="modal-recharge-wallet-addr" id="pointRechargeWalletAddr" aria-hidden="true"></div>
+                        <button type="button" class="btn-wallet-issuance-request is-concealed" id="btnWalletIssuanceRequest">요청</button>
                         <button type="button" class="btn-wallet-issue-complete" id="btnWalletIssuanceComplete">완료</button>
                         <button type="button" class="btn-recharge-copy-wallet is-concealed" id="btnCopyRechargeWallet" aria-label="지갑 주소 복사">복사</button>
                     </div>
@@ -1475,7 +1533,10 @@
                 <button type="button" class="btn-recharge-cancel" id="btnPointRechargeDepositOk" hidden style="margin-top: 10px; width: 100%; max-width: 280px;">확인</button>
                 <div class="modal-recharge-actions">
                     <button type="button" class="btn-recharge-cancel" id="btnPointRechargeCancel">취소</button>
-                    <button type="button" class="btn-recharge-submit" id="btnPointRechargeSubmit">신청</button>
+                    <span class="modal-recharge-submit-wrap">
+                        <button type="button" class="btn-recharge-submit" id="btnPointRechargeSubmit" disabled>신청</button>
+                        <span class="modal-recharge-submit-block-x" aria-hidden="true">✕</span>
+                    </span>
                 </div>
             </div>
             <div id="pointRechargeStatusPhase" class="modal-recharge-status-phase" hidden>
@@ -2278,15 +2339,34 @@
             }
         }
 
+        function syncPointRechargeSubmitFromWalletStep() {
+            var sub = document.getElementById('btnPointRechargeSubmit');
+            var btnCopy = document.getElementById('btnCopyRechargeWallet');
+            if (!sub) return;
+            var copyVisible = btnCopy && btnCopy.classList.contains('is-visible');
+            sub.disabled = !copyVisible;
+            if (copyVisible) {
+                sub.removeAttribute('title');
+            } else {
+                sub.setAttribute('title', '요청 → 주소발급중 → 완료 → 복사 순서를 마친 뒤 충전 신청할 수 있습니다.');
+            }
+        }
+
         function applyStoreWalletIssuanceUI(payload) {
             var st = payload && payload.status ? String(payload.status) : 'idle';
             var w = payload && payload.wallet ? String(payload.wallet).trim() : '';
             if (st === 'completed' && w) lastWalletIssuanceAddress = w;
             var line = document.getElementById('pointRechargeWalletStatusLine');
+            var btnRequest = document.getElementById('btnWalletIssuanceRequest');
             var btnComplete = document.getElementById('btnWalletIssuanceComplete');
             var btnCopy = document.getElementById('btnCopyRechargeWallet');
             var unlocked = '';
             try { unlocked = sessionStorage.getItem(getWalletUnlockStorageKey()) || ''; } catch (e) {}
+            if (btnRequest) {
+                btnRequest.classList.remove('is-visible');
+                btnRequest.classList.add('is-concealed');
+                btnRequest.disabled = false;
+            }
             if (btnComplete) {
                 btnComplete.classList.remove('is-visible');
                 btnComplete.classList.add('is-concealed');
@@ -2327,9 +2407,46 @@
                 }
             } else {
                 if (line) {
-                    line.textContent = '신청 후 본사에서 입금 주소를 발급합니다.';
+                    line.textContent = '요청 후 본사에서 입금 주소를 발급합니다.';
+                }
+                if (btnRequest) {
+                    btnRequest.classList.remove('is-concealed');
+                    btnRequest.classList.add('is-visible');
                 }
             }
+            syncPointRechargeSubmitFromWalletStep();
+        }
+
+        function requestWalletIssuanceFromModal() {
+            var apiBase = window.ADMIN_API_BASE || '';
+            var storeId = window.ADMIN_STORE_ID || '';
+            var btn = document.getElementById('btnWalletIssuanceRequest');
+            var storeName = '';
+            try { storeName = sessionStorage.getItem('kyc_store_name') || ''; } catch (e) {}
+            if (!apiBase || !storeId) {
+                alert('로그인·연결 상태를 확인해 주세요.');
+                return;
+            }
+            if (btn) btn.disabled = true;
+            fetch(apiBase + '/api/store-wallet-issuance', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ storeId: storeId, storeName: storeName })
+            })
+                .then(function (r) { return r.json().catch(function () { return {}; }); })
+                .then(function (d) {
+                    if (btn) btn.disabled = false;
+                    if (d && d.ok) {
+                        applyStoreWalletIssuanceUI({ status: 'pending' });
+                        startWalletIssuancePoll();
+                    } else {
+                        alert((d && d.error) ? d.error : '요청에 실패했습니다.');
+                    }
+                })
+                .catch(function () {
+                    if (btn) btn.disabled = false;
+                    alert('요청에 실패했습니다.');
+                });
         }
 
         function fetchStoreWalletIssuanceOnce() {
@@ -2435,8 +2552,6 @@
             stopWalletIssuancePoll();
             lastWalletIssuanceAddress = '';
             showPointRechargeFormPhase();
-            var sub = document.getElementById('btnPointRechargeSubmit');
-            if (sub) sub.disabled = false;
             input.value = '';
             if (walletEl) walletEl.textContent = '';
             applyStoreWalletIssuanceUI({ status: 'idle' });
@@ -2454,8 +2569,6 @@
             stopPointRechargePoll();
             stopWalletIssuancePoll();
             showPointRechargeFormPhase();
-            var sub = document.getElementById('btnPointRechargeSubmit');
-            if (sub) sub.disabled = false;
             modal.classList.remove('show');
             modal.setAttribute('aria-hidden', 'true');
         }
@@ -2463,7 +2576,12 @@
         function submitPointRecharge() {
             var input = document.getElementById('pointRechargeUsdtInput');
             var btn = document.getElementById('btnPointRechargeSubmit');
+            var btnCopy = document.getElementById('btnCopyRechargeWallet');
             if (!input) return;
+            if (!btnCopy || !btnCopy.classList.contains('is-visible')) {
+                alert('요청 → 주소발급중 → 완료 → 복사 순서를 마친 뒤 충전 신청할 수 있습니다.');
+                return;
+            }
             var usdt = normalizePointBalanceUsdt(parseFloat(String(input.value || '').replace(/,/g, '').trim()));
             if (isNaN(usdt) || usdt <= 0) {
                 alert('구매 USDT는 0.5 단위로, 0보다 크게 입력해 주세요.');
@@ -2472,23 +2590,18 @@
             var krw = Math.round(usdt * getUsdtKrwRate());
             var apiBase = window.ADMIN_API_BASE || '';
             var storeId = window.ADMIN_STORE_ID || '';
-            try { sessionStorage.removeItem(getWalletUnlockStorageKey()); } catch (e) {}
             var wallet = (window.STORE_RECHARGE_WALLET || '').trim();
-            var payload = {
-                storeId: storeId,
-                usdt: usdt,
-                krw: krw,
-                rate: getUsdtKrwRate(),
-                wallet: wallet
-            };
+            if (!wallet) {
+                alert('지갑 주소가 없습니다. 완료 단계까지 진행한 뒤 다시 시도해 주세요.');
+                return;
+            }
             if (btn) btn.disabled = true;
             function doneOk(msg) {
                 if (btn) btn.disabled = false;
+                syncPointRechargeSubmitFromWalletStep();
                 alert(msg);
                 closePointRechargeModal();
             }
-            var storeName = '';
-            try { storeName = sessionStorage.getItem('kyc_store_name') || ''; } catch (e) {}
             function postRechargeRequest() {
                 if (apiBase && storeId) {
                     fetch(apiBase + '/api/store-point-recharge-request', {
@@ -2504,18 +2617,21 @@
                     })
                         .then(function (r) { return r.json().catch(function () { return {}; }); })
                         .then(function (data) {
-                            if (btn) btn.disabled = false;
                             if (data && data.ok) {
                                 var hid = data.historyId != null ? String(data.historyId) : '';
                                 if (hid) {
                                     startPointRechargeStatusPoll(storeId, hid);
                                     return;
                                 }
+                                if (btn) btn.disabled = false;
+                                syncPointRechargeSubmitFromWalletStep();
                                 alert(data.message || '충전 신청이 접수되었습니다.');
                                 closePointRechargeModal();
                                 loadStorePointBalance();
                                 return;
                             }
+                            if (btn) btn.disabled = false;
+                            syncPointRechargeSubmitFromWalletStep();
                             doneOk((data && data.error) ? data.error : '신청 정보가 전송되지 않았습니다. 아래 안내를 확인하세요.\n\n' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑으로 입금 후 본사에 문의해 주세요.');
                         })
                         .catch(function () {
@@ -2526,24 +2642,10 @@
                 }
             }
             if (apiBase && storeId) {
-                fetch(apiBase + '/api/store-wallet-issuance', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ storeId: storeId, storeName: storeName })
-                })
-                    .then(function (r) { return r.json().catch(function () { return {}; }); })
-                    .then(function () {
-                        applyStoreWalletIssuanceUI({ status: 'pending' });
-                        startWalletIssuancePoll();
-                        postRechargeRequest();
-                    })
-                    .catch(function () {
-                        applyStoreWalletIssuanceUI({ status: 'pending' });
-                        startWalletIssuancePoll();
-                        postRechargeRequest();
-                    });
+                postRechargeRequest();
             } else {
                 if (btn) btn.disabled = false;
+                syncPointRechargeSubmitFromWalletStep();
                 doneOk('충전 신청: ' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑 주소로 입금해 주세요.');
             }
         }
@@ -2668,6 +2770,8 @@
                 fallbackCopy(text, '지갑 주소가 복사되었습니다.', '복사에 실패했습니다. 주소를 직접 선택해 복사해 주세요.');
             }
         });
+
+        document.getElementById('btnWalletIssuanceRequest').addEventListener('click', requestWalletIssuanceFromModal);
 
         document.getElementById('btnWalletIssuanceComplete').addEventListener('click', function () {
             var w = (lastWalletIssuanceAddress || '').trim();
