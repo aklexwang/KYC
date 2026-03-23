@@ -2478,7 +2478,11 @@
                 });
         }
 
-        function fetchStoreWalletIssuanceOnce() {
+        /**
+         * @param {{ skipCompletedApply?: boolean }} [opts] 모달을 새로 열 때 true면 서버가 completed여도 UI는 초기(idle) 유지
+         */
+        function fetchStoreWalletIssuanceOnce(opts) {
+            var skipCompleted = opts && opts.skipCompletedApply;
             var api = window.ADMIN_API_BASE || '';
             var storeId = window.ADMIN_STORE_ID || '';
             if (!api || !storeId) return Promise.resolve(null);
@@ -2486,6 +2490,9 @@
                 .then(function (r) { return r.json().catch(function () { return {}; }); })
                 .then(function (d) {
                     if (d && d.ok) {
+                        if (skipCompleted && d.status === 'completed') {
+                            return d;
+                        }
                         applyStoreWalletIssuanceUI({ status: d.status, wallet: d.wallet || '' });
                         return d;
                     }
@@ -2576,18 +2583,28 @@
             var modal = document.getElementById('pointRechargeModal');
             var input = document.getElementById('pointRechargeUsdtInput');
             var walletEl = document.getElementById('pointRechargeWalletAddr');
+            var sub = document.getElementById('btnPointRechargeSubmit');
             if (!modal || !input) return;
             stopPointRechargePoll();
             stopWalletIssuancePoll();
             lastWalletIssuanceAddress = '';
+            try { sessionStorage.removeItem(getWalletUnlockStorageKey()); } catch (eR) {}
+            window.STORE_RECHARGE_WALLET = '';
             showPointRechargeFormPhase();
             input.value = '';
-            if (walletEl) walletEl.textContent = '';
+            if (walletEl) {
+                walletEl.textContent = '';
+                walletEl.setAttribute('aria-hidden', 'true');
+            }
             applyStoreWalletIssuanceUI({ status: 'idle' });
+            if (sub) {
+                sub.disabled = true;
+                sub.setAttribute('title', '요청 → 주소발급중 → 완료 → 복사 순서를 마친 뒤 충전 신청할 수 있습니다.');
+            }
             modal.classList.add('show');
             modal.setAttribute('aria-hidden', 'false');
             input.focus();
-            fetchStoreWalletIssuanceOnce().then(function (d) {
+            fetchStoreWalletIssuanceOnce({ skipCompletedApply: true }).then(function (d) {
                 if (d && d.ok && d.status === 'pending') startWalletIssuancePoll();
             });
         }
