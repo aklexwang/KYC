@@ -45,9 +45,12 @@ exports.handler = async (event) => {
           requestedAt: r.requestedAt || null,
           issuedByNickname: '기록 없음',
           issuedByAdminId: '',
+          issuanceOutcome: 'completed',
         }));
-      const mergeKey = (row) =>
-        `${row.storeId || ''}|${row.wallet || ''}|${row.completedAt || ''}`;
+      const mergeKey = (row) => {
+        const out = row.issuanceOutcome === 'cancelled' ? 'cancelled' : 'completed';
+        return `${row.storeId || ''}|${out}|${row.completedAt || ''}|${String(row.wallet || '').trim()}`;
+      };
       const mergedMap = new Map();
       legacyRows.forEach((row) => mergedMap.set(mergeKey(row), row));
       storedHist.forEach((row) => {
@@ -55,7 +58,10 @@ exports.handler = async (event) => {
         const k = mergeKey(row);
         mergedMap.set(k, { ...mergedMap.get(k), ...row, wallet: String(row.wallet || '').trim() });
       });
-      let completedHistory = Array.from(mergedMap.values()).filter((r) => r.wallet);
+      let completedHistory = Array.from(mergedMap.values()).filter((r) => {
+        if (r && r.issuanceOutcome === 'cancelled') return true;
+        return !!(r && typeof r.wallet === 'string' && r.wallet.trim());
+      });
       completedHistory.sort((a, b) => String(b.completedAt || '').localeCompare(String(a.completedAt || '')));
       return {
         statusCode: 200,
@@ -122,6 +128,7 @@ exports.handler = async (event) => {
         requestedAt: rec.requestedAt || null,
         issuedByNickname: admin.nickname || admin.id || '',
         issuedByAdminId: admin.id || '',
+        issuanceOutcome: 'completed',
       };
       const completionHistory = [...prevHist, historyEntry].slice(-500);
       await setWalletIssuance(event, { byStore, completionHistory });

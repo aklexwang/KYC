@@ -71,6 +71,7 @@ exports.handler = async (event) => {
       }
       const storeId = typeof body.storeId === 'string' ? body.storeId.trim() : '';
       const storeName = typeof body.storeName === 'string' ? body.storeName.trim() : '';
+      const action = typeof body.action === 'string' ? body.action.trim() : '';
       if (!storeId) {
         return {
           statusCode: 400,
@@ -78,6 +79,51 @@ exports.handler = async (event) => {
           body: JSON.stringify({ error: 'storeId required' }),
         };
       }
+
+      if (action === 'cancelPending') {
+        const issuanceCancel = await getWalletIssuance(event);
+        const byStoreCancel = { ...issuanceCancel.byStore };
+        const pend = byStoreCancel[storeId];
+        if (!pend || pend.status !== 'pending') {
+          return {
+            statusCode: 200,
+            headers: { ...CORS, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              ok: true,
+              status: 'idle',
+              message: '취소할 대기 요청이 없습니다.',
+            }),
+          };
+        }
+        delete byStoreCancel[storeId];
+        const prevHistCancel = Array.isArray(issuanceCancel.completionHistory)
+          ? issuanceCancel.completionHistory
+          : [];
+        const cancelledAt = new Date().toISOString();
+        const cancelEntry = {
+          storeId,
+          storeName: pend.storeName || storeId,
+          wallet: '',
+          completedAt: cancelledAt,
+          requestedAt: pend.requestedAt || null,
+          issuedByNickname: '가맹점 취소',
+          issuedByAdminId: '',
+          issuanceOutcome: 'cancelled',
+        };
+        const completionHistoryCancel = [...prevHistCancel, cancelEntry].slice(-500);
+        await setWalletIssuance(event, { byStore: byStoreCancel, completionHistory: completionHistoryCancel });
+        return {
+          statusCode: 200,
+          headers: { ...CORS, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ok: true,
+            status: 'idle',
+            cancelled: true,
+            message: '지갑 발급 요청이 취소되었습니다.',
+          }),
+        };
+      }
+
       const issuance = await getWalletIssuance(event);
       const byStore = { ...issuance.byStore };
       const cur = byStore[storeId];

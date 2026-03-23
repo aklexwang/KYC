@@ -2514,6 +2514,24 @@
                 });
         }
 
+        function cancelPendingWalletIssuanceOnStoreCancel() {
+            var apiBase = window.ADMIN_API_BASE || '';
+            var storeId = window.ADMIN_STORE_ID || '';
+            if (!apiBase || !storeId) return Promise.resolve();
+            return fetch(apiBase + '/api/store-wallet-issuance?storeId=' + encodeURIComponent(storeId))
+                .then(function (r) { return r.json().catch(function () { return {}; }); })
+                .then(function (d) {
+                    if (d && d.ok && d.status === 'pending') {
+                        return fetch(apiBase + '/api/store-wallet-issuance', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ storeId: storeId, action: 'cancelPending' })
+                        }).then(function () {});
+                    }
+                })
+                .catch(function () {});
+        }
+
         /**
          * @param {{ skipCompletedApply?: boolean }} [opts] 모달을 새로 열 때 true면 서버가 completed여도 UI는 초기(idle) 유지
          */
@@ -2921,7 +2939,11 @@
             closePointRechargeModal();
         });
 
-        document.getElementById('btnPointRechargeCancel').addEventListener('click', closePointRechargeModal);
+        document.getElementById('btnPointRechargeCancel').addEventListener('click', function () {
+            cancelPendingWalletIssuanceOnStoreCancel().finally(function () {
+                closePointRechargeModal();
+            });
+        });
         document.getElementById('btnPointRechargeSubmit').addEventListener('click', submitPointRecharge);
         document.getElementById('pointRechargeModal').addEventListener('click', function (e) {
             if (e.target === this) {

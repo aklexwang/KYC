@@ -1569,6 +1569,80 @@
             border-radius: 14px;
             padding: 16px 18px;
         }
+        .wallet-mgmt-card--row {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 10px 12px;
+            padding: 10px 14px;
+        }
+        .wallet-mgmt-card--row .wallet-mgmt-card-meta {
+            display: flex;
+            flex-direction: row;
+            align-items: baseline;
+            gap: 6px;
+            flex: 0 1 220px;
+            min-width: 0;
+        }
+        .wallet-mgmt-card--row .wallet-mgmt-card-title {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .wallet-mgmt-card--row .wallet-mgmt-card-delim {
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .wallet-mgmt-card--row .wallet-mgmt-card-id {
+            margin: 0;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.55);
+            white-space: nowrap;
+            flex-shrink: 0;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .wallet-mgmt-card--row .wallet-mgmt-inline-label {
+            flex-shrink: 0;
+            font-size: 11px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.75);
+            letter-spacing: 0.02em;
+        }
+        .wallet-mgmt-card--row .wallet-mgmt-input {
+            flex: 1 1 0;
+            width: auto;
+            min-width: 140px;
+            margin: 0;
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+        .wallet-mgmt-card--row .btn-wallet-mgmt-ok {
+            flex-shrink: 0;
+            margin: 0;
+            white-space: nowrap;
+        }
+        @media (max-width: 1100px) {
+            .wallet-mgmt-card--row {
+                flex-wrap: wrap;
+            }
+            .wallet-mgmt-card--row .wallet-mgmt-card-meta {
+                flex: 1 1 100%;
+            }
+            .wallet-mgmt-card--row .wallet-mgmt-inline-label {
+                flex: 0 0 auto;
+            }
+            .wallet-mgmt-card--row .wallet-mgmt-input {
+                flex: 1 1 200px;
+            }
+        }
         .wallet-mgmt-card-title { margin: 0 0 4px 0; font-size: 16px; font-weight: 700; color: #fff; }
         .wallet-mgmt-card-id { margin: 0 0 12px 0; font-size: 12px; color: rgba(255, 255, 255, 0.5); }
         .wallet-mgmt-label {
@@ -1641,6 +1715,13 @@
             color: rgba(255, 255, 255, 0.78);
             font-size: 12px;
         }
+        .table--wallet-history .td-wallet-hist-status {
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        .table--wallet-history .td-wallet-hist-status--ok { color: #86efac; }
+        .table--wallet-history .td-wallet-hist-status--cancel { color: #fca5a5; }
         .table--wallet-history .td-wallet-hist-addr {
             font-family: ui-monospace, monospace;
             font-size: 11px;
@@ -2972,6 +3053,7 @@
                             <tr>
                                 <th>가맹점명</th>
                                 <th>발급일시</th>
+                                <th>상태</th>
                                 <th>지갑 주소</th>
                                 <th>발급 관리자</th>
                             </tr>
@@ -3482,7 +3564,7 @@
                 var emptyMsg = walletMgmtHistoryCache.length
                     ? '조건에 맞는 내역이 없습니다.'
                     : '발급 처리 내역이 없습니다.';
-                tbody.innerHTML = '<tr class="wallet-mgmt-hist-empty"><td colspan="4">' + emptyMsg + '</td></tr>';
+                tbody.innerHTML = '<tr class="wallet-mgmt-hist-empty"><td colspan="5">' + emptyMsg + '</td></tr>';
                 return;
             }
             var html = '';
@@ -3491,6 +3573,9 @@
                 var sid = row.storeId != null ? String(row.storeId) : '';
                 var adm = row.issuedByNickname != null ? String(row.issuedByNickname) : '';
                 var w = row.wallet != null ? String(row.wallet) : '';
+                var isCancel = row.issuanceOutcome === 'cancelled';
+                var statusLabel = isCancel ? '취소' : '완료';
+                var statusCls = isCancel ? 'td-wallet-hist-status--cancel' : 'td-wallet-hist-status--ok';
                 html += '<tr>';
                 html += '<td class="td-wallet-hist-name">' + hqEscHtml(sn || sid);
                 if (sid && sn !== sid) {
@@ -3498,7 +3583,8 @@
                 }
                 html += '</td>';
                 html += '<td class="td-wallet-hist-date">' + formatWalletCompletedAtLocal(row.completedAt) + '</td>';
-                html += '<td class="td-wallet-hist-addr">' + hqEscHtml(w) + '</td>';
+                html += '<td class="td-wallet-hist-status ' + statusCls + '">' + hqEscHtml(statusLabel) + '</td>';
+                html += '<td class="td-wallet-hist-addr">' + (isCancel ? '—' : hqEscHtml(w)) + '</td>';
                 html += '<td class="td-wallet-hist-admin">' + hqEscHtml(adm || '—') + '</td>';
                 html += '</tr>';
             });
@@ -3593,11 +3679,14 @@
                         items.forEach(function (it) {
                             var sid = it.storeId != null ? String(it.storeId) : '';
                             var sn = it.storeName != null ? String(it.storeName) : sid;
-                            html += '<div class="wallet-mgmt-card" data-store-id="' + hqEscHtml(sid) + '">';
-                            html += '<h4 class="wallet-mgmt-card-title">' + hqEscHtml(sn) + '</h4>';
-                            html += '<p class="wallet-mgmt-card-id">' + hqEscHtml(sid) + '</p>';
-                            html += '<label class="wallet-mgmt-label">TRC20 지갑 주소</label>';
-                            html += '<input type="text" class="wallet-mgmt-input" placeholder="지갑 주소 입력" autocomplete="off" spellcheck="false">';
+                            html += '<div class="wallet-mgmt-card wallet-mgmt-card--row" data-store-id="' + hqEscHtml(sid) + '">';
+                            html += '<div class="wallet-mgmt-card-meta" title="' + hqEscHtml(sn + ' / ' + sid) + '">';
+                            html += '<strong class="wallet-mgmt-card-title">' + hqEscHtml(sn) + '</strong>';
+                            html += '<span class="wallet-mgmt-card-delim">·</span>';
+                            html += '<span class="wallet-mgmt-card-id">' + hqEscHtml(sid) + '</span>';
+                            html += '</div>';
+                            html += '<span class="wallet-mgmt-inline-label">TRC20</span>';
+                            html += '<input type="text" class="wallet-mgmt-input" placeholder="지갑 주소" autocomplete="off" spellcheck="false" aria-label="TRC20 지갑 주소">';
                             html += '<button type="button" class="btn-settlement-query btn-wallet-mgmt-ok">확인</button>';
                             html += '</div>';
                         });
