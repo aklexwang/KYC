@@ -1537,7 +1537,8 @@
         .hq-overview-panel-head {
             display: flex;
             flex-wrap: wrap;
-            align-items: center;
+            align-items: flex-start;
+            justify-content: space-between;
             gap: 10px 14px;
             margin-bottom: 12px;
         }
@@ -1546,14 +1547,32 @@
             font-size: 14px;
             font-weight: 700;
             color: #e2e8f0;
+            flex: 1 1 auto;
+            min-width: 140px;
+            padding-top: 2px;
         }
         .hq-overview-date-row {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
             font-size: 12px;
             color: rgba(148, 163, 184, 0.9);
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+        .hq-ov-daterange-placeholder {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.55);
+            color: rgba(148, 163, 184, 0.95);
+            font-size: 12px;
+            font-weight: 500;
+            user-select: none;
         }
         .hq-overview-date-row input[type="date"] {
             padding: 6px 8px;
@@ -1595,16 +1614,18 @@
         }
         .hq-overview-recent-head {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 12px;
+            gap: 10px;
+            margin-bottom: 14px;
         }
         .hq-overview-recent-head h2 {
             margin: 0;
             font-size: 15px;
             font-weight: 800;
             color: #f1f5f9;
+            text-align: center;
+            width: 100%;
         }
         .hq-overview-link-all {
             background: none;
@@ -1631,6 +1652,7 @@
             font-weight: 700;
             color: rgba(148, 163, 184, 0.95);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
         }
         .table--hq-overview-recent td {
             padding: 10px 8px;
@@ -1658,7 +1680,7 @@
         }
         .hq-sc-btn {
             padding: 12px 18px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: none;
             background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
             color: #fff;
@@ -2022,10 +2044,10 @@
                     <div class="hq-overview-panel-head">
                         <h3>누적 인증 건수 <span style="font-weight:500;opacity:.75;font-size:12px;">(전 가맹점)</span></h3>
                         <div class="hq-overview-date-row" title="현재는 전체 누적 기준입니다.">
-                            <span aria-hidden="true">📅</span>
-                            <input type="date" id="overviewStatsFrom" class="hq-ov-date" disabled>
-                            <span>~</span>
-                            <input type="date" id="overviewStatsTo" class="hq-ov-date" disabled>
+                            <div class="hq-ov-daterange-placeholder" aria-hidden="true">
+                                <span>📅</span>
+                                <span>시작일 ~ 종료일</span>
+                            </div>
                         </div>
                     </div>
                     <div class="hq-ov-pills">
@@ -4295,9 +4317,11 @@
                 var isDep = kind === 'deposit';
                 var amtStr;
                 if (isDep && (st === '진행중' || st === '처리중')) {
-                    amtStr = '+' + formatStorePointUsdt(pickPointLedgerAmountUsdt(r)) + ' USDT';
+                    amtStr = '+' + formatStorePointUsdt(pickPointLedgerAmountUsdt(r));
+                } else if (ch < 0) {
+                    amtStr = '-' + formatStorePointUsdt(Math.abs(ch));
                 } else {
-                    amtStr = (ch >= 0 ? '+' : '') + formatStorePointUsdt(Math.abs(ch)) + ' USDT';
+                    amtStr = (ch > 0 ? '+' : '') + formatStorePointUsdt(Math.abs(ch));
                 }
                 var amtCls = (kind === 'deduct' || ch < 0) ? 'hq-ov-amt-neg' : 'hq-ov-amt-pos';
                 var stCls = (st === '진행중' || st === '처리중') ? 'hq-ov-st--hot' : (st === '취소' ? 'hq-ov-st--cancel' : 'hq-ov-st--ok');
