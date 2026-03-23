@@ -1251,22 +1251,23 @@
             white-space: normal;
             padding: 10px 12px;
         }
-        .modal-recharge-submit-block-x {
-            display: none;
-            position: absolute;
-            inset: 0;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            font-weight: 900;
-            line-height: 1;
-            color: rgba(248, 113, 113, 0.96);
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.55);
-            pointer-events: none;
-            z-index: 2;
+        .modal-recharge-field--usdt {
+            position: relative;
         }
-        .modal-recharge-submit-wrap:has(.btn-recharge-submit:disabled):hover .modal-recharge-submit-block-x {
-            display: flex;
+        .modal-recharge-usdt-hint {
+            margin: 8px 0 0 0;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.45;
+            color: #fecaca;
+            background: rgba(127, 29, 29, 0.45);
+            border: 1px solid rgba(248, 113, 113, 0.55);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+        }
+        .modal-recharge-usdt-hint[hidden] {
+            display: none !important;
         }
         #pointRechargeFormPhase.point-recharge-form--terminal .modal-recharge-field,
         #pointRechargeFormPhase.point-recharge-form--terminal .modal-recharge-wallet {
@@ -1569,9 +1570,10 @@
         <div class="modal-recharge-box" role="dialog" aria-modal="true" aria-labelledby="pointRechargeTitle">
             <h3 id="pointRechargeTitle">포인트 충전</h3>
             <div id="pointRechargeFormPhase">
-                <div class="modal-recharge-field">
+                <div class="modal-recharge-field modal-recharge-field--usdt">
                     <label for="pointRechargeUsdtInput">구매 USDT</label>
-                    <input type="number" id="pointRechargeUsdtInput" min="0.5" step="0.5" inputmode="decimal" placeholder="0.5 USDT 이상 · 0.5 단위" autocomplete="off">
+                    <input type="number" id="pointRechargeUsdtInput" min="0.5" step="0.5" inputmode="decimal" placeholder="0.5 USDT 이상 · 0.5 단위" autocomplete="off" aria-describedby="pointRechargeUsdtHint">
+                    <div id="pointRechargeUsdtHint" class="modal-recharge-usdt-hint" hidden role="alert"></div>
                 </div>
                 <div class="modal-recharge-wallet">
                     <span class="modal-recharge-wallet-label">USDT ( TRC20 ) 지갑 주소</span>
@@ -1589,7 +1591,6 @@
                     <button type="button" class="btn-recharge-cancel" id="btnPointRechargeCancel">취소</button>
                     <span class="modal-recharge-submit-wrap">
                         <button type="button" class="btn-recharge-submit" id="btnPointRechargeSubmit" disabled>신청</button>
-                        <span class="modal-recharge-submit-block-x" aria-hidden="true">✕</span>
                     </span>
                 </div>
             </div>
@@ -2013,6 +2014,29 @@
                     : 0.5;
             inp.placeholder = formatPointUsdt(m) + ' USDT 이상 · 0.5 단위';
             inp.setAttribute('min', String(m));
+        }
+
+        function hidePointRechargeUsdtHint() {
+            var el = document.getElementById('pointRechargeUsdtHint');
+            if (!el) return;
+            el.hidden = true;
+            el.textContent = '';
+        }
+
+        function showPointRechargeUsdtHint(msg) {
+            var el = document.getElementById('pointRechargeUsdtHint');
+            if (!el) return;
+            el.textContent = msg || '';
+            el.hidden = !msg;
+        }
+
+        function maybeHidePointRechargeUsdtHintOnValid() {
+            var input = document.getElementById('pointRechargeUsdtInput');
+            if (!input) return;
+            var usdt = normalizePointBalanceUsdt(parseFloat(String(input.value || '').replace(/,/g, '').trim()));
+            if (!isNaN(usdt) && usdt > 0 && usdt >= MIN_USDT_FOR_RECHARGE) {
+                hidePointRechargeUsdtHint();
+            }
         }
 
         function setSidebarPointLoading(loading) {
@@ -2746,6 +2770,7 @@
             applyStoreWalletIssuanceUI({ status: 'idle' });
             modal.classList.add('show');
             modal.setAttribute('aria-hidden', 'false');
+            hidePointRechargeUsdtHint();
             syncPointRechargeMinHints();
             input.focus();
             fetchStoreWalletIssuanceOnce({ skipCompletedApply: true }).then(function (d) {
@@ -2758,6 +2783,7 @@
             if (!modal) return;
             stopPointRechargePoll();
             stopWalletIssuancePoll();
+            hidePointRechargeUsdtHint();
             showPointRechargeFormPhase();
             modal.classList.remove('show');
             modal.setAttribute('aria-hidden', 'true');
@@ -2782,9 +2808,15 @@
                 return;
             }
             if (usdt < MIN_USDT_FOR_RECHARGE) {
-                alert('충전은 ' + formatPointUsdt(MIN_USDT_FOR_RECHARGE) + ' USDT 이상만 가능합니다.');
+                showPointRechargeUsdtHint(
+                    '충전은 ' + formatPointUsdt(MIN_USDT_FOR_RECHARGE) + ' USDT 이상만 가능합니다.'
+                );
+                try {
+                    input.focus();
+                } catch (e) {}
                 return;
             }
+            hidePointRechargeUsdtHint();
             var krw = Math.round(usdt * getUsdtKrwRate());
             var apiBase = window.ADMIN_API_BASE || '';
             var storeId = window.ADMIN_STORE_ID || '';
@@ -2831,7 +2863,10 @@
                             setPointRechargeSubmitPollingUi(false);
                             syncPointRechargeSubmitFromWalletStep();
                             if (data && data.error) {
-                                alert(data.error);
+                                showPointRechargeUsdtHint(data.error);
+                                try {
+                                    input.focus();
+                                } catch (e2) {}
                                 return;
                             }
                             doneOk('신청 정보가 전송되지 않았습니다. 아래 안내를 확인하세요.\n\n' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑으로 입금 후 본사에 문의해 주세요.');
@@ -3002,6 +3037,11 @@
             });
         });
         document.getElementById('btnPointRechargeSubmit').addEventListener('click', submitPointRecharge);
+        var pointRechargeUsdtInputEl = document.getElementById('pointRechargeUsdtInput');
+        if (pointRechargeUsdtInputEl) {
+            pointRechargeUsdtInputEl.addEventListener('input', maybeHidePointRechargeUsdtHintOnValid);
+            pointRechargeUsdtInputEl.addEventListener('change', maybeHidePointRechargeUsdtHintOnValid);
+        }
         document.getElementById('pointRechargeModal').addEventListener('click', function (e) {
             if (e.target === this) {
                 var formPh = document.getElementById('pointRechargeFormPhase');
