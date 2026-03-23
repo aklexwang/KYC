@@ -1,4 +1,10 @@
-const { getStoreGateMinUsdt, setStoreGateMinUsdt, getStorageErrorHelp } = require('./storage');
+const {
+  getStoreGateMinUsdt,
+  setStoreGateMinUsdt,
+  getStoreMinRechargeUsdt,
+  setStoreMinRechargeUsdt,
+  getStorageErrorHelp,
+} = require('./storage');
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -17,10 +23,11 @@ exports.handler = async (event) => {
   try {
     if (event.httpMethod === 'GET') {
       const minUsdtForStoreUse = await getStoreGateMinUsdt(event);
+      const minRechargeUsdt = await getStoreMinRechargeUsdt(event);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json', ...CORS },
-        body: JSON.stringify({ minUsdtForStoreUse }),
+        body: JSON.stringify({ minUsdtForStoreUse, minRechargeUsdt }),
       };
     }
 
@@ -34,12 +41,19 @@ exports.handler = async (event) => {
         body: JSON.stringify({ error: 'Invalid JSON' }),
       };
     }
-    const raw = body.minUsdtForStoreUse != null ? body.minUsdtForStoreUse : body.min;
-    const minUsdtForStoreUse = await setStoreGateMinUsdt(event, raw);
+    if (body.minUsdtForStoreUse !== undefined || body.min !== undefined) {
+      const raw = body.minUsdtForStoreUse != null ? body.minUsdtForStoreUse : body.min;
+      await setStoreGateMinUsdt(event, raw);
+    }
+    if (body.minRechargeUsdt !== undefined) {
+      await setStoreMinRechargeUsdt(event, body.minRechargeUsdt);
+    }
+    const minUsdtForStoreUse = await getStoreGateMinUsdt(event);
+    const minRechargeUsdt = await getStoreMinRechargeUsdt(event);
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json', ...CORS },
-      body: JSON.stringify({ ok: true, minUsdtForStoreUse }),
+      body: JSON.stringify({ ok: true, minUsdtForStoreUse, minRechargeUsdt }),
     };
   } catch (err) {
     console.error('store-gate-config error', err);

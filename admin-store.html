@@ -1135,6 +1135,10 @@
             color: rgba(255, 255, 255, 0.55);
             font-weight: 500;
         }
+        .modal-recharge-wallet-status.is-wallet-rejected {
+            color: #fca5a5;
+            font-weight: 600;
+        }
         .btn-wallet-issue-complete {
             display: none;
             flex-shrink: 0;
@@ -1567,7 +1571,7 @@
             <div id="pointRechargeFormPhase">
                 <div class="modal-recharge-field">
                     <label for="pointRechargeUsdtInput">구매 USDT</label>
-                    <input type="number" id="pointRechargeUsdtInput" min="0" step="0.5" inputmode="decimal" placeholder="0.5 USDT 단위" autocomplete="off">
+                    <input type="number" id="pointRechargeUsdtInput" min="0.5" step="0.5" inputmode="decimal" placeholder="0.5 USDT 이상 · 0.5 단위" autocomplete="off">
                 </div>
                 <div class="modal-recharge-wallet">
                     <span class="modal-recharge-wallet-label">USDT ( TRC20 ) 지갑 주소</span>
@@ -1608,12 +1612,15 @@
         }
         window.ADMIN_STORE_ID = '';
         var MIN_USDT_FOR_USE = 100;
+        var MIN_USDT_FOR_RECHARGE = 0.5;
         var lastKnownStoreUsdt = null;
 
         function loadStoreGateConfig(done) {
             var apiBase = window.ADMIN_API_BASE || '';
             if (!apiBase) {
                 MIN_USDT_FOR_USE = 100;
+                MIN_USDT_FOR_RECHARGE = 0.5;
+                syncPointRechargeMinHints();
                 if (done) done();
                 return;
             }
@@ -1626,6 +1633,13 @@
                     } else {
                         MIN_USDT_FOR_USE = 100;
                     }
+                    var mr = data && data.minRechargeUsdt != null ? Number(data.minRechargeUsdt) : 0.5;
+                    if (isFinite(mr) && mr >= 0) {
+                        MIN_USDT_FOR_RECHARGE = Math.round(mr * 2) / 2;
+                    } else {
+                        MIN_USDT_FOR_RECHARGE = 0.5;
+                    }
+                    syncPointRechargeMinHints();
                     var dash = document.getElementById('dashboardWrap');
                     if (dash && dash.classList.contains('show')) {
                         applyStoreUsdtGate(lastKnownStoreUsdt != null && isFinite(lastKnownStoreUsdt) ? lastKnownStoreUsdt : 0);
@@ -1634,6 +1648,8 @@
                 })
                 .catch(function () {
                     MIN_USDT_FOR_USE = 100;
+                    MIN_USDT_FOR_RECHARGE = 0.5;
+                    syncPointRechargeMinHints();
                     if (done) done();
                 });
         }
@@ -1984,6 +2000,19 @@
         function formatPointUsdt(n) {
             var x = normalizePointBalanceUsdt(n);
             return x.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+        }
+
+        function syncPointRechargeMinHints() {
+            var inp = document.getElementById('pointRechargeUsdtInput');
+            if (!inp) return;
+            var m =
+                typeof MIN_USDT_FOR_RECHARGE === 'number' &&
+                !isNaN(MIN_USDT_FOR_RECHARGE) &&
+                MIN_USDT_FOR_RECHARGE >= 0
+                    ? MIN_USDT_FOR_RECHARGE
+                    : 0.5;
+            inp.placeholder = formatPointUsdt(m) + ' USDT 이상 · 0.5 단위';
+            inp.setAttribute('min', String(m));
         }
 
         function setSidebarPointLoading(loading) {
@@ -2430,6 +2459,7 @@
             }
             if (line) {
                 line.classList.add('is-muted');
+                line.classList.remove('is-wallet-rejected');
                 line.textContent = '';
             }
             if (st === 'pending') {
@@ -2465,6 +2495,22 @@
                         btnComplete.classList.remove('is-concealed');
                         btnComplete.classList.add('is-visible');
                     }
+                }
+            } else if (st === 'rejected') {
+                if (walletEl) {
+                    walletEl.textContent = '';
+                    walletEl.setAttribute('aria-hidden', 'true');
+                }
+                if (line) {
+                    line.classList.remove('is-muted');
+                    line.classList.add('is-wallet-rejected');
+                    line.textContent =
+                        (payload && payload.message) ||
+                        '본사에게 지갑주소 발급을 거부하였습니다.';
+                }
+                if (btnRequest) {
+                    btnRequest.classList.remove('is-concealed');
+                    btnRequest.classList.add('is-visible');
                 }
             } else {
                 if (walletEl) {
@@ -2542,7 +2588,12 @@
                         if (skipCompleted && d.status === 'completed') {
                             return d;
                         }
-                        applyStoreWalletIssuanceUI({ status: d.status, wallet: d.wallet || '' });
+                        applyStoreWalletIssuanceUI({
+                            status: d.status,
+                            wallet: d.wallet || '',
+                            message: d.message || ''
+                        });
+                        if (d.status === 'rejected') stopWalletIssuancePoll();
                         return d;
                     }
                     return null;
@@ -2695,6 +2746,7 @@
             applyStoreWalletIssuanceUI({ status: 'idle' });
             modal.classList.add('show');
             modal.setAttribute('aria-hidden', 'false');
+            syncPointRechargeMinHints();
             input.focus();
             fetchStoreWalletIssuanceOnce({ skipCompletedApply: true }).then(function (d) {
                 if (d && d.ok && d.status === 'pending') startWalletIssuancePoll();
@@ -2727,6 +2779,10 @@
             var usdt = normalizePointBalanceUsdt(parseFloat(String(input.value || '').replace(/,/g, '').trim()));
             if (isNaN(usdt) || usdt <= 0) {
                 alert('구매 USDT는 0.5 단위로, 0보다 크게 입력해 주세요.');
+                return;
+            }
+            if (usdt < MIN_USDT_FOR_RECHARGE) {
+                alert('충전은 ' + formatPointUsdt(MIN_USDT_FOR_RECHARGE) + ' USDT 이상만 가능합니다.');
                 return;
             }
             var krw = Math.round(usdt * getUsdtKrwRate());
@@ -2772,7 +2828,13 @@
                                 loadStorePointBalance();
                                 return;
                             }
-                            doneOk((data && data.error) ? data.error : '신청 정보가 전송되지 않았습니다. 아래 안내를 확인하세요.\n\n' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑으로 입금 후 본사에 문의해 주세요.');
+                            setPointRechargeSubmitPollingUi(false);
+                            syncPointRechargeSubmitFromWalletStep();
+                            if (data && data.error) {
+                                alert(data.error);
+                                return;
+                            }
+                            doneOk('신청 정보가 전송되지 않았습니다. 아래 안내를 확인하세요.\n\n' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑으로 입금 후 본사에 문의해 주세요.');
                         })
                         .catch(function () {
                             doneOk('충전 신청: ' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑 주소로 입금해 주세요.');

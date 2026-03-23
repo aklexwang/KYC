@@ -1056,7 +1056,8 @@
         #section-settings .settings-desc { color: rgba(255,255,255,0.72); margin: 0 0 18px 0; line-height: 1.55; }
         #section-settings .settings-usdt-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
         #section-settings .settings-usdt-row label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.88); }
-        #section-settings #hqStoreGateMinUsdt {
+        #section-settings #hqStoreGateMinUsdt,
+        #section-settings #hqStoreMinRechargeUsdt {
             width: 140px;
             padding: 10px 12px;
             border-radius: 8px;
@@ -1064,6 +1065,9 @@
             border: 1px solid rgba(255,255,255,0.14);
             color: #fff;
             font-size: 15px;
+        }
+        #section-settings .settings-usdt-row + .settings-usdt-row {
+            margin-top: 14px;
         }
         #section-settings .settings-hint { font-size: 13px; color: #86efac; margin: 14px 0 0 0; min-height: 1.2em; }
         .create-store-form .btn-register, .btn-toggle-register, .btn-copy-qr { background: #2a74ff; }
@@ -1624,10 +1628,19 @@
             padding: 8px 10px;
             font-size: 13px;
         }
-        .wallet-mgmt-card--row .btn-wallet-mgmt-ok {
+        .wallet-mgmt-card--row .btn-wallet-mgmt-ok,
+        .wallet-mgmt-card--row .btn-wallet-mgmt-cancel {
             flex-shrink: 0;
             margin: 0;
             white-space: nowrap;
+        }
+        .wallet-mgmt-card--row .btn-wallet-mgmt-cancel {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            color: rgba(255, 255, 255, 0.88);
+        }
+        .wallet-mgmt-card--row .btn-wallet-mgmt-cancel:hover {
+            background: rgba(255, 255, 255, 0.12);
         }
         @media (max-width: 1100px) {
             .wallet-mgmt-card--row {
@@ -1722,6 +1735,7 @@
         }
         .table--wallet-history .td-wallet-hist-status--ok { color: #86efac; }
         .table--wallet-history .td-wallet-hist-status--cancel { color: #fca5a5; }
+        .table--wallet-history .td-wallet-hist-status--reject { color: #fdba74; }
         .table--wallet-history .td-wallet-hist-addr {
             font-family: ui-monospace, monospace;
             font-size: 11px;
@@ -3072,6 +3086,11 @@
                 <input type="number" id="hqStoreGateMinUsdt" min="0" step="0.5" inputmode="decimal" placeholder="100" aria-label="가맹점 이용 최소 USDT">
                 <button type="button" class="btn-settlement-query" id="btnSaveStoreGateMinUsdt">저장</button>
             </div>
+            <div class="settings-usdt-row">
+                <label for="hqStoreMinRechargeUsdt">최소 충전 USDT</label>
+                <input type="number" id="hqStoreMinRechargeUsdt" min="0" step="0.5" inputmode="decimal" placeholder="0.5" aria-label="포인트 충전 최소 USDT">
+                <button type="button" class="btn-settlement-query" id="btnSaveStoreMinRechargeUsdt">저장</button>
+            </div>
             <p class="settings-hint" id="hqStoreGateSaveStatus" aria-live="polite"></p>
         </div>
         <div class="settings-panel settings-hq-admins-panel">
@@ -3574,8 +3593,13 @@
                 var adm = row.issuedByNickname != null ? String(row.issuedByNickname) : '';
                 var w = row.wallet != null ? String(row.wallet) : '';
                 var isCancel = row.issuanceOutcome === 'cancelled';
-                var statusLabel = isCancel ? '취소' : '완료';
-                var statusCls = isCancel ? 'td-wallet-hist-status--cancel' : 'td-wallet-hist-status--ok';
+                var isReject = row.issuanceOutcome === 'rejected';
+                var statusLabel = isCancel ? '취소' : isReject ? '거부' : '완료';
+                var statusCls = isCancel
+                    ? 'td-wallet-hist-status--cancel'
+                    : isReject
+                      ? 'td-wallet-hist-status--reject'
+                      : 'td-wallet-hist-status--ok';
                 html += '<tr>';
                 html += '<td class="td-wallet-hist-name">' + hqEscHtml(sn || sid);
                 if (sid && sn !== sid) {
@@ -3584,7 +3608,7 @@
                 html += '</td>';
                 html += '<td class="td-wallet-hist-date">' + formatWalletCompletedAtLocal(row.completedAt) + '</td>';
                 html += '<td class="td-wallet-hist-status ' + statusCls + '">' + hqEscHtml(statusLabel) + '</td>';
-                html += '<td class="td-wallet-hist-addr">' + (isCancel ? '—' : hqEscHtml(w)) + '</td>';
+                html += '<td class="td-wallet-hist-addr">' + (isCancel || isReject ? '—' : hqEscHtml(w)) + '</td>';
                 html += '<td class="td-wallet-hist-admin">' + hqEscHtml(adm || '—') + '</td>';
                 html += '</tr>';
             });
@@ -3687,6 +3711,7 @@
                             html += '</div>';
                             html += '<span class="wallet-mgmt-inline-label">TRC20</span>';
                             html += '<input type="text" class="wallet-mgmt-input" placeholder="지갑 주소" autocomplete="off" spellcheck="false" aria-label="TRC20 지갑 주소">';
+                            html += '<button type="button" class="btn-settlement-query btn-wallet-mgmt-cancel">취소</button>';
                             html += '<button type="button" class="btn-settlement-query btn-wallet-mgmt-ok">확인</button>';
                             html += '</div>';
                         });
@@ -3705,6 +3730,40 @@
             sec.dataset.walletMgmtBound = '1';
             initWalletMgmtHistToolbarOnce();
             sec.addEventListener('click', function (e) {
+                var btnCancel = e.target.closest('.btn-wallet-mgmt-cancel');
+                if (btnCancel) {
+                    var cardC = btnCancel.closest('.wallet-mgmt-card');
+                    if (!cardC) return;
+                    var sidC = cardC.getAttribute('data-store-id') || '';
+                    if (!sidC) return;
+                    if (!confirm('이 가맹점의 지갑 주소 발급 요청을 거부하시겠습니까? 가맹점 화면에 거부 안내가 표시됩니다.')) return;
+                    var apiC = window.ADMIN_API_BASE || '';
+                    btnCancel.disabled = true;
+                    var okBtn = cardC.querySelector('.btn-wallet-mgmt-ok');
+                    if (okBtn) okBtn.disabled = true;
+                    fetch(apiC + '/api/hq-wallet-issuance', {
+                        method: 'POST',
+                        headers: hqJsonHeaders(),
+                        body: JSON.stringify({ storeId: sidC, action: 'rejectPending' })
+                    })
+                        .then(function (r) { return r.json().catch(function () { return {}; }); })
+                        .then(function (d) {
+                            btnCancel.disabled = false;
+                            if (okBtn) okBtn.disabled = false;
+                            if (d && d.ok) {
+                                loadWalletMgmtList();
+                                refreshWalletMgmtBadge();
+                            } else {
+                                alert((d && d.error) ? d.error : '거부 처리에 실패했습니다.');
+                            }
+                        })
+                        .catch(function () {
+                            btnCancel.disabled = false;
+                            if (okBtn) okBtn.disabled = false;
+                            alert('요청에 실패했습니다.');
+                        });
+                    return;
+                }
                 var btn = e.target.closest('.btn-wallet-mgmt-ok');
                 if (!btn) return;
                 var card = btn.closest('.wallet-mgmt-card');
@@ -3718,6 +3777,8 @@
                 }
                 var api = window.ADMIN_API_BASE || '';
                 btn.disabled = true;
+                var cancelBtn = card.querySelector('.btn-wallet-mgmt-cancel');
+                if (cancelBtn) cancelBtn.disabled = true;
                 fetch(api + '/api/hq-wallet-issuance', {
                     method: 'POST',
                     headers: hqJsonHeaders(),
@@ -3726,6 +3787,7 @@
                     .then(function (r) { return r.json().catch(function () { return {}; }); })
                     .then(function (d) {
                         btn.disabled = false;
+                        if (cancelBtn) cancelBtn.disabled = false;
                         if (d && d.ok) {
                             loadWalletMgmtList();
                             refreshWalletMgmtBadge();
@@ -3735,6 +3797,7 @@
                     })
                     .catch(function () {
                         btn.disabled = false;
+                        if (cancelBtn) cancelBtn.disabled = false;
                         alert('요청에 실패했습니다.');
                     });
             });
@@ -4615,13 +4678,15 @@
 
         function loadHqStoreGateSettings() {
             var el = document.getElementById('hqStoreGateMinUsdt');
+            var elR = document.getElementById('hqStoreMinRechargeUsdt');
             var st = document.getElementById('hqStoreGateSaveStatus');
             if (!el) return;
             if (st) st.textContent = '';
             var api = window.ADMIN_API_BASE || '';
             if (!api) {
                 el.value = '100';
-                if (st) st.textContent = '로컬에서는 API가 없어 기본값(100)만 표시됩니다.';
+                if (elR) elR.value = '0.5';
+                if (st) st.textContent = '로컬에서는 API가 없어 기본값만 표시됩니다.';
                 return;
             }
             fetch(api + '/api/store-gate-config')
@@ -4629,9 +4694,14 @@
                 .then(function (data) {
                     var v = data && data.minUsdtForStoreUse != null ? Number(data.minUsdtForStoreUse) : 100;
                     el.value = isFinite(v) && v >= 0 ? String(v) : '100';
+                    if (elR) {
+                        var mr = data && data.minRechargeUsdt != null ? Number(data.minRechargeUsdt) : 0.5;
+                        elR.value = isFinite(mr) && mr >= 0 ? String(mr) : '0.5';
+                    }
                 })
                 .catch(function () {
                     el.value = '100';
+                    if (elR) elR.value = '0.5';
                     if (st) st.textContent = '불러오기에 실패했습니다.';
                 });
         }
@@ -4661,6 +4731,49 @@
                 .then(function (data) {
                     if (data && data.ok && data.minUsdtForStoreUse != null) {
                         el.value = String(data.minUsdtForStoreUse);
+                        var elR = document.getElementById('hqStoreMinRechargeUsdt');
+                        if (elR && data.minRechargeUsdt != null && isFinite(Number(data.minRechargeUsdt))) {
+                            elR.value = String(data.minRechargeUsdt);
+                        }
+                        if (st) st.textContent = '저장되었습니다.';
+                    } else {
+                        if (st) st.textContent = (data && data.error) ? String(data.error) : '저장에 실패했습니다.';
+                    }
+                })
+                .catch(function () {
+                    if (st) st.textContent = '저장 요청에 실패했습니다.';
+                });
+        }
+
+        function saveHqStoreMinRechargeSettings() {
+            var el = document.getElementById('hqStoreMinRechargeUsdt');
+            var st = document.getElementById('hqStoreGateSaveStatus');
+            var api = window.ADMIN_API_BASE || '';
+            if (!el) return;
+            var raw = String(el.value || '').trim();
+            var n = parseFloat(raw.replace(/,/g, ''));
+            if (!isFinite(n) || n < 0) {
+                if (st) st.textContent = '0 이상의 숫자를 입력하세요.';
+                return;
+            }
+            if (!api) {
+                if (st) st.textContent = 'API 베이스가 없어 저장할 수 없습니다.';
+                return;
+            }
+            if (st) st.textContent = '저장 중…';
+            fetch(api + '/api/store-gate-config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ minRechargeUsdt: n })
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data && data.ok && data.minRechargeUsdt != null) {
+                        el.value = String(data.minRechargeUsdt);
+                        var elHold = document.getElementById('hqStoreGateMinUsdt');
+                        if (elHold && data.minUsdtForStoreUse != null && isFinite(Number(data.minUsdtForStoreUse))) {
+                            elHold.value = String(data.minUsdtForStoreUse);
+                        }
                         if (st) st.textContent = '저장되었습니다.';
                     } else {
                         if (st) st.textContent = (data && data.error) ? String(data.error) : '저장에 실패했습니다.';
@@ -6254,6 +6367,11 @@
         if (btnSaveGate && !btnSaveGate.dataset.bound) {
             btnSaveGate.dataset.bound = '1';
             btnSaveGate.addEventListener('click', saveHqStoreGateSettings);
+        }
+        var btnSaveMinRecharge = document.getElementById('btnSaveStoreMinRechargeUsdt');
+        if (btnSaveMinRecharge && !btnSaveMinRecharge.dataset.bound) {
+            btnSaveMinRecharge.dataset.bound = '1';
+            btnSaveMinRecharge.addEventListener('click', saveHqStoreMinRechargeSettings);
         }
         ['memberFilterStoreSearch', 'memberFilterDateFrom', 'memberFilterDateTo', 'memberFilterStoreSelect', 'memberFilterSms', 'memberFilterIdDoc', 'memberFilterAccount', 'memberFilterKyc']
             .forEach(function (id) {

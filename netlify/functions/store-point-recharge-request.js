@@ -1,4 +1,9 @@
-const { getStorePointsMap, setStorePointsMap, getStorageErrorHelp } = require('./storage');
+const {
+  getStorePointsMap,
+  setStorePointsMap,
+  getStoreMinRechargeUsdt,
+  getStorageErrorHelp,
+} = require('./storage');
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -55,6 +60,16 @@ exports.handler = async (event) => {
   }
 
   try {
+    const minRecharge = await getStoreMinRechargeUsdt(event);
+    if (amt < minRecharge) {
+      return {
+        statusCode: 400,
+        headers: { ...CORS, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          error: `충전은 ${minRecharge} USDT 이상만 가능합니다.`,
+        }),
+      };
+    }
     const map = { ...(await getStorePointsMap(event)) };
     const cur = map[storeId] || {};
     let bal = Number(cur.pointBalanceUsdt != null ? cur.pointBalanceUsdt : cur.pointBalance);

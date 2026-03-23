@@ -48,7 +48,9 @@ exports.handler = async (event) => {
           issuanceOutcome: 'completed',
         }));
       const mergeKey = (row) => {
-        const out = row.issuanceOutcome === 'cancelled' ? 'cancelled' : 'completed';
+        let out = 'completed';
+        if (row.issuanceOutcome === 'cancelled') out = 'cancelled';
+        else if (row.issuanceOutcome === 'rejected') out = 'rejected';
         return `${row.storeId || ''}|${out}|${row.completedAt || ''}|${String(row.wallet || '').trim()}`;
       };
       const mergedMap = new Map();
@@ -60,6 +62,7 @@ exports.handler = async (event) => {
       });
       let completedHistory = Array.from(mergedMap.values()).filter((r) => {
         if (r && r.issuanceOutcome === 'cancelled') return true;
+        if (r && r.issuanceOutcome === 'rejected') return true;
         return !!(r && typeof r.wallet === 'string' && r.wallet.trim());
       });
       completedHistory.sort((a, b) => String(b.completedAt || '').localeCompare(String(a.completedAt || '')));
@@ -88,6 +91,7 @@ exports.handler = async (event) => {
       }
       const storeId = typeof body.storeId === 'string' ? body.storeId.trim() : '';
       const wallet = typeof body.wallet === 'string' ? body.wallet.trim() : '';
+      const action = typeof body.action === 'string' ? body.action.trim() : '';
       if (!storeId) {
         return {
           statusCode: 400,
@@ -95,6 +99,50 @@ exports.handler = async (event) => {
           body: JSON.stringify({ error: 'storeId required' }),
         };
       }
+
+      if (action === 'rejectPending') {
+        const issuanceRej = await getWalletIssuance(event);
+        const byStoreRej = { ...issuanceRej.byStore };
+        const recRej = byStoreRej[storeId];
+        if (!recRej || recRej.status !== 'pending') {
+          return {
+            statusCode: 400,
+            headers: { ...CORS, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ error: '해당 가맹점의 대기 중인 요청이 없습니다.' }),
+          };
+        }
+        const rejectedAt = new Date().toISOString();
+        byStoreRej[storeId] = {
+          ...recRej,
+          status: 'rejected',
+          wallet: '',
+          rejectedAt,
+          completedAt: '',
+        };
+        const prevHistRej = Array.isArray(issuanceRej.completionHistory) ? issuanceRej.completionHistory : [];
+        const historyEntryRej = {
+          storeId,
+          storeName: recRej.storeName || storeId,
+          wallet: '',
+          completedAt: rejectedAt,
+          requestedAt: recRej.requestedAt || null,
+          issuedByNickname: admin.nickname || admin.id || '본사',
+          issuedByAdminId: admin.id || '',
+          issuanceOutcome: 'rejected',
+        };
+        const completionHistoryRej = [...prevHistRej, historyEntryRej].slice(-500);
+        await setWalletIssuance(event, { byStore: byStoreRej, completionHistory: completionHistoryRej });
+        return {
+          statusCode: 200,
+          headers: { ...CORS, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ok: true,
+            storeId,
+            message: '발급 요청을 거부 처리했습니다.',
+          }),
+        };
+      }
+
       if (!wallet || wallet.length < 26) {
         return {
           statusCode: 400,

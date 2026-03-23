@@ -448,6 +448,7 @@ function getStorageErrorHelp() {
 }
 
 const DEFAULT_STORE_GATE_MIN_USDT = 100;
+const DEFAULT_STORE_MIN_RECHARGE_USDT = 0.5;
 
 async function getStoreGateMinUsdt(event) {
   if (USE_UPSTASH) {
@@ -478,6 +479,41 @@ async function setStoreGateMinUsdt(event, raw) {
   }
   const store = await blobsGetStore(event);
   await store.set('store_gate_min_usdt', String(next));
+  return next;
+}
+
+async function getStoreMinRechargeUsdt(event) {
+  if (USE_UPSTASH) {
+    const v = await upstashGet('kyc_store_min_recharge_usdt');
+    if (v == null || v === '') return DEFAULT_STORE_MIN_RECHARGE_USDT;
+    const n = typeof v === 'number' ? v : parseFloat(String(v));
+    if (!isFinite(n) || n < 0) return DEFAULT_STORE_MIN_RECHARGE_USDT;
+    return Math.round(n * 2) / 2;
+  }
+  const store = await blobsGetStore(event);
+  const raw = await store.get('store_min_recharge_usdt');
+  if (!raw) return DEFAULT_STORE_MIN_RECHARGE_USDT;
+  try {
+    const n = parseFloat(String(raw));
+    if (!isFinite(n) || n < 0) return DEFAULT_STORE_MIN_RECHARGE_USDT;
+    return Math.round(n * 2) / 2;
+  } catch (e) {
+    return DEFAULT_STORE_MIN_RECHARGE_USDT;
+  }
+}
+
+async function setStoreMinRechargeUsdt(event, raw) {
+  const parsed = typeof raw === 'number' ? raw : parseFloat(String(raw));
+  const next =
+    !isFinite(parsed) || parsed < 0
+      ? DEFAULT_STORE_MIN_RECHARGE_USDT
+      : Math.round(parsed * 2) / 2;
+  if (USE_UPSTASH) {
+    await upstashSet('kyc_store_min_recharge_usdt', next);
+    return next;
+  }
+  const store = await blobsGetStore(event);
+  await store.set('store_min_recharge_usdt', String(next));
   return next;
 }
 
@@ -587,6 +623,8 @@ module.exports = {
   setStorePointsMap,
   getStoreGateMinUsdt,
   setStoreGateMinUsdt,
+  getStoreMinRechargeUsdt,
+  setStoreMinRechargeUsdt,
   getStoreAllowedIpsMap,
   setStoreAllowedIpsForStore,
   normalizeAllowedIpsInput,

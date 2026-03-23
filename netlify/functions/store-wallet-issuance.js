@@ -38,6 +38,18 @@ exports.handler = async (event) => {
           body: JSON.stringify({ ok: true, status: 'pending', requestedAt: rec.requestedAt || null }),
         };
       }
+      if (rec.status === 'rejected') {
+        return {
+          statusCode: 200,
+          headers: { ...CORS, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ok: true,
+            status: 'rejected',
+            rejectedAt: rec.rejectedAt || null,
+            message: '본사에게 지갑주소 발급을 거부하였습니다.',
+          }),
+        };
+      }
       if (rec.status === 'completed') {
         const w = typeof rec.wallet === 'string' ? rec.wallet.trim() : '';
         return {
