@@ -2518,17 +2518,12 @@
             var apiBase = window.ADMIN_API_BASE || '';
             var storeId = window.ADMIN_STORE_ID || '';
             if (!apiBase || !storeId) return Promise.resolve();
-            return fetch(apiBase + '/api/store-wallet-issuance?storeId=' + encodeURIComponent(storeId))
+            return fetch(apiBase + '/api/store-wallet-issuance', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ storeId: storeId, action: 'cancelPending' })
+            })
                 .then(function (r) { return r.json().catch(function () { return {}; }); })
-                .then(function (d) {
-                    if (d && d.ok && d.status === 'pending') {
-                        return fetch(apiBase + '/api/store-wallet-issuance', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ storeId: storeId, action: 'cancelPending' })
-                        }).then(function () {});
-                    }
-                })
                 .catch(function () {});
         }
 
