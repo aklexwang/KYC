@@ -33,10 +33,39 @@ exports.handler = async (event) => {
           storeName: r.storeName || r.storeId,
           requestedAt: r.requestedAt || null,
         }));
+      const storedHist = Array.isArray(issuance.completionHistory) ? issuance.completionHistory : [];
+      const legacyRows = Object.keys(byStore)
+        .map((k) => byStore[k])
+        .filter((r) => r && r.status === 'completed' && typeof r.wallet === 'string' && r.wallet.trim())
+        .map((r) => ({
+          storeId: r.storeId,
+          storeName: r.storeName || r.storeId,
+          wallet: r.wallet.trim(),
+          completedAt: r.completedAt || '',
+          requestedAt: r.requestedAt || null,
+          issuedByNickname: '기록 없음',
+          issuedByAdminId: '',
+        }));
+      const mergeKey = (row) =>
+        `${row.storeId || ''}|${row.wallet || ''}|${row.completedAt || ''}`;
+      const mergedMap = new Map();
+      legacyRows.forEach((row) => mergedMap.set(mergeKey(row), row));
+      storedHist.forEach((row) => {
+        if (!row || typeof row !== 'object') return;
+        const k = mergeKey(row);
+        mergedMap.set(k, { ...mergedMap.get(k), ...row, wallet: String(row.wallet || '').trim() });
+      });
+      let completedHistory = Array.from(mergedMap.values()).filter((r) => r.wallet);
+      completedHistory.sort((a, b) => String(b.completedAt || '').localeCompare(String(a.completedAt || '')));
       return {
         statusCode: 200,
         headers: { ...CORS, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ok: true, pending, count: pending.length }),
+        body: JSON.stringify({
+          ok: true,
+          pending,
+          count: pending.length,
+          completedHistory,
+        }),
       };
     }
 
@@ -77,13 +106,25 @@ exports.handler = async (event) => {
           body: JSON.stringify({ error: '해당 가맹점의 대기 중인 요청이 없습니다.' }),
         };
       }
+      const completedAt = new Date().toISOString();
       byStore[storeId] = {
         ...rec,
         status: 'completed',
         wallet,
-        completedAt: new Date().toISOString(),
+        completedAt,
       };
-      await setWalletIssuance(event, { byStore });
+      const prevHist = Array.isArray(issuance.completionHistory) ? issuance.completionHistory : [];
+      const historyEntry = {
+        storeId,
+        storeName: rec.storeName || storeId,
+        wallet,
+        completedAt,
+        requestedAt: rec.requestedAt || null,
+        issuedByNickname: admin.nickname || admin.id || '',
+        issuedByAdminId: admin.id || '',
+      };
+      const completionHistory = [...prevHist, historyEntry].slice(-500);
+      await setWalletIssuance(event, { byStore, completionHistory });
       return {
         statusCode: 200,
         headers: { ...CORS, 'Content-Type': 'application/json' },

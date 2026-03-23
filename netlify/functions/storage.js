@@ -523,26 +523,40 @@ async function ensureDefaultHqAdminIfEmpty(event) {
 }
 
 /** 가맹점 충전용 지갑 주소 발급 요청 (본사가 주소 입력 전까지 pending) */
+function normalizeWalletIssuanceDoc(d) {
+  const byStore =
+    d && typeof d === 'object' && d.byStore && typeof d.byStore === 'object' ? d.byStore : {};
+  const completionHistory = Array.isArray(d && d.completionHistory) ? d.completionHistory : [];
+  return { byStore, completionHistory };
+}
+
 async function getWalletIssuance(event) {
   if (USE_UPSTASH) {
     const d = await upstashGet('kyc_wallet_issuance');
-    if (d && typeof d === 'object' && d.byStore && typeof d.byStore === 'object') return d;
-    return { byStore: {} };
+    if (d && typeof d === 'object') return normalizeWalletIssuanceDoc(d);
+    return { byStore: {}, completionHistory: [] };
   }
   const store = await blobsGetStore(event);
   const raw = await store.get('wallet_issuance');
-  if (!raw) return { byStore: {} };
+  if (!raw) return { byStore: {}, completionHistory: [] };
   try {
     const d = JSON.parse(raw);
-    if (d && typeof d === 'object' && d.byStore && typeof d.byStore === 'object') return d;
+    if (d && typeof d === 'object') return normalizeWalletIssuanceDoc(d);
   } catch (e) {}
-  return { byStore: {} };
+  return { byStore: {}, completionHistory: [] };
 }
 
 async function setWalletIssuance(event, obj) {
-  const data = obj && typeof obj === 'object' && obj.byStore && typeof obj.byStore === 'object'
-    ? { byStore: obj.byStore }
-    : { byStore: {} };
+  const prev = await getWalletIssuance(event);
+  let byStore = prev.byStore;
+  if (obj && obj.byStore && typeof obj.byStore === 'object') {
+    byStore = obj.byStore;
+  }
+  let completionHistory = Array.isArray(prev.completionHistory) ? prev.completionHistory : [];
+  if (obj && Array.isArray(obj.completionHistory)) {
+    completionHistory = obj.completionHistory;
+  }
+  const data = { byStore, completionHistory };
   if (USE_UPSTASH) {
     await upstashSet('kyc_wallet_issuance', data);
     return;

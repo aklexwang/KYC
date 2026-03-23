@@ -1595,6 +1595,65 @@
             border-color: rgba(37, 99, 235, 0.65);
         }
         .btn-wallet-mgmt-ok { margin-top: 4px; }
+        .wallet-mgmt-subtitle {
+            margin: 22px 0 10px 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+        .wallet-mgmt-subtitle:first-of-type { margin-top: 4px; }
+        .wallet-mgmt-history-toolbar {
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .wallet-mgmt-history-toolbar .wallet-mgmt-hist-reset {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+        }
+        .wallet-mgmt-history-toolbar .wallet-mgmt-hist-reset:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .table--wallet-history {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.92);
+        }
+        .table--wallet-history th {
+            background: rgba(15, 29, 76, 0.98);
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 12px;
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+        }
+        .table--wallet-history td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            vertical-align: top;
+        }
+        .table--wallet-history .td-wallet-hist-name { font-weight: 600; color: #fff; }
+        .table--wallet-history .td-wallet-hist-date {
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+            color: rgba(255, 255, 255, 0.78);
+            font-size: 12px;
+        }
+        .table--wallet-history .td-wallet-hist-addr {
+            font-family: ui-monospace, monospace;
+            font-size: 11px;
+            word-break: break-all;
+            color: rgba(147, 197, 253, 0.95);
+            max-width: 280px;
+        }
+        .table--wallet-history .td-wallet-hist-admin { color: rgba(255, 255, 255, 0.82); }
+        .table--wallet-history .wallet-mgmt-hist-empty td {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 20px 12px;
+        }
         .sidebar-badge {
             display: inline-block;
             margin-left: 6px;
@@ -2891,7 +2950,35 @@
         <section class="settlement-section wallet-mgmt-section">
             <h3 class="settlement-title">지갑관리</h3>
             <p class="wallet-mgmt-desc">포인트 충전 신청이 들어온 가맹점에 TRC20 입금 지갑 주소를 발급합니다.</p>
+            <h4 class="wallet-mgmt-subtitle">대기 중인 요청</h4>
             <div id="walletMgmtList" class="wallet-mgmt-list" aria-live="polite"></div>
+            <h4 class="wallet-mgmt-subtitle">발급 처리 내역</h4>
+            <div class="settlement-date-bar wallet-mgmt-history-toolbar">
+                <label for="walletMgmtHistName">가맹점명</label>
+                <input type="search" id="walletMgmtHistName" class="settlement-store-search" placeholder="가맹점명 또는 ID" autocomplete="off" aria-label="지갑 내역 가맹점 검색">
+                <label for="walletMgmtHistDateFrom">시작일</label>
+                <input type="date" id="walletMgmtHistDateFrom" autocomplete="off" title="발급일 시작">
+                <span class="point-ledger-date-sep">~</span>
+                <label for="walletMgmtHistDateTo">종료일</label>
+                <input type="date" id="walletMgmtHistDateTo" autocomplete="off" title="발급일 종료">
+                <button type="button" class="btn-settlement-query" id="btnWalletMgmtHistSearch">검색</button>
+                <button type="button" class="btn-settlement-query wallet-mgmt-hist-reset" id="btnWalletMgmtHistReset">초기화</button>
+            </div>
+            <div class="table-wrap">
+                <div class="table-scroll">
+                    <table class="table--wallet-history">
+                        <thead>
+                            <tr>
+                                <th>가맹점명</th>
+                                <th>발급일시</th>
+                                <th>지갑 주소</th>
+                                <th>발급 관리자</th>
+                            </tr>
+                        </thead>
+                        <tbody id="walletMgmtHistBody"></tbody>
+                    </table>
+                </div>
+            </div>
         </section>
         </section>
         <section id="section-settings" class="dashboard-section">
@@ -3341,6 +3428,110 @@
 
         var lastWalletMgmtPendingCount = 0;
         var walletMgmtSkipNotify = true;
+        var walletMgmtHistoryCache = [];
+
+        function formatWalletCompletedAtLocal(iso) {
+            if (!iso) return '—';
+            try {
+                var d = new Date(iso);
+                if (isNaN(d.getTime())) return hqEscHtml(String(iso));
+                return hqEscHtml(d.toLocaleString('ko-KR', { dateStyle: 'medium', timeStyle: 'short' }));
+            } catch (e) { return '—'; }
+        }
+
+        function walletHistRowLocalDateKey(iso) {
+            if (!iso) return '';
+            try {
+                var d = new Date(iso);
+                if (isNaN(d.getTime())) return '';
+                var y = d.getFullYear();
+                var m = String(d.getMonth() + 1);
+                if (m.length < 2) m = '0' + m;
+                var day = String(d.getDate());
+                if (day.length < 2) day = '0' + day;
+                return y + '-' + m + '-' + day;
+            } catch (e) { return ''; }
+        }
+
+        function filterWalletMgmtHistoryRows(rows) {
+            var nameEl = document.getElementById('walletMgmtHistName');
+            var fromEl = document.getElementById('walletMgmtHistDateFrom');
+            var toEl = document.getElementById('walletMgmtHistDateTo');
+            var nameQ = nameEl ? String(nameEl.value || '').trim().toLowerCase() : '';
+            var fromStr = fromEl && fromEl.value ? String(fromEl.value) : '';
+            var toStr = toEl && toEl.value ? String(toEl.value) : '';
+            return rows.filter(function (row) {
+                if (nameQ) {
+                    var sn = (row.storeName != null ? String(row.storeName) : '').toLowerCase();
+                    var sid = (row.storeId != null ? String(row.storeId) : '').toLowerCase();
+                    if (sn.indexOf(nameQ) === -1 && sid.indexOf(nameQ) === -1) return false;
+                }
+                var dkey = walletHistRowLocalDateKey(row.completedAt);
+                if (fromStr && (!dkey || dkey < fromStr)) return false;
+                if (toStr && (!dkey || dkey > toStr)) return false;
+                return true;
+            });
+        }
+
+        function renderWalletMgmtHistoryTable(rows) {
+            var tbody = document.getElementById('walletMgmtHistBody');
+            if (!tbody) return;
+            var list = rows || [];
+            if (!list.length) {
+                var emptyMsg = walletMgmtHistoryCache.length
+                    ? '조건에 맞는 내역이 없습니다.'
+                    : '발급 처리 내역이 없습니다.';
+                tbody.innerHTML = '<tr class="wallet-mgmt-hist-empty"><td colspan="4">' + emptyMsg + '</td></tr>';
+                return;
+            }
+            var html = '';
+            list.forEach(function (row) {
+                var sn = row.storeName != null ? String(row.storeName) : '';
+                var sid = row.storeId != null ? String(row.storeId) : '';
+                var adm = row.issuedByNickname != null ? String(row.issuedByNickname) : '';
+                var w = row.wallet != null ? String(row.wallet) : '';
+                html += '<tr>';
+                html += '<td class="td-wallet-hist-name">' + hqEscHtml(sn || sid);
+                if (sid && sn !== sid) {
+                    html += '<br><span style="font-size:11px;color:rgba(255,255,255,0.45)">' + hqEscHtml(sid) + '</span>';
+                }
+                html += '</td>';
+                html += '<td class="td-wallet-hist-date">' + formatWalletCompletedAtLocal(row.completedAt) + '</td>';
+                html += '<td class="td-wallet-hist-addr">' + hqEscHtml(w) + '</td>';
+                html += '<td class="td-wallet-hist-admin">' + hqEscHtml(adm || '—') + '</td>';
+                html += '</tr>';
+            });
+            tbody.innerHTML = html;
+        }
+
+        function initWalletMgmtHistToolbarOnce() {
+            var sec = document.getElementById('section-wallet-mgmt');
+            if (!sec || sec.dataset.walletHistToolbarBound) return;
+            sec.dataset.walletHistToolbarBound = '1';
+            var search = document.getElementById('btnWalletMgmtHistSearch');
+            var reset = document.getElementById('btnWalletMgmtHistReset');
+            var nameInp = document.getElementById('walletMgmtHistName');
+            function applyHistFilter() {
+                renderWalletMgmtHistoryTable(filterWalletMgmtHistoryRows(walletMgmtHistoryCache));
+            }
+            if (search) search.addEventListener('click', applyHistFilter);
+            if (reset) reset.addEventListener('click', function () {
+                if (nameInp) nameInp.value = '';
+                var df = document.getElementById('walletMgmtHistDateFrom');
+                var dt = document.getElementById('walletMgmtHistDateTo');
+                if (df) df.value = '';
+                if (dt) dt.value = '';
+                applyHistFilter();
+            });
+            if (nameInp) {
+                nameInp.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        applyHistFilter();
+                    }
+                });
+            }
+        }
 
         function updateWalletMgmtBadgeFromCount(n) {
             var el = document.getElementById('walletMgmtPendingBadge');
@@ -3391,24 +3582,27 @@
                 .then(function (r) { return r.json().catch(function () { return {}; }); })
                 .then(function (d) {
                     var items = (d && d.ok && Array.isArray(d.pending)) ? d.pending : [];
+                    var hist = (d && d.ok && Array.isArray(d.completedHistory)) ? d.completedHistory : [];
+                    walletMgmtHistoryCache = hist;
                     updateWalletMgmtBadgeFromCount(items.length);
                     if (!items.length) {
                         root.innerHTML = '<p class="wallet-mgmt-empty">대기 중인 지갑 요청이 없습니다.</p>';
-                        return;
+                    } else {
+                        var html = '';
+                        items.forEach(function (it) {
+                            var sid = it.storeId != null ? String(it.storeId) : '';
+                            var sn = it.storeName != null ? String(it.storeName) : sid;
+                            html += '<div class="wallet-mgmt-card" data-store-id="' + hqEscHtml(sid) + '">';
+                            html += '<h4 class="wallet-mgmt-card-title">' + hqEscHtml(sn) + '</h4>';
+                            html += '<p class="wallet-mgmt-card-id">' + hqEscHtml(sid) + '</p>';
+                            html += '<label class="wallet-mgmt-label">TRC20 지갑 주소</label>';
+                            html += '<input type="text" class="wallet-mgmt-input" placeholder="지갑 주소 입력" autocomplete="off" spellcheck="false">';
+                            html += '<button type="button" class="btn-settlement-query btn-wallet-mgmt-ok">확인</button>';
+                            html += '</div>';
+                        });
+                        root.innerHTML = html;
                     }
-                    var html = '';
-                    items.forEach(function (it) {
-                        var sid = it.storeId != null ? String(it.storeId) : '';
-                        var sn = it.storeName != null ? String(it.storeName) : sid;
-                        html += '<div class="wallet-mgmt-card" data-store-id="' + hqEscHtml(sid) + '">';
-                        html += '<h4 class="wallet-mgmt-card-title">' + hqEscHtml(sn) + '</h4>';
-                        html += '<p class="wallet-mgmt-card-id">' + hqEscHtml(sid) + '</p>';
-                        html += '<label class="wallet-mgmt-label">TRC20 지갑 주소</label>';
-                        html += '<input type="text" class="wallet-mgmt-input" placeholder="지갑 주소 입력" autocomplete="off" spellcheck="false">';
-                        html += '<button type="button" class="btn-settlement-query btn-wallet-mgmt-ok">확인</button>';
-                        html += '</div>';
-                    });
-                    root.innerHTML = html;
+                    renderWalletMgmtHistoryTable(filterWalletMgmtHistoryRows(walletMgmtHistoryCache));
                 })
                 .catch(function () {
                     root.innerHTML = '<p class="wallet-mgmt-empty">목록을 불러오지 못했습니다.</p>';
@@ -3419,6 +3613,7 @@
             var sec = document.getElementById('section-wallet-mgmt');
             if (!sec || sec.dataset.walletMgmtBound) return;
             sec.dataset.walletMgmtBound = '1';
+            initWalletMgmtHistToolbarOnce();
             sec.addEventListener('click', function (e) {
                 var btn = e.target.closest('.btn-wallet-mgmt-ok');
                 if (!btn) return;
