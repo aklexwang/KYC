@@ -4232,41 +4232,15 @@
         }
 
         function renderSmsCell(row) {
-            var base = renderBadge(row.sms || 'wait');
-            if (row.sms !== 'complete') return base;
-            var smsName = (row.smsName || row.verifiedName || row.name || '').trim();
-            var phone = (row.phone || row.phoneNumber || row.mobile || row.tel || '').trim();
-            var details = '';
-            if (smsName) details += '<div class="member-detail">이름: ' + escapeHtml(smsName) + '</div>';
-            if (phone) details += '<div class="member-detail">전화번호: ' + escapeHtml(phone) + '</div>';
-            if (!details) details = '<div class="member-detail member-detail--muted">문자인증 상세 데이터 없음</div>';
-            return base + details;
+            return renderBadge(row.sms || 'wait');
         }
 
         function renderIdDocCell(row) {
-            var base = renderBadge(row.idDoc || 'wait');
-            if (row.idDoc !== 'complete') return base;
-            var idPhoto = row.idDocImage || row.idCardImage || row.idImage || '';
-            var facePhoto = row.faceImage || row.selfieImage || row.facePhoto || '';
-            if (!idPhoto && !facePhoto) return base + '<div class="member-detail member-detail--muted">신분증/얼굴 사진 데이터 없음</div>';
-            var images = [];
-            if (idPhoto) images.push('<img class="member-photo" src="' + escapeHtml(idPhoto) + '" alt="신분증 사진">');
-            if (facePhoto) images.push('<img class="member-photo" src="' + escapeHtml(facePhoto) + '" alt="얼굴 사진">');
-            return base + '<div class="member-photo-row">' + images.join('') + '</div>';
+            return renderBadge(row.idDoc || 'wait');
         }
 
         function renderAccountCell(row) {
-            var base = renderBadge(row.account || 'wait');
-            if (row.account !== 'complete') return base;
-            var bank = (row.bank || row.bankName || '').trim();
-            var accountNo = (row.accountNumber || row.accountNo || '').trim();
-            var holder = (row.accountHolder || row.holderName || row.holder || '').trim();
-            if (!bank && !accountNo && !holder) return base + '<div class="member-detail member-detail--muted">계좌 상세 데이터 없음</div>';
-            return base +
-                '<div class="member-detail">은행명: ' + escapeHtml(bank || '-') + '</div>' +
-                '<div class="member-detail">계좌번호: ' + escapeHtml(accountNo || '-') + '</div>' +
-                '<div class="member-detail">예금주: ' + escapeHtml(holder || '-') + '</div>' +
-                '<div class="member-detail">인증</div>';
+            return renderBadge(row.account || 'wait');
         }
 
         function getAllMembersWithStore() {
@@ -4583,7 +4557,7 @@
                     tr.dataset.account = normalizeMemberStatus(row.account);
                     tr.dataset.kyc = kycResultValue(row);
                     tr.innerHTML =
-                        '<td><div>' + (row.storeName || '-') + '</div><div class="td-store-id">' + storeIdLabel(row.storeId) + '</div></td>' +
+                        '<td>' + escapeHtml(row.storeName || '-') + '</td>' +
                         '<td><div>' + escapeHtml(row.name || '-') + '</div><div class="td-store-id">' + escapeHtml(row.loginId || '-') + '</div></td>' +
                         '<td>' + formatJoinedAt(row.joinedAt) + '</td>' +
                         '<td>' + renderSmsCell(row) + '</td>' +
