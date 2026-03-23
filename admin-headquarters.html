@@ -142,6 +142,153 @@
             box-sizing: border-box;
         }
         #memberListSearchInput::placeholder { color: #8e8e93; }
+        #section-members .member-toolbar-panel {
+            background: #0b153d;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin-bottom: 14px;
+        }
+        #section-members .member-toolbar-title {
+            margin: 0 0 12px 0;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: #eef4ff;
+            letter-spacing: -0.02em;
+        }
+        #section-members .member-toolbar-filters {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 12px;
+        }
+        #section-members .member-filter-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+        #section-members .member-filter-group label {
+            font-size: 12px;
+            font-weight: 700;
+            color: rgba(226, 232, 240, 0.9);
+            white-space: nowrap;
+        }
+        #section-members .member-filter-group input[type="date"],
+        #section-members .member-filter-group input[type="search"],
+        #section-members .member-filter-group select {
+            height: 34px;
+            padding: 7px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: #0f1d4c;
+            color: #fff;
+            font-size: 13px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        #section-members #memberFilterDateFrom,
+        #section-members #memberFilterDateTo {
+            width: 132px;
+        }
+        #section-members #memberFilterStoreSearch { width: 190px; }
+        #section-members .member-filter-group select { width: 92px; }
+        #section-members #memberFilterStoreSelect { width: 130px; }
+        #section-members .member-filter-sep {
+            color: rgba(148, 163, 184, 0.95);
+            font-size: 12px;
+            font-weight: 700;
+        }
+        #section-members .member-filter-actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+        #section-members .btn-member-query,
+        #section-members .btn-member-download {
+            height: 34px;
+            padding: 0 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        #section-members .btn-member-query {
+            background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+            color: #fff;
+        }
+        #section-members .btn-member-download {
+            background: #334155;
+            color: #fff;
+        }
+        #section-members .btn-member-query:hover,
+        #section-members .btn-member-download:hover { filter: brightness(1.05); }
+        #memberExportModal .member-export-box {
+            max-width: 720px;
+            width: min(720px, 100%);
+            background: #0b153d;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
+            padding: 22px 22px 20px;
+            color: #fff;
+        }
+        #memberExportModal .member-export-title {
+            margin: 0 0 14px 0;
+            font-size: 34px;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+        }
+        #memberExportModal .member-export-options {
+            background: #f3f4f6;
+            border-radius: 14px;
+            padding: 16px 18px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(190px, 1fr));
+            gap: 12px 24px;
+            color: #1f2937;
+        }
+        #memberExportModal .member-export-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 30px;
+            font-weight: 600;
+            line-height: 1.1;
+        }
+        #memberExportModal .member-export-option input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            accent-color: #334155;
+        }
+        #memberExportModal .member-export-actions {
+            margin-top: 18px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        #memberExportModal .btn-member-export-cancel,
+        #memberExportModal .btn-member-export-download {
+            min-width: 120px;
+            height: 52px;
+            border: none;
+            border-radius: 10px;
+            font-size: 28px;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        #memberExportModal .btn-member-export-cancel {
+            background: #3a4a76;
+            color: #f8fafc;
+        }
+        #memberExportModal .btn-member-export-download {
+            background: #f3f4f6;
+            color: #111827;
+        }
         .create-store-toolbar { margin-bottom: 0; flex-shrink: 0; }
         .store-list-filters {
             display: flex;
@@ -2414,8 +2561,62 @@
                 <h2 class="section-title member-section-title">회원 목록</h2>
                 <p class="section-desc member-section-desc">문자·신분증·계좌 인증 현황입니다. 가맹점 관리에서 카드를 선택하면 해당 가맹점 회원만 표시됩니다.</p>
             </div>
-            <div class="store-list-filters member-list-filters">
-                <input type="search" id="memberListSearchInput" placeholder="회원명·가맹명·로그인 계정 검색" autocomplete="off" aria-label="회원 검색">
+        </div>
+        <div class="member-toolbar-panel">
+            <h3 class="member-toolbar-title">전체 회원 현황 (문자·신분증·1원 인증)</h3>
+            <div class="member-toolbar-filters">
+                <div class="member-filter-group">
+                    <label for="memberFilterDateFrom">가입일</label>
+                    <input type="date" id="memberFilterDateFrom" autocomplete="off">
+                    <span class="member-filter-sep">~</span>
+                    <input type="date" id="memberFilterDateTo" autocomplete="off">
+                </div>
+                <div class="member-filter-group">
+                    <label for="memberFilterStoreSelect">가맹점</label>
+                    <select id="memberFilterStoreSelect" aria-label="가맹점 필터">
+                        <option value="all" selected>전체</option>
+                    </select>
+                    <input type="search" id="memberFilterStoreSearch" placeholder="가맹명·계정 검색" autocomplete="off" aria-label="가맹점 검색">
+                </div>
+                <div class="member-filter-group">
+                    <label for="memberFilterSms">문자 인증</label>
+                    <select id="memberFilterSms" aria-label="문자 인증 필터">
+                        <option value="all" selected>전체</option>
+                        <option value="complete">완료</option>
+                        <option value="wait">대기</option>
+                        <option value="fail">실패</option>
+                    </select>
+                </div>
+                <div class="member-filter-group">
+                    <label for="memberFilterIdDoc">신분증 인증</label>
+                    <select id="memberFilterIdDoc" aria-label="신분증 인증 필터">
+                        <option value="all" selected>전체</option>
+                        <option value="complete">완료</option>
+                        <option value="wait">대기</option>
+                        <option value="fail">실패</option>
+                    </select>
+                </div>
+                <div class="member-filter-group">
+                    <label for="memberFilterAccount">1원 인증</label>
+                    <select id="memberFilterAccount" aria-label="1원 인증 필터">
+                        <option value="all" selected>전체</option>
+                        <option value="complete">완료</option>
+                        <option value="wait">대기</option>
+                        <option value="fail">실패</option>
+                    </select>
+                </div>
+                <div class="member-filter-group">
+                    <label for="memberFilterKyc">KYC 결과</label>
+                    <select id="memberFilterKyc" aria-label="KYC 결과 필터">
+                        <option value="all" selected>전체</option>
+                        <option value="complete">완료</option>
+                        <option value="incomplete">미완료</option>
+                    </select>
+                </div>
+                <div class="member-filter-actions">
+                    <button type="button" class="btn-member-query" id="btnMemberFilterApply">조회</button>
+                    <button type="button" class="btn-member-download" id="btnMemberExportOpen">다운로드</button>
+                </div>
             </div>
         </div>
         <div class="table-wrap">
@@ -2437,6 +2638,24 @@
             </div>
         </div>
         </section>
+        <div id="memberExportModal" class="modal-overlay-prices" aria-hidden="true">
+            <div class="member-export-box" role="dialog" aria-modal="true" aria-labelledby="memberExportModalTitle">
+                <h3 id="memberExportModalTitle" class="member-export-title">회원 정보 다운로드</h3>
+                <div class="member-export-options">
+                    <label class="member-export-option"><input type="checkbox" data-export-col="storeName" checked>가맹명</label>
+                    <label class="member-export-option"><input type="checkbox" data-export-col="name" checked>이름</label>
+                    <label class="member-export-option"><input type="checkbox" data-export-col="joinedAt" checked>가입 일시</label>
+                    <label class="member-export-option"><input type="checkbox" data-export-col="phone" checked>전화 번호</label>
+                    <label class="member-export-option"><input type="checkbox" data-export-col="idDoc" checked>신분증 인증</label>
+                    <label class="member-export-option"><input type="checkbox" data-export-col="accountInfo" checked>계좌 정보</label>
+                    <label class="member-export-option"><input type="checkbox" data-export-col="kycResult" checked>KYC 결과</label>
+                </div>
+                <div class="member-export-actions">
+                    <button type="button" class="btn-member-export-cancel" id="btnMemberExportCancel">취소</button>
+                    <button type="button" class="btn-member-export-download" id="btnMemberExportDownload">다운로드</button>
+                </div>
+            </div>
+        </div>
         <section id="section-settlement" class="dashboard-section">
         <section id="settlementSection" class="settlement-section">
             <h3 class="settlement-title">수수료 통계</h3>
@@ -3964,6 +4183,34 @@
             if (!m) return '';
             return m.joinedAt || m.createdAt || m.joined_at || m.created_at || m.signupAt || m.registeredAt || '';
         }
+        function normalizeMemberStatus(v) {
+            var s = v != null ? String(v).trim().toLowerCase() : '';
+            if (s === 'complete' || s === '완료') return 'complete';
+            if (s === 'fail' || s === 'failed' || s === '실패') return 'fail';
+            return 'wait';
+        }
+        function joinedDateKey(iso) {
+            if (!iso) return '';
+            try {
+                var d = new Date(iso);
+                if (isNaN(d.getTime())) return '';
+                var y = d.getFullYear();
+                var m = d.getMonth() + 1;
+                var dd = d.getDate();
+                return y + '-' + (m < 10 ? '0' + m : '' + m) + '-' + (dd < 10 ? '0' + dd : '' + dd);
+            } catch (e) {
+                return '';
+            }
+        }
+        function kycResultValue(row) {
+            return isKycComplete(row) ? 'complete' : 'incomplete';
+        }
+        function memberStatusKo(v) {
+            var t = normalizeMemberStatus(v);
+            if (t === 'complete') return '완료';
+            if (t === 'fail') return '실패';
+            return '대기';
+        }
 
         function formatJoinedAt(iso) {
             if (!iso) return '—';
@@ -4020,16 +4267,31 @@
                         sms: m.sms,
                         idDoc: m.idDoc,
                         account: m.account,
-                        phone: m.phone,
+                        phone: m.phone || m.phoneNumber || m.mobile || m.tel || '',
+                        loginId: m.id || m.loginId || m.username || m.userId || '',
                         idDocImage: m.idDocImage,
                         faceImage: m.faceImage,
-                        bankName: m.bankName,
-                        accountNumber: m.accountNumber,
-                        accountHolder: m.accountHolder
+                        bankName: m.bankName || m.bank || '',
+                        accountNumber: m.accountNumber || m.accountNo || '',
+                        accountHolder: m.accountHolder || m.holderName || m.holder || ''
                     });
                 });
             });
             return list;
+        }
+        function refreshMemberStoreFilterOptions() {
+            var sel = document.getElementById('memberFilterStoreSelect');
+            if (!sel) return;
+            var prev = sel.value || 'all';
+            var options = ['<option value="all">전체</option>'];
+            stores.forEach(function (s) {
+                if (!s || !s.id) return;
+                var label = (s.name || s.id) + ' (' + s.id + ')';
+                options.push('<option value="' + escapeHtml(String(s.id)) + '">' + escapeHtml(label) + '</option>');
+            });
+            sel.innerHTML = options.join('');
+            var hasPrev = Array.prototype.some.call(sel.options, function (o) { return o.value === prev; });
+            sel.value = hasPrev ? prev : 'all';
         }
 
         function storePriceServiceEnabled(prices, name) {
@@ -4289,6 +4551,7 @@
             var tbody = document.getElementById('memberList');
             tbody.innerHTML = '';
             var all = getAllMembersWithStore();
+            refreshMemberStoreFilterOptions();
             if (all.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" class="no-data">등록된 회원이 없습니다.</td></tr>';
             } else {
@@ -4296,9 +4559,17 @@
                     var tr = document.createElement('tr');
                     tr.className = 'member-row';
                     tr.dataset.storeId = row.storeId;
+                    tr.dataset.storeName = row.storeName || '';
+                    tr.dataset.memberName = row.name || '';
+                    tr.dataset.loginId = row.loginId || '';
+                    tr.dataset.joinedDate = joinedDateKey(row.joinedAt);
+                    tr.dataset.sms = normalizeMemberStatus(row.sms);
+                    tr.dataset.iddoc = normalizeMemberStatus(row.idDoc);
+                    tr.dataset.account = normalizeMemberStatus(row.account);
+                    tr.dataset.kyc = kycResultValue(row);
                     tr.innerHTML =
                         '<td><div>' + (row.storeName || '-') + '</div><div class="td-store-id">' + storeIdLabel(row.storeId) + '</div></td>' +
-                        '<td>' + (row.name || '-') + '</td>' +
+                        '<td><div>' + escapeHtml(row.name || '-') + '</div><div class="td-store-id">' + escapeHtml(row.loginId || '-') + '</div></td>' +
                         '<td>' + formatJoinedAt(row.joinedAt) + '</td>' +
                         '<td>' + renderSmsCell(row) + '</td>' +
                         '<td>' + renderIdDocCell(row) + '</td>' +
@@ -4314,14 +4585,142 @@
 
         function applyStoreFilter() {
             var rows = document.querySelectorAll('#memberList tr.member-row');
-            var searchEl = document.getElementById('memberListSearchInput');
+            var searchEl = document.getElementById('memberFilterStoreSearch');
             var q = searchEl ? (searchEl.value || '').trim().toLowerCase() : '';
+            var storeSel = document.getElementById('memberFilterStoreSelect');
+            var smsSel = document.getElementById('memberFilterSms');
+            var idSel = document.getElementById('memberFilterIdDoc');
+            var accSel = document.getElementById('memberFilterAccount');
+            var kycSel = document.getElementById('memberFilterKyc');
+            var fromEl = document.getElementById('memberFilterDateFrom');
+            var toEl = document.getElementById('memberFilterDateTo');
+            var selectedStore = storeSel ? (storeSel.value || 'all') : 'all';
+            var smsVal = smsSel ? (smsSel.value || 'all') : 'all';
+            var idVal = idSel ? (idSel.value || 'all') : 'all';
+            var accVal = accSel ? (accSel.value || 'all') : 'all';
+            var kycVal = kycSel ? (kycSel.value || 'all') : 'all';
+            var from = fromEl ? (fromEl.value || '') : '';
+            var to = toEl ? (toEl.value || '') : '';
             rows.forEach(function (tr) {
-                var storeOk = selectedStoreId === null || tr.dataset.storeId === selectedStoreId;
+                var storeOk = (selectedStoreId === null || tr.dataset.storeId === selectedStoreId) &&
+                    (selectedStore === 'all' || tr.dataset.storeId === selectedStore);
                 var text = (tr.textContent || '').toLowerCase().replace(/\s+/g, ' ');
                 var searchOk = !q || text.indexOf(q) !== -1;
-                tr.classList.toggle('member-row-hidden', !storeOk || !searchOk);
+                var smsOk = (smsVal === 'all' || (tr.dataset.sms || 'wait') === smsVal);
+                var idOk = (idVal === 'all' || (tr.dataset.iddoc || 'wait') === idVal);
+                var accOk = (accVal === 'all' || (tr.dataset.account || 'wait') === accVal);
+                var kycOk = (kycVal === 'all' || (tr.dataset.kyc || 'incomplete') === kycVal);
+                var joined = tr.dataset.joinedDate || '';
+                var dateOk = (!from || (joined && joined >= from)) && (!to || (joined && joined <= to));
+                tr.classList.toggle('member-row-hidden', !storeOk || !searchOk || !smsOk || !idOk || !accOk || !kycOk || !dateOk);
             });
+        }
+        function getMemberFilterState() {
+            function val(id, fallback) {
+                var el = document.getElementById(id);
+                return el ? (el.value || fallback) : fallback;
+            }
+            return {
+                search: String(val('memberFilterStoreSearch', '')).trim().toLowerCase(),
+                from: String(val('memberFilterDateFrom', '')).trim(),
+                to: String(val('memberFilterDateTo', '')).trim(),
+                store: String(val('memberFilterStoreSelect', 'all') || 'all'),
+                sms: String(val('memberFilterSms', 'all') || 'all'),
+                idDoc: String(val('memberFilterIdDoc', 'all') || 'all'),
+                account: String(val('memberFilterAccount', 'all') || 'all'),
+                kyc: String(val('memberFilterKyc', 'all') || 'all'),
+                selectedStoreId: selectedStoreId
+            };
+        }
+        function memberDataMatchesFilters(row, st) {
+            if (!row) return false;
+            if (st.selectedStoreId != null && row.storeId !== st.selectedStoreId) return false;
+            if (st.store !== 'all' && row.storeId !== st.store) return false;
+            if (st.sms !== 'all' && normalizeMemberStatus(row.sms) !== st.sms) return false;
+            if (st.idDoc !== 'all' && normalizeMemberStatus(row.idDoc) !== st.idDoc) return false;
+            if (st.account !== 'all' && normalizeMemberStatus(row.account) !== st.account) return false;
+            if (st.kyc !== 'all' && kycResultValue(row) !== st.kyc) return false;
+            var joined = joinedDateKey(row.joinedAt);
+            if (st.from && (!joined || joined < st.from)) return false;
+            if (st.to && (!joined || joined > st.to)) return false;
+            if (st.search) {
+                var hay = [
+                    row.storeId || '',
+                    row.storeName || '',
+                    row.name || '',
+                    row.loginId || ''
+                ].join(' ').toLowerCase();
+                if (hay.indexOf(st.search) === -1) return false;
+            }
+            return true;
+        }
+        function getFilteredMembersForExport() {
+            var st = getMemberFilterState();
+            return getAllMembersWithStore().filter(function (row) { return memberDataMatchesFilters(row, st); });
+        }
+        function csvCell(value) {
+            var s = String(value == null ? '' : value).replace(/"/g, '""');
+            return '"' + s + '"';
+        }
+        function openMemberExportModal() {
+            var modal = document.getElementById('memberExportModal');
+            if (!modal) return;
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
+        }
+        function closeMemberExportModal() {
+            var modal = document.getElementById('memberExportModal');
+            if (!modal) return;
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+        function downloadFilteredMembersCsv() {
+            var selected = Array.prototype.filter.call(
+                document.querySelectorAll('#memberExportModal input[type="checkbox"][data-export-col]'),
+                function (el) { return el.checked; }
+            ).map(function (el) { return el.getAttribute('data-export-col'); });
+            if (!selected.length) {
+                alert('다운로드할 항목을 1개 이상 선택해 주세요.');
+                return;
+            }
+            var rows = getFilteredMembersForExport();
+            if (!rows.length) {
+                alert('다운로드할 회원 데이터가 없습니다.');
+                return;
+            }
+            var defs = {
+                storeName: { h: '가맹명', v: function (r) { return r.storeName || ''; } },
+                name: { h: '이름', v: function (r) { return r.name || ''; } },
+                joinedAt: { h: '가입 일시', v: function (r) { return formatJoinedAt(r.joinedAt); } },
+                phone: { h: '전화 번호', v: function (r) { return r.phone || ''; } },
+                idDoc: { h: '신분증 인증', v: function (r) { return memberStatusKo(r.idDoc); } },
+                accountInfo: {
+                    h: '계좌 정보',
+                    v: function (r) {
+                        var bank = r.bankName || '';
+                        var num = r.accountNumber || '';
+                        var holder = r.accountHolder || '';
+                        return [bank, num, holder].filter(Boolean).join(' / ');
+                    }
+                },
+                kycResult: { h: 'KYC 결과', v: function (r) { return kycResultValue(r) === 'complete' ? '완료' : '미완료'; } }
+            };
+            var headers = selected.map(function (k) { return defs[k].h; });
+            var lines = [headers.map(csvCell).join(',')];
+            rows.forEach(function (r) {
+                lines.push(selected.map(function (k) { return csvCell(defs[k].v(r)); }).join(','));
+            });
+            var blob = new Blob(["\uFEFF" + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+            var a = document.createElement('a');
+            var d = new Date();
+            function p(n) { return n < 10 ? '0' + n : '' + n; }
+            a.href = URL.createObjectURL(blob);
+            a.download = 'members_' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '_' + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds()) + '.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(a.href);
+            closeMemberExportModal();
         }
 
         function setStoreFilter(storeId) {
@@ -5060,7 +5459,10 @@
             if (e.target === this || e.target.classList.contains('member-image-preview-hint')) closeMemberImagePreview();
         });
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') closeMemberImagePreview();
+            if (e.key === 'Escape') {
+                closeMemberImagePreview();
+                closeMemberExportModal();
+            }
         });
         document.getElementById('memberList').addEventListener('click', function (e) {
             var t = e.target;
@@ -5200,10 +5602,40 @@
             btnSaveGate.dataset.bound = '1';
             btnSaveGate.addEventListener('click', saveHqStoreGateSettings);
         }
-        var memberSearchInp = document.getElementById('memberListSearchInput');
-        if (memberSearchInp && !memberSearchInp.dataset.memberSearchBound) {
-            memberSearchInp.dataset.memberSearchBound = '1';
-            memberSearchInp.addEventListener('input', function () { applyStoreFilter(); });
+        ['memberFilterStoreSearch', 'memberFilterDateFrom', 'memberFilterDateTo', 'memberFilterStoreSelect', 'memberFilterSms', 'memberFilterIdDoc', 'memberFilterAccount', 'memberFilterKyc']
+            .forEach(function (id) {
+                var el = document.getElementById(id);
+                if (!el || el.dataset.memberFilterBound) return;
+                el.dataset.memberFilterBound = '1';
+                var eventName = (el.tagName === 'INPUT' && el.type === 'search') ? 'input' : 'change';
+                el.addEventListener(eventName, applyStoreFilter);
+            });
+        var btnMemberApply = document.getElementById('btnMemberFilterApply');
+        if (btnMemberApply && !btnMemberApply.dataset.memberBound) {
+            btnMemberApply.dataset.memberBound = '1';
+            btnMemberApply.addEventListener('click', applyStoreFilter);
+        }
+        var btnMemberExportOpen = document.getElementById('btnMemberExportOpen');
+        if (btnMemberExportOpen && !btnMemberExportOpen.dataset.memberBound) {
+            btnMemberExportOpen.dataset.memberBound = '1';
+            btnMemberExportOpen.addEventListener('click', openMemberExportModal);
+        }
+        var btnMemberExportCancel = document.getElementById('btnMemberExportCancel');
+        if (btnMemberExportCancel && !btnMemberExportCancel.dataset.memberBound) {
+            btnMemberExportCancel.dataset.memberBound = '1';
+            btnMemberExportCancel.addEventListener('click', closeMemberExportModal);
+        }
+        var btnMemberExportDownload = document.getElementById('btnMemberExportDownload');
+        if (btnMemberExportDownload && !btnMemberExportDownload.dataset.memberBound) {
+            btnMemberExportDownload.dataset.memberBound = '1';
+            btnMemberExportDownload.addEventListener('click', downloadFilteredMembersCsv);
+        }
+        var memberExportModal = document.getElementById('memberExportModal');
+        if (memberExportModal && !memberExportModal.dataset.memberBound) {
+            memberExportModal.dataset.memberBound = '1';
+            memberExportModal.addEventListener('click', function (e) {
+                if (e.target === memberExportModal) closeMemberExportModal();
+            });
         }
         syncSettlementTableRowSearchAttr();
         applySettlementStoreFilter();
