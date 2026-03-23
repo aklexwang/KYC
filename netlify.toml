@@ -2,6 +2,14 @@
 [build]
   publish = "."
 
+# 로컬: npm run dev → scripts/local-dev-server.js (Netlify CLI 불필요)
+# 대안: npm run dev:netlify (npx netlify-cli, 느리거나 멈출 수 있음)
+[dev]
+  framework = "#static"
+  publish = "."
+  functions = "netlify/functions"
+  port = 8888
+
 [[redirects]]
   from = "/api/kyc"
   to = "/.netlify/functions/kyc"
@@ -89,5 +97,17 @@
 [[redirects]]
   from = "/api/account-verify"
   to = "/.netlify/functions/account-verify"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/hq-login"
+  to = "/.netlify/functions/hq-login"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/hq-admins"
+  to = "/.netlify/functions/hq-admins"
   status = 200
   force = true

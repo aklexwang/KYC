@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" crossorigin>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -1439,7 +1440,7 @@
                     0 0 0 3px rgba(250, 204, 21, 1);
             }
         }
-        #section-account-queue .table--account-queue { min-width: 960px; }
+        #section-account-queue .table--account-queue { min-width: 1040px; }
         #section-account-queue .account-queue-wrap { margin-top: 8px; }
         #section-account-queue .hq-code-input {
             width: 88px;
@@ -1467,6 +1468,443 @@
         #section-account-queue .account-queue-status { font-size: 12px; font-weight: 600; }
         #section-account-queue .account-queue-status--pending { color: #fbbf24; }
         #section-account-queue .account-queue-status--sent { color: #86efac; }
+        #section-account-queue .td-code-sent-by { font-size: 12px; color: rgba(255, 255, 255, 0.72); max-width: 140px; }
+
+        /* 본사 현황판 (overview) */
+        #section-overview.hq-overview-wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .hq-overview-title {
+            text-align: center;
+            margin: 0 0 22px 0;
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #f8fafc;
+        }
+        .hq-overview-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .hq-oc-card {
+            background: linear-gradient(165deg, rgba(22, 33, 58, 0.95) 0%, rgba(12, 18, 35, 0.98) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 16px 14px 14px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+        }
+        .hq-oc-card--alert {
+            border-color: rgba(217, 119, 6, 0.55);
+            box-shadow: 0 0 0 1px rgba(217, 119, 6, 0.15), 0 8px 28px rgba(0, 0, 0, 0.35);
+        }
+        .hq-oc-card .hq-oc-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(148, 163, 184, 0.95);
+            margin: 0 0 8px 0;
+        }
+        .hq-oc-card .hq-oc-num {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #f1f5f9;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
+        }
+        .hq-oc-card .hq-oc-sub {
+            margin: 8px 0 0 0;
+            font-size: 11px;
+            line-height: 1.45;
+            color: rgba(148, 163, 184, 0.88);
+        }
+        .hq-overview-mid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        @media (max-width: 900px) {
+            .hq-overview-mid { grid-template-columns: 1fr; }
+        }
+        .hq-overview-panel {
+            background: linear-gradient(165deg, rgba(22, 33, 58, 0.92) 0%, rgba(12, 18, 35, 0.96) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 16px 16px 14px;
+        }
+        .hq-overview-panel-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 14px;
+            margin-bottom: 12px;
+        }
+        .hq-overview-panel-head h3 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+        .hq-overview-date-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 12px;
+            color: rgba(148, 163, 184, 0.9);
+        }
+        .hq-overview-date-row input[type="date"] {
+            padding: 6px 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: #0f1d4c;
+            color: #e2e8f0;
+            font-size: 12px;
+            font-family: inherit;
+            color-scheme: dark;
+        }
+        .hq-ov-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .hq-ov-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+        }
+        .hq-ov-pill--live {
+            background: rgba(120, 53, 15, 0.45);
+            border-color: rgba(251, 191, 36, 0.35);
+            color: #fde68a;
+        }
+        .hq-overview-recent {
+            background: linear-gradient(165deg, rgba(22, 33, 58, 0.92) 0%, rgba(12, 18, 35, 0.96) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 16px 16px 8px;
+            margin-bottom: 18px;
+        }
+        .hq-overview-recent-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .hq-overview-recent-head h2 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 800;
+            color: #f1f5f9;
+        }
+        .hq-overview-link-all {
+            background: none;
+            border: none;
+            color: #7dd3fc;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            text-decoration: underline;
+            padding: 0;
+        }
+        .hq-overview-link-all:hover { color: #bae6fd; }
+        .table--hq-overview-recent {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 520px;
+            font-size: 13px;
+        }
+        .table--hq-overview-recent th {
+            text-align: left;
+            padding: 10px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: rgba(148, 163, 184, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .table--hq-overview-recent td {
+            padding: 10px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            color: rgba(241, 245, 249, 0.92);
+        }
+        .hq-ov-kind-grant { color: #86efac; font-weight: 600; }
+        .hq-ov-kind-deduct { color: #fecaca; font-weight: 600; }
+        .hq-ov-kind-deposit { color: #7dd3fc; font-weight: 600; }
+        .hq-ov-amt-pos { color: #86efac; font-weight: 700; font-variant-numeric: tabular-nums; }
+        .hq-ov-amt-neg { color: #fecaca; font-weight: 700; font-variant-numeric: tabular-nums; }
+        .hq-ov-st--hot { color: #fca5a5; font-weight: 700; }
+        .hq-ov-st--ok { color: #86efac; font-weight: 600; }
+        .hq-ov-st--cancel { color: #94a3b8; font-weight: 600; }
+        .hq-overview-shortcuts h3 {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            font-weight: 800;
+            color: #e2e8f0;
+        }
+        .hq-overview-shortcuts-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .hq-sc-btn {
+            padding: 12px 18px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+        }
+        .hq-sc-btn:hover { filter: brightness(1.06); }
+        .hq-sc-btn:active { filter: brightness(0.96); }
+
+        .hq-app-root { display: none; min-height: 100vh; }
+        .hq-app-root.is-visible { display: block; }
+        .hq-login-section {
+            position: fixed;
+            inset: 0;
+            z-index: 300;
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 20px;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            isolation: isolate;
+            font-family: 'Pretendard', 'Inter', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+            background:
+                radial-gradient(ellipse 120% 80% at 100% 0%, rgba(43, 127, 255, 0.14), transparent 55%),
+                radial-gradient(ellipse 90% 70% at 0% 100%, rgba(0, 0, 0, 0.45), transparent 50%),
+                linear-gradient(155deg, #0a1528 0%, #0d1b32 38%, #081018 100%);
+            box-sizing: border-box;
+        }
+        .hq-login-section.is-visible { display: flex; }
+        .hq-login-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.18' stroke-width='0.65' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M36 11 L58.5 52 H13.5 Z'/%3E%3Cpath d='M17.5 47 V26 L25.5 35.5 L36 23 L46.5 35.5 L54.5 26 V47'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 72px 72px;
+            background-repeat: repeat;
+        }
+        .hq-login-section::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 75% 45% at 18% 5%, rgba(37, 99, 235, 0.12), transparent 50%),
+                radial-gradient(ellipse 55% 40% at 92% 88%, rgba(15, 23, 42, 0.5), transparent 48%);
+        }
+        .hq-login-card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+            background: rgba(13, 20, 37, 0.94);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 22px;
+            padding: 40px 36px 36px;
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.04) inset,
+                0 24px 64px rgba(0, 0, 0, 0.45),
+                0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+        .hq-login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 28px;
+            right: 28px;
+            height: 3px;
+            border-radius: 0 0 4px 4px;
+            background: linear-gradient(90deg, #3078f0, #2563eb, #1e3a8a);
+            opacity: 0.95;
+        }
+        .hq-login-card-brand-icon {
+            display: block;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            object-fit: contain;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+            margin-bottom: 18px;
+        }
+        .hq-login-card h2 {
+            margin: 0 0 8px 0;
+            font-size: 1.375rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: #f8fafc;
+        }
+        .hq-login-card .hq-login-sub {
+            margin: 0 0 24px 0;
+            font-size: 0.9375rem;
+            line-height: 1.55;
+            color: rgba(255, 255, 255, 0.55);
+        }
+        .hq-login-card .field { margin-bottom: 18px; }
+        .hq-login-card .field label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.72);
+            margin-bottom: 8px;
+        }
+        .hq-login-card .field input {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            box-sizing: border-box;
+            background: #141f33;
+            color: #f1f5f9;
+        }
+        .hq-login-card .field input:focus {
+            outline: none;
+            border-color: rgba(37, 99, 235, 0.75);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+        }
+        .hq-login-card .btn-hq-login-submit {
+            width: 100%;
+            padding: 14px 16px;
+            margin-top: 8px;
+            background: linear-gradient(180deg, #3078f0 0%, #2563eb 55%, #1e66d5 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(37, 99, 235, 0.35);
+        }
+        .hq-login-card .btn-hq-login-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .hq-login-error {
+            color: #fca5a5;
+            font-size: 0.8125rem;
+            margin-top: 10px;
+            line-height: 1.45;
+            display: none;
+        }
+        .hq-login-error.show { display: block; }
+        .hq-bootstrap-panel {
+            margin-top: 22px;
+            padding-top: 22px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+        .hq-bootstrap-panel.is-visible { display: block; }
+        .hq-bootstrap-panel h3 {
+            margin: 0 0 10px 0;
+            font-size: 0.9375rem;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+        .hq-bootstrap-hint {
+            font-size: 0.8125rem;
+            color: rgba(255, 255, 255, 0.45);
+            margin: 0 0 14px 0;
+            line-height: 1.5;
+        }
+        .admin-header { position: relative; }
+        .hq-header-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px 16px;
+        }
+        .hq-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .hq-header-user {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.88);
+        }
+        .btn-hq-logout {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-hq-logout:hover { background: rgba(255, 255, 255, 0.25); }
+        .settings-hq-admins-panel {
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        .settings-hq-admins-panel .hq-admin-add-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 12px;
+            align-items: flex-end;
+            margin-bottom: 16px;
+        }
+        .settings-hq-admins-panel .hq-admin-add-form .field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .settings-hq-admins-panel .hq-admin-add-form label { font-size: 12px; font-weight: 600; color: #5c5c5c; }
+        .settings-hq-admins-panel .hq-admin-add-form input {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #E5E5EA;
+            font-size: 14px;
+            min-width: 120px;
+            font-family: inherit;
+        }
+        .table--hq-admins { min-width: 480px; width: 100%; border-collapse: collapse; margin-top: 8px; }
+        .table--hq-admins th { background: #1A2F4A; color: #fff; font-size: 12px; padding: 10px 12px; text-align: left; }
+        .table--hq-admins td { padding: 10px 12px; border-bottom: 1px solid #E5E5EA; font-size: 14px; }
+        .btn-hq-admin-remove {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            background: #c62828;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-hq-admin-remove:disabled { opacity: 0.45; cursor: not-allowed; }
 
         @media (max-width: 1000px) {
             .dashboard-shell { display: block; }
@@ -1476,6 +1914,46 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
+    <div id="hqLoginWrap" class="hq-login-section is-visible" aria-hidden="false">
+        <div class="hq-login-card">
+            <img src="kyc-icon.png" alt="" class="hq-login-card-brand-icon" width="40" height="40" decoding="async">
+            <h2>본사 어드민 로그인</h2>
+            <p class="hq-login-sub">본사 관리자 아이디와 비밀번호를 입력하세요.</p>
+            <div class="field">
+                <label for="hqLoginId">아이디</label>
+                <input type="text" id="hqLoginId" placeholder="본사 관리자 아이디" autocomplete="username">
+            </div>
+            <div class="field">
+                <label for="hqLoginPassword">비밀번호</label>
+                <input type="password" id="hqLoginPassword" placeholder="비밀번호" autocomplete="current-password">
+            </div>
+            <p id="hqLoginError" class="hq-login-error" role="alert"></p>
+            <button type="button" class="btn-hq-login-submit" id="btnHqLogin">로그인</button>
+            <div id="hqBootstrapPanel" class="hq-bootstrap-panel">
+                <h3>최초 관리자 등록</h3>
+                <p class="hq-bootstrap-hint">저장소에 본사 관리자가 없습니다. Netlify에 설정한 <strong>HQ_ACCOUNT_VERIFY_SECRET</strong>(또는 <strong>HQ_BOOTSTRAP_SECRET</strong>)과 동일한 값을 아래에 입력한 뒤 첫 계정을 만드세요.</p>
+                <div class="field">
+                    <label for="hqBootstrapSecret">설정용 비밀번호</label>
+                    <input type="password" id="hqBootstrapSecret" placeholder="환경변수와 동일" autocomplete="off">
+                </div>
+                <div class="field">
+                    <label for="hqBootstrapId">아이디</label>
+                    <input type="text" id="hqBootstrapId" placeholder="로그인 아이디" autocomplete="off">
+                </div>
+                <div class="field">
+                    <label for="hqBootstrapPw">비밀번호</label>
+                    <input type="password" id="hqBootstrapPw" placeholder="로그인 비밀번호" autocomplete="new-password">
+                </div>
+                <div class="field">
+                    <label for="hqBootstrapNickname">닉네임 (표시명)</label>
+                    <input type="text" id="hqBootstrapNickname" placeholder="예: 김본사" autocomplete="off">
+                </div>
+                <button type="button" class="btn-hq-login-submit" id="btnHqBootstrap">첫 관리자 등록</button>
+                <p id="hqBootstrapError" class="hq-login-error" style="margin-top:12px;"></p>
+            </div>
+        </div>
+    </div>
+    <div id="hqAppRoot" class="hq-app-root">
     <div class="dashboard-shell">
     <aside class="dashboard-sidebar">
         <h2 class="sidebar-title">Admin Dashboard</h2>
@@ -1494,34 +1972,110 @@
     </aside>
     <div class="dashboard-main">
     <header class="admin-header">
-        <h1>본사 어드민</h1>
-        <p>가맹점별 KYC 회원 현황 조회</p>
-    </header>
-    <main class="admin-body">
-        <section id="section-overview" class="dashboard-section active">
-        <div class="summary-cards">
-            <div class="summary-card">
-                <div class="num" id="totalStores">0</div>
-                <div class="label">전체 가맹점</div>
+        <div class="hq-header-row">
+            <div>
+                <h1>본사 어드민</h1>
+                <p>가맹점별 KYC 회원 현황 조회</p>
             </div>
-            <div class="summary-card">
-                <div class="num" id="totalMembers">0</div>
-                <div class="label">전체 회원</div>
-            </div>
-            <div class="summary-card">
-                <div class="num" id="totalKycDone">0</div>
-                <div class="label">KYC 인증 완료</div>
+            <div class="hq-header-actions">
+                <span class="hq-header-user" id="hqHeaderUserLabel"></span>
+                <button type="button" class="btn-hq-logout" id="btnHqLogout">로그아웃</button>
             </div>
         </div>
-        <div class="overview-chart-wrap" id="overviewChartWrap">
-            <div class="overview-chart-head">
-                <h3 class="overview-chart-title">포인트 내역 · 본사 수익 추이</h3>
-                <p class="overview-chart-desc">최근 30일간 가맹점 포인트 <strong>지급</strong>·<strong>차감</strong>을 일별로 집계합니다. 차감은 가맹점에서 회수한 USDT, 지급은 가맹점에 지급한 USDT입니다. (취소 건은 제외)</p>
+    </header>
+    <main class="admin-body">
+        <section id="section-overview" class="dashboard-section active hq-overview-wrap">
+        <div class="hq-overview">
+            <h1 class="hq-overview-title">현황판</h1>
+            <div class="hq-overview-cards">
+                <div class="hq-oc-card">
+                    <p class="hq-oc-label">가맹점</p>
+                    <p class="hq-oc-num" id="ovStoresNum">0</p>
+                    <p class="hq-oc-sub" id="ovStoresSub">신규 0 · 정상 0 · 정지 0 · 탈퇴 0</p>
+                </div>
+                <div class="hq-oc-card">
+                    <p class="hq-oc-label">전체 회원</p>
+                    <p class="hq-oc-num" id="ovMembersNum">0</p>
+                    <p class="hq-oc-sub" id="ovMembersSub">KYC 완료 0명 (0%)</p>
+                </div>
+                <div class="hq-oc-card">
+                    <p class="hq-oc-label">가맹점 포인트 합계</p>
+                    <p class="hq-oc-num" id="ovPointsSum">0 USDT</p>
+                </div>
+                <div class="hq-oc-card">
+                    <p class="hq-oc-label">누적 수수료 합계</p>
+                    <p class="hq-oc-num" id="ovFeesSum">0 USDT</p>
+                </div>
+                <div class="hq-oc-card hq-oc-card--alert">
+                    <p class="hq-oc-label">1원 이체 대기</p>
+                    <p class="hq-oc-num" id="ovWonPending">0</p>
+                    <p class="hq-oc-sub">처리가 필요한 건수</p>
+                </div>
+                <div class="hq-oc-card">
+                    <p class="hq-oc-label">가맹점 포인트 충전</p>
+                    <p class="hq-oc-num" id="ovRechargePending">0</p>
+                    <p class="hq-oc-sub">입금 확인중</p>
+                </div>
             </div>
-            <div class="overview-chart-canvas-box">
-                <canvas id="hqRevenueChart" aria-label="포인트 일별 지급 차감 차트"></canvas>
+            <div class="hq-overview-mid">
+                <div class="hq-overview-panel">
+                    <div class="hq-overview-panel-head">
+                        <h3>누적 인증 건수 <span style="font-weight:500;opacity:.75;font-size:12px;">(전 가맹점)</span></h3>
+                        <div class="hq-overview-date-row" title="현재는 전체 누적 기준입니다.">
+                            <span aria-hidden="true">📅</span>
+                            <input type="date" id="overviewStatsFrom" class="hq-ov-date" disabled>
+                            <span>~</span>
+                            <input type="date" id="overviewStatsTo" class="hq-ov-date" disabled>
+                        </div>
+                    </div>
+                    <div class="hq-ov-pills">
+                        <span class="hq-ov-pill">문자 <span id="ovPillSms">0</span> 건</span>
+                        <span class="hq-ov-pill">신분증 <span id="ovPillId">0</span> 건</span>
+                        <span class="hq-ov-pill">1원 인증 <span id="ovPillWon">0</span> 건</span>
+                    </div>
+                </div>
+                <div class="hq-overview-panel">
+                    <div class="hq-overview-panel-head">
+                        <h3>회원 인증 실시간 현황</h3>
+                    </div>
+                    <div class="hq-ov-pills">
+                        <span class="hq-ov-pill hq-ov-pill--live">문자 진행중 <span id="ovLiveSms">0</span></span>
+                        <span class="hq-ov-pill">신분증 진행중 <span id="ovLiveId">0</span></span>
+                        <span class="hq-ov-pill">1원 진행중 <span id="ovLiveWon">0</span></span>
+                        <span class="hq-ov-pill">KYC 미완료 <span id="ovLiveKycInc">0</span></span>
+                    </div>
+                </div>
             </div>
-            <p class="overview-chart-footnote" id="overviewChartFootnote"></p>
+            <div class="hq-overview-recent">
+                <div class="hq-overview-recent-head">
+                    <h2>최근 포인트 내역</h2>
+                    <button type="button" class="hq-overview-link-all" id="btnOverviewPointLedgerAll">전체 보기</button>
+                </div>
+                <div class="table-scroll" style="overflow-x:auto;">
+                    <table class="table--hq-overview-recent">
+                        <thead>
+                            <tr>
+                                <th>일시</th>
+                                <th>가맹점</th>
+                                <th>구분</th>
+                                <th>변동</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overviewRecentPointBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="hq-overview-shortcuts">
+                <h3>바로가기</h3>
+                <div class="hq-overview-shortcuts-btns">
+                    <button type="button" class="hq-sc-btn" data-hq-shortcut="stores">가맹점 관리</button>
+                    <button type="button" class="hq-sc-btn" data-hq-shortcut="members">회원 목록</button>
+                    <button type="button" class="hq-sc-btn" data-hq-shortcut="accountQueue">1원 인증</button>
+                    <button type="button" class="hq-sc-btn" data-hq-shortcut="settlement">수수료 통계</button>
+                    <button type="button" class="hq-sc-btn" data-hq-shortcut="pointLedger">포인트 내역</button>
+                </div>
+            </div>
         </div>
         </section>
 
@@ -1540,6 +2094,7 @@
                                 <th>예금주</th>
                                 <th>상태</th>
                                 <th>4자리 입력</th>
+                                <th>입금코드 처리</th>
                                 <th>확인</th>
                             </tr>
                         </thead>
@@ -2000,8 +2555,43 @@
             </div>
             <p class="settings-hint" id="hqStoreGateSaveStatus" aria-live="polite"></p>
         </div>
+        <div class="settings-panel settings-hq-admins-panel">
+            <h3 class="settlement-title">본사 관리자 계정</h3>
+            <p class="section-desc settings-desc">1원 인증에서 입금 4자리를 보낸 사람이 닉네임으로 기록됩니다. 마지막 한 명은 삭제할 수 없으며, 본인 계정은 여기서 삭제할 수 없습니다.</p>
+            <div class="hq-admin-add-form">
+                <div class="field">
+                    <label for="hqAdminAddId">아이디</label>
+                    <input type="text" id="hqAdminAddId" placeholder="새 관리자 로그인 ID" autocomplete="off">
+                </div>
+                <div class="field">
+                    <label for="hqAdminAddPw">비밀번호</label>
+                    <input type="password" id="hqAdminAddPw" placeholder="비밀번호" autocomplete="new-password">
+                </div>
+                <div class="field">
+                    <label for="hqAdminAddNickname">닉네임</label>
+                    <input type="text" id="hqAdminAddNickname" placeholder="화면에 표시될 이름" autocomplete="off">
+                </div>
+                <button type="button" class="btn-settlement-query" id="btnHqAdminAdd">추가</button>
+            </div>
+            <p class="settings-hint" id="hqAdminsSaveStatus" aria-live="polite"></p>
+            <div class="table-wrap">
+                <div class="table-scroll">
+                    <table class="table--hq-admins">
+                        <thead>
+                            <tr>
+                                <th>아이디</th>
+                                <th>닉네임</th>
+                                <th>삭제</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hqAdminsListBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
         </section>
     </main>
+    </div>
     </div>
     </div>
     <div id="memberImagePreview" class="member-image-preview-overlay" role="dialog" aria-modal="true" aria-hidden="true">
@@ -2012,6 +2602,256 @@
     </div>
     <script>
         window.ADMIN_API_BASE = window.ADMIN_API_BASE || (typeof location !== 'undefined' ? location.origin : '');
+
+        var HQ_SESSION_TOKEN_KEY = 'hqSessionToken';
+        var HQ_ADMIN_NICK_KEY = 'hqAdminNickname';
+        var HQ_ADMIN_ID_KEY = 'hqAdminId';
+
+        function getHqSessionToken() {
+            try { return sessionStorage.getItem(HQ_SESSION_TOKEN_KEY) || ''; } catch (e) { return ''; }
+        }
+        function setHqSession(token, nickname, adminId) {
+            try {
+                if (token) sessionStorage.setItem(HQ_SESSION_TOKEN_KEY, token);
+                if (nickname != null) sessionStorage.setItem(HQ_ADMIN_NICK_KEY, nickname);
+                if (adminId != null) sessionStorage.setItem(HQ_ADMIN_ID_KEY, adminId);
+            } catch (e) {}
+        }
+        function clearHqSession() {
+            try {
+                sessionStorage.removeItem(HQ_SESSION_TOKEN_KEY);
+                sessionStorage.removeItem(HQ_ADMIN_NICK_KEY);
+                sessionStorage.removeItem(HQ_ADMIN_ID_KEY);
+            } catch (e) {}
+        }
+        function hqJsonHeaders() {
+            var h = { 'Content-Type': 'application/json' };
+            var t = getHqSessionToken();
+            if (t) h['X-HQ-Admin-Token'] = t;
+            return h;
+        }
+        function hqEscHtml(t) {
+            return String(t == null ? '' : t)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function showHqLoginScreen() {
+            var w = document.getElementById('hqLoginWrap');
+            var app = document.getElementById('hqAppRoot');
+            if (w) { w.classList.add('is-visible'); w.setAttribute('aria-hidden', 'false'); }
+            if (app) app.classList.remove('is-visible');
+            refreshHqBootstrapVisibility();
+        }
+        function hideHqLoginScreen() {
+            var w = document.getElementById('hqLoginWrap');
+            var app = document.getElementById('hqAppRoot');
+            if (w) { w.classList.remove('is-visible'); w.setAttribute('aria-hidden', 'true'); }
+            if (app) app.classList.add('is-visible');
+        }
+        function updateHqHeaderUser() {
+            var el = document.getElementById('hqHeaderUserLabel');
+            if (!el) return;
+            try {
+                var n = sessionStorage.getItem(HQ_ADMIN_NICK_KEY) || '';
+                var id = sessionStorage.getItem(HQ_ADMIN_ID_KEY) || '';
+                el.textContent = n ? (n + ' 님') : (id ? (id + ' 님') : '');
+            } catch (e) { el.textContent = ''; }
+        }
+        function refreshHqBootstrapVisibility() {
+            var api = window.ADMIN_API_BASE || '';
+            var panel = document.getElementById('hqBootstrapPanel');
+            if (!api || !panel) return;
+            fetch(api + '/api/hq-admins', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'status' })
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (d && d.needBootstrap) panel.classList.add('is-visible');
+                    else panel.classList.remove('is-visible');
+                })
+                .catch(function () { panel.classList.remove('is-visible'); });
+        }
+
+        var hqLoginUiBound = false;
+        function bindHqLoginUiOnce() {
+            if (hqLoginUiBound) return;
+            hqLoginUiBound = true;
+            refreshHqBootstrapVisibility();
+            var btn = document.getElementById('btnHqLogin');
+            if (btn) btn.addEventListener('click', doHqLogin);
+            var bp = document.getElementById('btnHqBootstrap');
+            if (bp) bp.addEventListener('click', doHqBootstrap);
+            var lo = document.getElementById('btnHqLogout');
+            if (lo) lo.addEventListener('click', function () { clearHqSession(); location.reload(); });
+        }
+
+        function doHqLogin() {
+            var api = window.ADMIN_API_BASE || '';
+            var idInput = document.getElementById('hqLoginId');
+            var pwInput = document.getElementById('hqLoginPassword');
+            var err = document.getElementById('hqLoginError');
+            var btn = document.getElementById('btnHqLogin');
+            var id = idInput && idInput.value ? idInput.value.trim() : '';
+            var pw = pwInput && pwInput.value ? pwInput.value : '';
+            if (!id || !pw) {
+                if (err) { err.textContent = '아이디와 비밀번호를 입력하세요.'; err.classList.add('show'); }
+                return;
+            }
+            if (err) err.classList.remove('show');
+            if (btn) btn.disabled = true;
+            fetch(api + '/api/hq-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id, password: pw })
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (btn) btn.disabled = false;
+                    if (d && d.ok && d.token) {
+                        setHqSession(d.token, d.nickname, d.adminId);
+                        hideHqLoginScreen();
+                        updateHqHeaderUser();
+                        bootHqDashboard();
+                    } else {
+                        if (err) {
+                            err.textContent = (d && d.error) ? d.error : ((d && d.message) ? d.message : '로그인에 실패했습니다.');
+                            err.classList.add('show');
+                        }
+                    }
+                })
+                .catch(function () {
+                    if (btn) btn.disabled = false;
+                    if (err) { err.textContent = '서버에 연결하지 못했습니다.'; err.classList.add('show'); }
+                });
+        }
+
+        function doHqBootstrap() {
+            var api = window.ADMIN_API_BASE || '';
+            var err = document.getElementById('hqBootstrapError');
+            var sec = document.getElementById('hqBootstrapSecret');
+            var idInput = document.getElementById('hqBootstrapId');
+            var pwInput = document.getElementById('hqBootstrapPw');
+            var nnInput = document.getElementById('hqBootstrapNickname');
+            var btn = document.getElementById('btnHqBootstrap');
+            if (err) { err.classList.remove('show'); err.textContent = ''; }
+            var payload = {
+                action: 'bootstrap',
+                setupSecret: sec ? sec.value : '',
+                id: idInput && idInput.value ? idInput.value.trim() : '',
+                password: pwInput && pwInput.value ? pwInput.value : '',
+                nickname: nnInput && nnInput.value ? nnInput.value.trim() : ''
+            };
+            if (btn) btn.disabled = true;
+            fetch(api + '/api/hq-admins', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (btn) btn.disabled = false;
+                    if (d && d.ok) {
+                        if (err) err.classList.remove('show');
+                        var bp = document.getElementById('hqBootstrapPanel');
+                        if (bp) bp.classList.remove('is-visible');
+                        var li = document.getElementById('hqLoginId');
+                        var lp = document.getElementById('hqLoginPassword');
+                        if (li) li.value = payload.id;
+                        if (lp) lp.value = payload.password;
+                        alert('첫 관리자가 등록되었습니다. 로그인해 주세요.');
+                    } else if (err) {
+                        err.textContent = (d && d.error) ? d.error : '등록에 실패했습니다.';
+                        err.classList.add('show');
+                    }
+                })
+                .catch(function () {
+                    if (btn) btn.disabled = false;
+                    if (err) { err.textContent = '요청에 실패했습니다.'; err.classList.add('show'); }
+                });
+        }
+
+        function loadHqAdminsList() {
+            var api = window.ADMIN_API_BASE || '';
+            var tbody = document.getElementById('hqAdminsListBody');
+            if (!tbody || !getHqSessionToken()) return;
+            fetch(api + '/api/hq-admins', {
+                method: 'POST',
+                headers: hqJsonHeaders(),
+                body: JSON.stringify({ action: 'list' })
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (!d || !d.ok) {
+                        tbody.innerHTML = '<tr><td colspan="3">목록을 불러오지 못했습니다.</td></tr>';
+                        return;
+                    }
+                    var admins = d.admins || [];
+                    var selfId = '';
+                    try { selfId = sessionStorage.getItem(HQ_ADMIN_ID_KEY) || ''; } catch (e2) {}
+                    tbody.innerHTML = admins.map(function (a) {
+                        var dis = (admins.length <= 1 || a.id === selfId) ? ' disabled' : '';
+                        return '<tr><td>' + hqEscHtml(a.id) + '</td><td>' + hqEscHtml(a.nickname) + '</td><td><button type="button" class="btn-hq-admin-remove" data-id="' + hqEscHtml(a.id) + '"' + dis + '>삭제</button></td></tr>';
+                    }).join('');
+                    tbody.querySelectorAll('.btn-hq-admin-remove').forEach(function (b) {
+                        b.addEventListener('click', function () {
+                            var rid = b.getAttribute('data-id');
+                            if (!rid || b.disabled) return;
+                            if (!confirm('관리자 "' + rid + '" 을(를) 삭제할까요?')) return;
+                            fetch(api + '/api/hq-admins', {
+                                method: 'POST',
+                                headers: hqJsonHeaders(),
+                                body: JSON.stringify({ action: 'remove', id: rid })
+                            })
+                                .then(function (r2) { return r2.json(); })
+                                .then(function (d2) {
+                                    if (d2 && d2.ok) loadHqAdminsList();
+                                    else alert((d2 && d2.error) || '삭제에 실패했습니다.');
+                                })
+                                .catch(function () { alert('요청에 실패했습니다.'); });
+                        });
+                    });
+                })
+                .catch(function () {
+                    tbody.innerHTML = '<tr><td colspan="3">목록을 불러오지 못했습니다.</td></tr>';
+                });
+        }
+
+        function tryHqSessionAndBoot() {
+            var api = window.ADMIN_API_BASE || '';
+            var tok = getHqSessionToken();
+            if (!tok) {
+                bindHqLoginUiOnce();
+                return;
+            }
+            fetch(api + '/api/hq-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'validate', token: tok })
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (d && d.ok && d.admin) {
+                        setHqSession(tok, d.admin.nickname, d.admin.id);
+                        hideHqLoginScreen();
+                        updateHqHeaderUser();
+                        bootHqDashboard();
+                    } else {
+                        clearHqSession();
+                        showHqLoginScreen();
+                        bindHqLoginUiOnce();
+                    }
+                })
+                .catch(function () {
+                    clearHqSession();
+                    showHqLoginScreen();
+                    bindHqLoginUiOnce();
+                });
+        }
 
         function demoMemberJoinedIso(daysAgo, hour, minute) {
             var d = new Date();
@@ -2088,7 +2928,10 @@
                     if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
                 } catch (eN) {}
             }
-            if (nextView === 'settings') loadHqStoreGateSettings();
+            if (nextView === 'settings') {
+                loadHqStoreGateSettings();
+                loadHqAdminsList();
+            }
             if (nextView === 'accountQueue') {
                 loadAccountVerifyQueue();
                 try {
@@ -2096,7 +2939,7 @@
                 } catch (e2) {}
             }
             if (nextView === 'overview') {
-                setTimeout(function () { updateOverviewRevenueChart(); }, 0);
+                setTimeout(function () { updateOverviewDashboard(); }, 0);
             }
             persistDashboardView(nextView);
         }
@@ -2143,7 +2986,7 @@
         function loadAccountVerifyQueue() {
             var api = window.ADMIN_API_BASE || '';
             if (!api) {
-                document.getElementById('accountQueueBody').innerHTML = '<tr><td colspan="8" class="no-data">API 베이스가 없습니다.</td></tr>';
+                document.getElementById('accountQueueBody').innerHTML = '<tr><td colspan="9" class="no-data">API 베이스가 없습니다.</td></tr>';
                 return;
             }
             fetch(api + '/api/account-verify')
@@ -2183,7 +3026,7 @@
                     accountQueueSkipNotify = false;
                 })
                 .catch(function () {
-                    document.getElementById('accountQueueBody').innerHTML = '<tr><td colspan="8" class="no-data">목록을 불러오지 못했습니다.</td></tr>';
+                    document.getElementById('accountQueueBody').innerHTML = '<tr><td colspan="9" class="no-data">목록을 불러오지 못했습니다.</td></tr>';
                 });
         }
 
@@ -2191,7 +3034,7 @@
             var tbody = document.getElementById('accountQueueBody');
             if (!tbody) return;
             if (!items || items.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="no-data">대기 중인 계좌 인증이 없습니다.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" class="no-data">대기 중인 계좌 인증이 없습니다.</td></tr>';
                 return;
             }
             function esc(t) {
@@ -2209,6 +3052,7 @@
                 var stLabel = st === 'pending' ? '<span class="account-queue-status account-queue-status--pending">입금 대기</span>' : '<span class="account-queue-status account-queue-status--sent">회원 입력 대기</span>';
                 var disabled = st !== 'pending' ? ' disabled' : '';
                 var inputId = 'hqCode_' + key.replace(/[^a-zA-Z0-9]/g, '_');
+                var sentBy = (st === 'code_sent' && row.codeSentByNickname) ? esc(row.codeSentByNickname) : '—';
                 return '<tr data-store-id="' + sid + '" data-member="' + esc(row.memberName) + '">' +
                     '<td>' + esc(row.storeName || row.storeId) + '</td>' +
                     '<td>' + esc(row.memberName) + '</td>' +
@@ -2217,6 +3061,7 @@
                     '<td>' + esc(row.accountHolder) + '</td>' +
                     '<td>' + stLabel + '</td>' +
                     '<td><input type="text" class="hq-code-input" id="' + inputId + '" maxlength="4" inputmode="numeric" placeholder="0000"' + disabled + ' aria-label="입금 4자리"></td>' +
+                    '<td class="td-code-sent-by">' + sentBy + '</td>' +
                     '<td><button type="button" class="btn-hq-confirm"' + disabled + ' data-input="' + inputId + '">확인</button></td>' +
                     '</tr>';
             }).join('');
@@ -2234,7 +3079,7 @@
                     btn.disabled = true;
                     fetch((window.ADMIN_API_BASE || '') + '/api/account-verify', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: hqJsonHeaders(),
                         body: JSON.stringify({
                             action: 'hqSetDepositCode',
                             storeId: storeId,
@@ -3432,17 +4277,132 @@
             renderStoreListFromState();
         }
 
-        function updateSummary() {
+        function renderOverviewRecentTable() {
+            var tbody = document.getElementById('overviewRecentPointBody');
+            if (!tbody) return;
+            var rows = collectAllPointLedgerRows().slice(0, 10);
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center; color:rgba(148,163,184,0.9);">내역이 없습니다.</td></tr>';
+                return;
+            }
+            var html = '';
+            rows.forEach(function (r) {
+                var st = pickPointLedgerStatus(r);
+                var kind = r.kind;
+                var kLabel = kind === 'deposit' ? '가맹점 충전' : (kind === 'grant' ? '관리자 지급' : '관리자 차감');
+                var kCls = kind === 'deposit' ? 'hq-ov-kind-deposit' : (kind === 'grant' ? 'hq-ov-kind-grant' : 'hq-ov-kind-deduct');
+                var ch = r._phChange != null ? r._phChange : 0;
+                var isDep = kind === 'deposit';
+                var amtStr;
+                if (isDep && (st === '진행중' || st === '처리중')) {
+                    amtStr = '+' + formatStorePointUsdt(pickPointLedgerAmountUsdt(r)) + ' USDT';
+                } else {
+                    amtStr = (ch >= 0 ? '+' : '') + formatStorePointUsdt(Math.abs(ch)) + ' USDT';
+                }
+                var amtCls = (kind === 'deduct' || ch < 0) ? 'hq-ov-amt-neg' : 'hq-ov-amt-pos';
+                var stCls = (st === '진행중' || st === '처리중') ? 'hq-ov-st--hot' : (st === '취소' ? 'hq-ov-st--cancel' : 'hq-ov-st--ok');
+                html += '<tr>';
+                html += '<td>' + escapeHtml(r.dateStr || formatStorePointHistoryDate(r.at)) + '</td>';
+                html += '<td>' + escapeHtml(r.storeName || '-') + '</td>';
+                html += '<td class="' + kCls + '">' + kLabel + '</td>';
+                html += '<td class="' + amtCls + '">' + escapeHtml(amtStr) + '</td>';
+                html += '<td class="' + stCls + '">' + escapeHtml(st) + '</td>';
+                html += '</tr>';
+            });
+            tbody.innerHTML = html;
+        }
+
+        function updateOverviewDashboard() {
             var totalMembers = 0;
             var totalDone = 0;
+            var smsU = 0;
+            var idU = 0;
+            var accU = 0;
+            var totalFees = 0;
+            var pointsSum = 0;
+            var nNormal = 0;
+            var nSus = 0;
+            var nWith = 0;
+            var nNewStores = 0;
+            var now = Date.now();
+            var thirty = 30 * 24 * 3600 * 1000;
             stores.forEach(function (s) {
+                if (!s) return;
                 var list = s.members || [];
                 totalMembers += list.length;
                 totalDone += list.filter(isKycComplete).length;
+                var u = s.usage || { sms: { count: 0 }, idDoc: { count: 0 }, account: { count: 0 } };
+                smsU += (u.sms && u.sms.count) || 0;
+                idU += (u.idDoc && u.idDoc.count) || 0;
+                accU += (u.account && u.account.count) || 0;
+                var ta = s.totalAmount != null ? Number(s.totalAmount) : 0;
+                if (isFinite(ta)) totalFees += ta;
+                ensureStorePointData(s);
+                pointsSum += getStorePointBalance(s);
+                var accSt = getStoreAccountStatus(s);
+                if (accSt === 'normal') nNormal++;
+                else if (accSt === 'suspended') nSus++;
+                else if (accSt === 'withdrawn') nWith++;
+                var ca = s.createdAt || s.created_at;
+                if (ca) {
+                    try {
+                        var t = new Date(ca).getTime();
+                        if (!isNaN(t) && (now - t) <= thirty) nNewStores++;
+                    } catch (e1) {}
+                }
             });
-            document.getElementById('totalStores').textContent = stores.length;
-            document.getElementById('totalMembers').textContent = totalMembers;
-            document.getElementById('totalKycDone').textContent = totalDone;
+            var liveSms = 0;
+            var liveId = 0;
+            var liveWon = 0;
+            var kycInc = 0;
+            stores.forEach(function (s) {
+                (s.members || []).forEach(function (m) {
+                    if (!m) return;
+                    if (m.sms === 'wait') liveSms++;
+                    if (m.idDoc === 'wait') liveId++;
+                    if (m.account === 'wait') liveWon++;
+                    if (!isKycComplete(m)) kycInc++;
+                });
+            });
+            var nStores = stores.length;
+            var pct = totalMembers > 0 ? Math.round((totalDone / totalMembers) * 100) : 0;
+            function setOvText(id, t) {
+                var el = document.getElementById(id);
+                if (el) el.textContent = t;
+            }
+            setOvText('ovStoresNum', String(nStores));
+            setOvText('ovStoresSub', '신규 ' + nNewStores + ' · 정상 ' + nNormal + ' · 정지 ' + nSus + ' · 탈퇴 ' + nWith);
+            setOvText('ovMembersNum', String(totalMembers));
+            setOvText('ovMembersSub', 'KYC 완료 ' + totalDone + '명 (' + pct + '%)');
+            setOvText('ovPointsSum', formatStorePointUsdt(pointsSum) + ' USDT');
+            var feeRounded = Math.round(totalFees * 10) / 10;
+            setOvText('ovFeesSum', feeRounded.toLocaleString('en-US', { maximumFractionDigits: 1 }) + ' USDT');
+            setOvText('ovPillSms', String(smsU));
+            setOvText('ovPillId', String(idU));
+            setOvText('ovPillWon', String(accU));
+            setOvText('ovLiveSms', String(liveSms));
+            setOvText('ovLiveId', String(liveId));
+            setOvText('ovLiveWon', String(liveWon));
+            setOvText('ovLiveKycInc', String(kycInc));
+            setOvText('ovRechargePending', String(countPendingDepositRecharges(stores)));
+            renderOverviewRecentTable();
+            var api = window.ADMIN_API_BASE || '';
+            if (api) {
+                fetch(api + '/api/account-verify')
+                    .then(function (r) { return r.json(); })
+                    .then(function (d) {
+                        var items = (d && d.items) ? d.items : [];
+                        var n = items.filter(function (x) { return x && x.status === 'pending'; }).length;
+                        setOvText('ovWonPending', String(n));
+                    })
+                    .catch(function () {});
+            } else {
+                setOvText('ovWonPending', String(lastAccountQueuePending || 0));
+            }
+        }
+
+        function updateSummary() {
+            updateOverviewDashboard();
         }
 
         function setCreateStorePriceToggleRow(rowKey, enabled) {
@@ -4160,9 +5120,27 @@
             }
         }
 
+        function bootHqDashboard() {
         initSettlementDateRange();
         initSettlementFilters();
         initPointLedgerToolbar();
+        var btnOvLedgerAll = document.getElementById('btnOverviewPointLedgerAll');
+        if (btnOvLedgerAll && !btnOvLedgerAll.dataset.hqBound) {
+            btnOvLedgerAll.dataset.hqBound = '1';
+            btnOvLedgerAll.addEventListener('click', function () {
+                switchDashboardView('pointLedger');
+            });
+        }
+        var ovShortcuts = document.querySelector('.hq-overview-shortcuts-btns');
+        if (ovShortcuts && !ovShortcuts.dataset.hqShortcutBound) {
+            ovShortcuts.dataset.hqShortcutBound = '1';
+            ovShortcuts.addEventListener('click', function (e) {
+                var t = e.target;
+                if (!t || t.tagName !== 'BUTTON') return;
+                var v = t.getAttribute('data-hq-shortcut');
+                if (v) switchDashboardView(v);
+            });
+        }
         var btnSaveGate = document.getElementById('btnSaveStoreGateMinUsdt');
         if (btnSaveGate && !btnSaveGate.dataset.bound) {
             btnSaveGate.dataset.bound = '1';
@@ -4183,6 +5161,44 @@
                 switchDashboardView(item.dataset.view || 'overview');
             });
         });
+        var btnHqAdminAdd = document.getElementById('btnHqAdminAdd');
+        if (btnHqAdminAdd && !btnHqAdminAdd.dataset.hqBound) {
+            btnHqAdminAdd.dataset.hqBound = '1';
+            btnHqAdminAdd.addEventListener('click', function () {
+                var api = window.ADMIN_API_BASE || '';
+                var idEl = document.getElementById('hqAdminAddId');
+                var pwEl = document.getElementById('hqAdminAddPw');
+                var nnEl = document.getElementById('hqAdminAddNickname');
+                var st = document.getElementById('hqAdminsSaveStatus');
+                var aid = idEl && idEl.value ? idEl.value.trim() : '';
+                var apw = pwEl && pwEl.value ? pwEl.value : '';
+                var ann = nnEl && nnEl.value ? nnEl.value.trim() : '';
+                if (!aid || !apw) {
+                    if (st) st.textContent = '아이디와 비밀번호를 입력하세요.';
+                    return;
+                }
+                if (st) st.textContent = '';
+                fetch(api + '/api/hq-admins', {
+                    method: 'POST',
+                    headers: hqJsonHeaders(),
+                    body: JSON.stringify({ action: 'add', id: aid, password: apw, nickname: ann || aid })
+                })
+                    .then(function (r) { return r.json(); })
+                    .then(function (d) {
+                        if (d && d.ok) {
+                            if (idEl) idEl.value = '';
+                            if (pwEl) pwEl.value = '';
+                            if (nnEl) nnEl.value = '';
+                            if (st) st.textContent = '추가했습니다.';
+                            loadHqAdminsList();
+                        } else if (st) st.textContent = (d && d.error) ? d.error : '추가에 실패했습니다.';
+                    })
+                    .catch(function () { if (st) st.textContent = '요청에 실패했습니다.'; });
+            });
+        }
+        }
+
+        tryHqSessionAndBoot();
     </script>
 </body>
 </html>

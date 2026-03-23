@@ -2,6 +2,11 @@
   "name": "kyc-korea",
   "private": true,
   "description": "KYC customer verification",
+  "scripts": {
+    "dev": "node scripts/local-dev-server.js",
+    "dev:netlify": "npx --yes netlify-cli@17.38.1 dev",
+    "dev:static": "python -m http.server 8765 --bind 127.0.0.1"
+  },
   "dependencies": {
     "@netlify/blobs": "^5.0.0"
   }

@@ -1,9 +1,10 @@
 const { getKycData, setKycData, incrementUsage, getStorageErrorHelp } = require('./storage');
+const { verifyHqSessionFromEvent } = require('./hq-session');
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-HQ-Secret',
+  'Access-Control-Allow-Headers': 'Content-Type, X-HQ-Secret, X-HQ-Admin-Token',
 };
 
 function json(status, obj) {
@@ -75,6 +76,9 @@ async function queueList(event) {
             accountHolder: m.accountHolder || '',
             status: st,
             requestedAt: m.accountVerifyRequestedAt || '',
+            codeSentByNickname: m.accountVerifyCodeSentByNickname || '',
+            codeSentById: m.accountVerifyCodeSentById || '',
+            codeSentAt: m.accountVerifyCodeSentAt || '',
           });
         }
       });
@@ -89,7 +93,9 @@ async function queueList(event) {
 }
 
 async function hqSetDepositCode(event, body) {
-  if (!checkHqSecret(event)) return json(403, { error: 'forbidden' });
+  const session = verifyHqSessionFromEvent(event);
+  const legacyOk = checkHqSecret(event);
+  if (!session && !legacyOk) return json(403, { error: 'forbidden' });
   const storeId = String(body.storeId || '').trim();
   const memberName = String(body.memberName || '').trim();
   const code4 = String(body.code4 || '').replace(/\D/g, '').slice(0, 4);
@@ -103,11 +109,15 @@ async function hqSetDepositCode(event, body) {
     if ((prev.accountVerifyStatus || 'none') !== 'pending') {
       return json(400, { error: 'pending만 처리 가능합니다.', status: prev.accountVerifyStatus || 'none' });
     }
+    const operatorNickname = session ? session.nickname : '시크릿키';
+    const operatorId = session ? session.id : '';
     list[idx] = {
       ...prev,
       depositCode4: code4,
       accountVerifyStatus: 'code_sent',
       accountVerifyCodeSentAt: new Date().toISOString(),
+      accountVerifyCodeSentByNickname: operatorNickname,
+      accountVerifyCodeSentById: operatorId,
     };
     await setKycData(event, data, null);
     return json(200, { ok: true });

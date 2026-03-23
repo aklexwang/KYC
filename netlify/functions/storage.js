@@ -481,6 +481,47 @@ async function setStoreGateMinUsdt(event, raw) {
   return next;
 }
 
+async function getHqAdmins(event) {
+  if (USE_UPSTASH) {
+    const p = await upstashGet('kyc_hq_admins');
+    return Array.isArray(p) ? p : [];
+  }
+  const store = await blobsGetStore(event);
+  const raw = await store.get('hq_admins');
+  if (!raw) return [];
+  try {
+    const p = JSON.parse(raw);
+    return Array.isArray(p) ? p : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+async function setHqAdmins(event, list) {
+  const arr = Array.isArray(list) ? list : [];
+  if (USE_UPSTASH) {
+    await upstashSet('kyc_hq_admins', arr);
+    return;
+  }
+  const store = await blobsGetStore(event);
+  await store.set('hq_admins', JSON.stringify(arr));
+}
+
+/** 저장소에 본사 관리자가 없을 때 기본 계정 1건만 자동 생성 (배포 직후 로그인 가능) */
+const DEFAULT_HQ_ADMIN = Object.freeze({
+  id: 'admin',
+  password: '111111',
+  nickname: '본사관리자',
+});
+
+async function ensureDefaultHqAdminIfEmpty(event) {
+  const admins = await getHqAdmins(event);
+  if (admins.length > 0) return;
+  await setHqAdmins(event, [
+    { id: DEFAULT_HQ_ADMIN.id, password: DEFAULT_HQ_ADMIN.password, nickname: DEFAULT_HQ_ADMIN.nickname },
+  ]);
+}
+
 module.exports = {
   getKycData,
   setKycData,
@@ -507,4 +548,7 @@ module.exports = {
   setStoreAllowedIpsForStore,
   normalizeAllowedIpsInput,
   USE_UPSTASH,
+  getHqAdmins,
+  setHqAdmins,
+  ensureDefaultHqAdminIfEmpty,
 };
