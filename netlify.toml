@@ -117,3 +117,15 @@
   to = "/.netlify/functions/hq-fetch-member-asset"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/api/store-wallet-issuance"
+  to = "/.netlify/functions/store-wallet-issuance"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/hq-wallet-issuance"
+  to = "/.netlify/functions/hq-wallet-issuance"
+  status = 200
+  force = true

@@ -54,6 +54,8 @@ const API_MAP = {
   '/api/hq-login': 'hq-login.js',
   '/api/hq-admins': 'hq-admins.js',
   '/api/hq-fetch-member-asset': 'hq-fetch-member-asset.js',
+  '/api/store-wallet-issuance': 'store-wallet-issuance.js',
+  '/api/hq-wallet-issuance': 'hq-wallet-issuance.js',
 };
 
 const MIME = {

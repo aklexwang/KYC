@@ -522,6 +522,35 @@ async function ensureDefaultHqAdminIfEmpty(event) {
   ]);
 }
 
+/** 가맹점 충전용 지갑 주소 발급 요청 (본사가 주소 입력 전까지 pending) */
+async function getWalletIssuance(event) {
+  if (USE_UPSTASH) {
+    const d = await upstashGet('kyc_wallet_issuance');
+    if (d && typeof d === 'object' && d.byStore && typeof d.byStore === 'object') return d;
+    return { byStore: {} };
+  }
+  const store = await blobsGetStore(event);
+  const raw = await store.get('wallet_issuance');
+  if (!raw) return { byStore: {} };
+  try {
+    const d = JSON.parse(raw);
+    if (d && typeof d === 'object' && d.byStore && typeof d.byStore === 'object') return d;
+  } catch (e) {}
+  return { byStore: {} };
+}
+
+async function setWalletIssuance(event, obj) {
+  const data = obj && typeof obj === 'object' && obj.byStore && typeof obj.byStore === 'object'
+    ? { byStore: obj.byStore }
+    : { byStore: {} };
+  if (USE_UPSTASH) {
+    await upstashSet('kyc_wallet_issuance', data);
+    return;
+  }
+  const store = await blobsGetStore(event);
+  await store.set('wallet_issuance', JSON.stringify(data));
+}
+
 module.exports = {
   getKycData,
   setKycData,
@@ -551,4 +580,6 @@ module.exports = {
   getHqAdmins,
   setHqAdmins,
   ensureDefaultHqAdminIfEmpty,
+  getWalletIssuance,
+  setWalletIssuance,
 };

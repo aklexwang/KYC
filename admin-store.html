@@ -393,37 +393,79 @@
         }
         .btn-sidebar-point-charge:hover { filter: brightness(1.06); }
         .btn-sidebar-point-charge:active { filter: brightness(0.96); }
+        /* USDT(Tether) 브랜드 톤 + TRC-20 네트워크 표기 */
         .sidebar-point-card {
             margin: 0 0 12px 0;
-            padding: 14px 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 200, 150, 0.22);
-            background: linear-gradient(180deg, #9a6230 0%, #8b572a 45%, #6d3f1c 100%);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+            padding: 14px 12px 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background:
+                radial-gradient(120% 80% at 10% 0%, rgba(255, 255, 255, 0.18) 0%, transparent 55%),
+                linear-gradient(155deg, #2fc49a 0%, #26A17B 42%, #1a7f62 100%);
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.2) inset,
+                0 8px 24px rgba(38, 161, 123, 0.38),
+                0 4px 12px rgba(0, 0, 0, 0.35);
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar-point-card::after {
+            content: '';
+            position: absolute;
+            right: -28px;
+            bottom: -28px;
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+            pointer-events: none;
         }
         .sidebar-point-label {
             font-size: 11px;
             font-weight: 700;
-            color: rgba(255, 235, 200, 0.92);
+            color: rgba(255, 255, 255, 0.95);
             letter-spacing: -0.02em;
             margin: 0 0 6px 0;
+            position: relative;
+            z-index: 1;
+        }
+        .sidebar-point-network {
+            margin: 0 0 8px 0;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.88);
+            position: relative;
+            z-index: 1;
+        }
+        .sidebar-point-network span {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset;
         }
         .sidebar-point-value {
             margin: 0;
             font-variant-numeric: tabular-nums;
             font-size: 20px;
-            font-weight: 700;
+            font-weight: 800;
             color: #fff;
             line-height: 1.25;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
         }
         .sidebar-point-value .sidebar-point-num { color: #fff; }
         .sidebar-point-value .sidebar-point-unit {
-            font-size: 13px;
-            font-weight: 600;
-            color: #fde68a;
-            margin-left: 4px;
-            letter-spacing: 0.02em;
+            font-size: 12px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.92);
+            margin-left: 5px;
+            letter-spacing: 0.06em;
         }
         .sidebar-point-card.is-loading .sidebar-point-num { opacity: 0.45; }
         .sidebar-menu { display: grid; gap: 8px; }
@@ -438,14 +480,6 @@
         }
         .menu-item.active { background: #232d45; color: #fff; border-color: rgba(255,255,255,0.06); }
         .menu-item { cursor: pointer; }
-        .sidebar-store-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.62);
-            margin: -8px 0 14px 0;
-            line-height: 1.35;
-            word-break: break-all;
-        }
         .dashboard-main { flex: 1; min-width: 0; padding: 20px 20px 30px; position: relative; background: #050a18; }
         .low-balance-overlay {
             display: none;
@@ -502,45 +536,177 @@
         }
         .header-row { display: flex; align-items: center; gap: 12px; }
         .admin-body { max-width: none; margin: 0; padding: 0; }
+        .overview-kpi-title {
+            margin: 0 0 6px 0;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #f8fbff;
+        }
+        .overview-kpi-sub {
+            margin: 0 0 14px 0;
+            font-size: 13px;
+            color: rgba(232, 243, 255, 0.72);
+        }
         .summary-cards {
             display: grid;
-            grid-template-columns: repeat(5, minmax(120px, 1fr));
+            grid-template-columns: repeat(6, minmax(120px, 1fr));
+            grid-template-areas:
+                "all all all done done done"
+                "progress progress fail fail wait wait";
             gap: 12px;
             margin-bottom: 16px;
         }
         .summary-card {
-            border-radius: 14px;
-            padding: 14px 14px 12px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+            border-radius: 16px;
+            padding: 16px 16px 14px;
+            min-height: 156px;
+            background:
+                radial-gradient(120% 90% at 100% 0%, rgba(147, 197, 253, 0.14) 0%, rgba(147, 197, 253, 0) 62%),
+                linear-gradient(180deg, #121d35 0%, #0d162d 100%);
+            border: 1px solid rgba(255,255,255,0.09);
+            box-shadow: 0 10px 24px rgba(0,0,0,.24);
+        }
+        .summary-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 10px;
+            right: 10px;
+            height: 2px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(96,165,250,0.95) 0%, rgba(56,189,248,0.72) 55%, rgba(167,139,250,0.9) 100%);
+            pointer-events: none;
+        }
+        .summary-card--all { grid-area: all; }
+        .summary-card--done { grid-area: done; }
+        .summary-card--progress { grid-area: progress; }
+        .summary-card--fail { grid-area: fail; }
+        .summary-card--wait { grid-area: wait; }
+        .summary-card--all,
+        .summary-card--done { min-height: 178px; }
+        .summary-card--progress,
+        .summary-card--fail,
+        .summary-card--wait { min-height: 128px; }
+        .summary-card .label {
+            color: rgba(223, 237, 255, 0.84);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            align-self: flex-start;
+        }
+        .summary-card .num {
+            line-height: 1.05;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            font-variant-numeric: tabular-nums;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+            align-self: flex-end;
+            text-align: right;
+        }
+        .summary-card--all .num { font-size: 64px; background-image: linear-gradient(135deg, #a5f3fc 0%, #60a5fa 55%, #a78bfa 100%); }
+        .summary-card--done .num { font-size: 64px; background-image: linear-gradient(135deg, #93c5fd 0%, #38bdf8 50%, #22d3ee 100%); }
+        .summary-card--progress .num { font-size: 44px; background-image: linear-gradient(135deg, #86efac 0%, #4ade80 100%); }
+        .summary-card--fail .num { font-size: 44px; background-image: linear-gradient(135deg, #fda4af 0%, #fb7185 100%); }
+        .summary-card--wait .num { font-size: 44px; background-image: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%); }
+        .member-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
             color: #fff;
-            box-shadow: 0 6px 18px rgba(0,0,0,.28);
+            letter-spacing: -0.02em;
         }
-        .summary-card .num { color: #fff; font-size: 32px; line-height: 1.1; }
-        .summary-card .label { color: rgba(255,255,255,0.9); font-size: 12px; }
-        .summary-card--all { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
-        .summary-card--done { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
-        .summary-card--progress { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); }
-        .summary-card--fail { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
-        .summary-card--wait { background: linear-gradient(135deg, #e91e63 0%, #d81b60 100%); }
-        .kpi-panel {
-            background: #0d1425;
-            border: 1px solid rgba(255,255,255,0.06);
+        .member-section-desc {
+            margin: 0;
+            max-width: 560px;
+            line-height: 1.5;
+            font-size: 13px;
+            color: rgba(255,255,255,0.72);
+        }
+        .member-section-head {
+            margin: 0 0 10px 0;
+        }
+        #section-members .member-toolbar-panel {
+            margin: 14px 0 14px 0;
+            background: #0b153d;
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 16px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
         }
-        .kpi-panel h3 { margin: 0; font-size: 16px; text-align: center; color: #fff; }
-        .kpi-panel .sub { margin: 4px 0 14px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.68); }
-        .kpi-row { display: grid; grid-template-columns: 90px 1fr 40px; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .kpi-row:last-child { margin-bottom: 0; }
-        .kpi-label { font-size: 12px; color: rgba(255,255,255,0.8); }
-        .kpi-track { height: 9px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; }
-        .kpi-bar { height: 100%; border-radius: 999px; width: 0%; transition: width .35s ease; }
-        .kpi-bar--all { background: #f39c12; }
-        .kpi-bar--done { background: #3498db; }
-        .kpi-bar--progress { background: #27ae60; }
-        .kpi-bar--fail { background: #8e44ad; }
-        .kpi-bar--wait { background: #e91e63; }
-        .kpi-num { text-align: right; font-size: 12px; color: rgba(255,255,255,0.8); }
+        #section-members .member-toolbar-title {
+            margin: 0;
+            color: rgba(255,255,255,0.92);
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+        #section-members .member-filter-actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        #section-members .member-filter-actions input[type="search"],
+        #section-members .member-filter-actions input[type="date"] {
+            height: 34px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: #0f1d4c;
+            color: #fff;
+            font-size: 13px;
+            font-family: inherit;
+        }
+        #section-members .member-filter-actions input[type="search"] {
+            width: 168px;
+        }
+        #section-members .member-filter-actions input[type="date"] {
+            width: 136px;
+        }
+        #section-members .member-filter-actions input::placeholder { color: rgba(255,255,255,0.45); }
+        #section-members .btn-member-query {
+            height: 34px;
+            padding: 0 14px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        #section-members .btn-member-query:hover { filter: brightness(1.05); }
+        tr.member-row-hidden { display: none; }
+        #section-members table .badge {
+            border-radius: 6px;
+        }
+        #section-members .badge--complete {
+            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+            color: #fff;
+        }
+        #section-members .badge--wait {
+            background: linear-gradient(135deg, #FDD835 0%, #F9A825 100%);
+            color: #3E2723;
+        }
+        #section-members .btn-kyc-done--na {
+            background: linear-gradient(135deg, #FDD835 0%, #F9A825 100%);
+            color: #3E2723;
+        }
         .dashboard-section { display: none; }
         .dashboard-section.active { display: block; }
         .store-qr-card, .table-wrap {
@@ -784,7 +950,20 @@
         @media (max-width: 1000px) {
             .dashboard-shell { display: block; }
             .dashboard-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
-            .summary-cards { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+            .summary-cards {
+                grid-template-columns: repeat(2, minmax(140px, 1fr));
+                grid-template-areas:
+                    "all done"
+                    "progress fail"
+                    "wait wait";
+            }
+            .summary-card--all .num,
+            .summary-card--done .num { font-size: 42px; }
+            .summary-card--all,
+            .summary-card--done { min-height: 162px; }
+            .summary-card--progress,
+            .summary-card--fail,
+            .summary-card--wait { min-height: 120px; }
         }
         @media (max-width: 600px) {
             .admin-body { padding: 16px 12px 32px; }
@@ -792,8 +971,21 @@
             td:first-child, th:first-child { padding-left: 12px; }
             td:last-child, th:last-child { padding-right: 12px; }
             .dashboard-main { padding: 14px 12px 24px; }
-            .summary-cards { grid-template-columns: 1fr; }
-            .kpi-row { grid-template-columns: 78px 1fr 34px; gap: 8px; }
+            .overview-kpi-title { font-size: 18px; }
+            .overview-kpi-sub { font-size: 12px; }
+            #section-members .member-filter-actions input[type="search"],
+            #section-members .member-filter-actions input[type="date"] { width: 100%; }
+            .summary-cards {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "all"
+                    "done"
+                    "progress"
+                    "fail"
+                    "wait";
+            }
+            .summary-card { padding: 14px 12px 12px; min-height: 118px; }
+            .summary-card .num { font-size: 38px !important; }
         }
         /* 포인트 충전 모달 */
         .modal-recharge-overlay {
@@ -891,20 +1083,11 @@
         .modal-recharge-wallet-addr {
             flex: 0 1 auto;
             min-width: 0;
-            max-width: 100%;
-            font-size: 13px;
-            line-height: 1.45;
-            word-break: break-all;
-            padding: 12px 14px;
+            width: min(320px, 100%);
+            height: 44px;
             border-radius: 10px;
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #93c5fd;
-            font-family: ui-monospace, monospace;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         .btn-recharge-copy-wallet {
             flex-shrink: 0;
@@ -923,6 +1106,46 @@
         .btn-recharge-copy-wallet:hover {
             background: rgba(37, 99, 235, 0.32);
             color: #fff;
+        }
+        .modal-recharge-wallet-status {
+            margin: 0 0 10px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(253, 224, 71, 0.95);
+            min-height: 1.3em;
+            text-align: center;
+        }
+        .modal-recharge-wallet-status.is-muted {
+            color: rgba(255, 255, 255, 0.55);
+            font-weight: 500;
+        }
+        .btn-wallet-issue-complete {
+            display: none;
+            flex-shrink: 0;
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            background: linear-gradient(180deg, #34d399 0%, #26A17B 100%);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 4px 14px rgba(38, 161, 123, 0.45);
+            transition: transform 0.12s ease, filter 0.12s ease;
+        }
+        .btn-wallet-issue-complete:hover { filter: brightness(1.06); transform: translateY(-1px); }
+        .btn-wallet-issue-complete:active { transform: translateY(0); filter: brightness(0.96); }
+        .modal-recharge-wallet-row .btn-recharge-copy-wallet.is-concealed,
+        .modal-recharge-wallet-row .btn-wallet-issue-complete.is-concealed {
+            display: none !important;
+        }
+        .modal-recharge-wallet-row .btn-wallet-issue-complete.is-visible {
+            display: inline-block;
+        }
+        .modal-recharge-wallet-row .btn-recharge-copy-wallet.is-visible {
+            display: inline-block;
         }
         .modal-recharge-actions {
             display: flex;
@@ -1013,9 +1236,9 @@
     <div class="dashboard-shell">
         <aside class="dashboard-sidebar">
             <h2 class="sidebar-title">Admin Dashboard</h2>
-            <p class="sidebar-store-name" id="sidebarStoreNameLine">—</p>
             <div class="sidebar-point-card is-loading" id="sidebarPointCard" aria-live="polite">
                 <p class="sidebar-point-label">보유 포인트</p>
+                <p class="sidebar-point-network" aria-label="네트워크 TRC-20"><span>USDT · TRC-20</span></p>
                 <p class="sidebar-point-value">
                     <span class="sidebar-point-num" id="sidebarPointBalance">—</span><span class="sidebar-point-unit">USDT</span>
                 </p>
@@ -1036,13 +1259,17 @@
             <header class="admin-header">
                 <div class="header-row">
                     <div>
-                        <h1>가맹점 어드민</h1>
+                        <h1 id="headerStoreName">가맹점 어드민</h1>
                     </div>
                     <button type="button" class="btn-logout" id="btnLogout">로그아웃</button>
                 </div>
             </header>
             <main class="admin-body">
                 <section id="section-overview" class="dashboard-section active">
+                <div class="member-section-head">
+                    <h2 class="section-title member-section-title" id="overviewKpiTitle">주요 지표</h2>
+                    <p class="section-desc member-section-desc" id="overviewKpiSub">실시간 KYC 진행 현황입니다.</p>
+                </div>
                 <div class="summary-cards">
                     <div class="summary-card summary-card--all">
                         <div class="num" id="totalCount">0</div>
@@ -1065,31 +1292,28 @@
                         <div class="label">대기</div>
                     </div>
                 </div>
-                <section class="kpi-panel">
-                    <h3>가맹점별 주요 지표</h3>
-                    <p class="sub">해당 가맹점 지표 비교</p>
-                    <div class="kpi-row"><span class="kpi-label">전체 회원</span><div class="kpi-track"><div id="barAll" class="kpi-bar kpi-bar--all"></div></div><span class="kpi-num" id="numAll">0</span></div>
-                    <div class="kpi-row"><span class="kpi-label">KYC 완료</span><div class="kpi-track"><div id="barDone" class="kpi-bar kpi-bar--done"></div></div><span class="kpi-num" id="numDone">0</span></div>
-                    <div class="kpi-row"><span class="kpi-label">진행 중</span><div class="kpi-track"><div id="barProgress" class="kpi-bar kpi-bar--progress"></div></div><span class="kpi-num" id="numProgress">0</span></div>
-                    <div class="kpi-row"><span class="kpi-label">실패</span><div class="kpi-track"><div id="barFail" class="kpi-bar kpi-bar--fail"></div></div><span class="kpi-num" id="numFail">0</span></div>
-                    <div class="kpi-row"><span class="kpi-label">대기</span><div class="kpi-track"><div id="barWait" class="kpi-bar kpi-bar--wait"></div></div><span class="kpi-num" id="numWait">0</span></div>
-                </section>
                 </section>
                 <section id="section-qr" class="dashboard-section">
+                <div class="member-section-head">
+                    <h2 class="section-title member-section-title">QR 코드</h2>
+                    <p class="section-desc member-section-desc">회원 인증 페이지에 사용할 QR 코드입니다.</p>
+                </div>
                 <div class="store-qr-card" id="storeQrCard">
                     <div class="qr-img-wrap">
-                        <img id="storeAdminQrImg" src="" alt="KYC QR 코드" width="160" height="160">
+                        <img id="storeAdminQrImg" src="" alt="KYC QR 코드" width="160" height="160" crossorigin="anonymous">
                     </div>
                     <div class="qr-info">
                         <p class="qr-title">가맹점 KYC QR 코드</p>
-                        <p class="qr-url" id="storeAdminQrUrl"></p>
-                        <button type="button" class="btn-copy-qr" id="btnCopyStoreQr">링크 복사</button>
+                        <button type="button" class="btn-copy-qr" id="btnCopyStoreQr">QR 이미지 복사</button>
                     </div>
                 </div>
                 </section>
                 <section id="section-settlement" class="dashboard-section">
+                <div class="member-section-head">
+                    <h2 class="section-title member-section-title">수수료 통계</h2>
+                    <p class="section-desc member-section-desc">기간별 인증 수수료 내역을 확인할 수 있습니다.</p>
+                </div>
                 <section id="storeSettlementSection" class="settlement-section">
-                    <h3 class="settlement-title">수수료 통계</h3>
                     <div class="settlement-date-bar">
                         <label for="storeSettlementDateFrom">시작일</label>
                         <input type="date" id="storeSettlementDateFrom" autocomplete="off" aria-label="수수료 통계 시작일">
@@ -1143,8 +1367,11 @@
                 </section>
                 </section>
                 <section id="section-point-history" class="dashboard-section">
+                <div class="member-section-head">
+                    <h2 class="section-title member-section-title">포인트 내역</h2>
+                    <p class="section-desc member-section-desc">기간별 포인트 지급/차감 이력을 조회할 수 있습니다.</p>
+                </div>
                 <section class="point-history-section">
-                    <h3 class="point-history-title">포인트 내역</h3>
                     <div class="point-history-toolbar">
                         <label for="storePointHistoryDateFrom">시작일</label>
                         <input type="date" id="storePointHistoryDateFrom" class="point-history-date-input" autocomplete="off" aria-label="포인트 내역 시작일">
@@ -1189,6 +1416,19 @@
                 </section>
                 </section>
                 <section id="section-members" class="dashboard-section">
+                <div class="member-section-head">
+                    <h2 class="section-title member-section-title">회원 목록</h2>
+                    <p class="section-desc member-section-desc">문자·신분증·계좌 인증 현황입니다.</p>
+                </div>
+                <div class="member-toolbar-panel">
+                    <h3 class="member-toolbar-title">전체 회원 현황 (문자·신분증·1원 인증)</h3>
+                    <div class="member-filter-actions">
+                        <input type="search" id="memberFilterName" placeholder="이름 검색" autocomplete="off" aria-label="회원 이름 검색">
+                        <input type="date" id="memberFilterDateFrom" autocomplete="off" aria-label="가입일 시작">
+                        <input type="date" id="memberFilterDateTo" autocomplete="off" aria-label="가입일 종료">
+                        <button type="button" class="btn-member-query" id="btnMemberFilterApply">검색</button>
+                    </div>
+                </div>
                 <div class="table-wrap">
                     <div class="table-scroll">
                         <table>
@@ -1224,11 +1464,15 @@
                 </div>
                 <div class="modal-recharge-wallet">
                     <span class="modal-recharge-wallet-label">USDT ( TRC20 ) 지갑 주소</span>
+                    <p class="modal-recharge-wallet-status is-muted" id="pointRechargeWalletStatusLine"></p>
                     <div class="modal-recharge-wallet-row">
-                        <div class="modal-recharge-wallet-addr" id="pointRechargeWalletAddr"></div>
-                        <button type="button" class="btn-recharge-copy-wallet" id="btnCopyRechargeWallet" aria-label="지갑 주소 복사">복사</button>
+                        <div class="modal-recharge-wallet-addr" id="pointRechargeWalletAddr" aria-hidden="true"></div>
+                        <button type="button" class="btn-wallet-issue-complete" id="btnWalletIssuanceComplete">완료</button>
+                        <button type="button" class="btn-recharge-copy-wallet is-concealed" id="btnCopyRechargeWallet" aria-label="지갑 주소 복사">복사</button>
                     </div>
                 </div>
+                <p class="modal-recharge-wallet-status is-muted" id="pointRechargeDepositStatus" hidden style="margin-top: 4px;">입금 확인 중입니다.</p>
+                <button type="button" class="btn-recharge-cancel" id="btnPointRechargeDepositOk" hidden style="margin-top: 10px; width: 100%; max-width: 280px;">확인</button>
                 <div class="modal-recharge-actions">
                     <button type="button" class="btn-recharge-cancel" id="btnPointRechargeCancel">취소</button>
                     <button type="button" class="btn-recharge-submit" id="btnPointRechargeSubmit">신청</button>
@@ -1247,9 +1491,9 @@
         if (typeof window.STORE_USDT_KRW_RATE !== 'number' || isNaN(window.STORE_USDT_KRW_RATE)) {
             window.STORE_USDT_KRW_RATE = 1450;
         }
-        /** 입금용 지갑 주소 (운영에서 설정) */
-        if (typeof window.STORE_RECHARGE_WALLET !== 'string' || !window.STORE_RECHARGE_WALLET.trim()) {
-            window.STORE_RECHARGE_WALLET = 'TVzaRmEckn6AtJWGvdKmYnfsMZLdBbRVYg';
+        /** 입금용 지갑 주소 (본사 발급 후 확정) */
+        if (typeof window.STORE_RECHARGE_WALLET !== 'string') {
+            window.STORE_RECHARGE_WALLET = '';
         }
         window.ADMIN_STORE_ID = '';
         var MIN_USDT_FOR_USE = 100;
@@ -1314,6 +1558,16 @@
             } catch (e) { return '—'; }
         }
 
+        function joinedDateKey(iso) {
+            if (!iso) return '';
+            var d = new Date(iso);
+            if (isNaN(d.getTime())) return '';
+            var y = d.getFullYear();
+            var m = String(d.getMonth() + 1).padStart(2, '0');
+            var day = String(d.getDate()).padStart(2, '0');
+            return y + '-' + m + '-' + day;
+        }
+
         function demoMemberJoinedIso(daysAgo, hour, minute) {
             var d = new Date();
             d.setDate(d.getDate() - daysAgo);
@@ -1337,6 +1591,9 @@
             } else {
                 members.forEach(function (m) {
                     var tr = document.createElement('tr');
+                    tr.className = 'member-row';
+                    tr.dataset.memberName = String(m.name || '').toLowerCase();
+                    tr.dataset.joinedDate = joinedDateKey(pickMemberJoinedIso(m));
                     tr.innerHTML =
                         '<td>' + (m.name || '-') + '</td>' +
                         '<td>' + formatJoinedAt(pickMemberJoinedIso(m)) + '</td>' +
@@ -1355,26 +1612,30 @@
             var progress = total - complete;
             var fail = list.filter(function (m) { return m.sms === 'fail' || m.idDoc === 'fail' || m.account === 'fail'; }).length;
             var wait = list.filter(function (m) { return m.sms === 'wait' || m.idDoc === 'wait' || m.account === 'wait'; }).length;
-            var maxVal = Math.max(total, complete, progress, fail, wait, 1);
-            function setBar(id, value) {
-                var el = document.getElementById(id);
-                if (el) el.style.width = ((value / maxVal) * 100).toFixed(2) + '%';
-            }
             document.getElementById('totalCount').textContent = total;
             document.getElementById('completeCount').textContent = complete;
             document.getElementById('progressCount').textContent = progress;
             document.getElementById('failCount').textContent = fail;
             document.getElementById('waitCount').textContent = wait;
-            document.getElementById('numAll').textContent = total;
-            document.getElementById('numDone').textContent = complete;
-            document.getElementById('numProgress').textContent = progress;
-            document.getElementById('numFail').textContent = fail;
-            document.getElementById('numWait').textContent = wait;
-            setBar('barAll', total);
-            setBar('barDone', complete);
-            setBar('barProgress', progress);
-            setBar('barFail', fail);
-            setBar('barWait', wait);
+            applyMemberFilters();
+        }
+
+        function applyMemberFilters() {
+            var nameEl = document.getElementById('memberFilterName');
+            var fromEl = document.getElementById('memberFilterDateFrom');
+            var toEl = document.getElementById('memberFilterDateTo');
+            var nameQ = nameEl ? String(nameEl.value || '').trim().toLowerCase() : '';
+            var from = fromEl ? String(fromEl.value || '').trim() : '';
+            var to = toEl ? String(toEl.value || '').trim() : '';
+            var rows = document.querySelectorAll('#memberList tr.member-row');
+            rows.forEach(function (row) {
+                var rowName = row.dataset.memberName || '';
+                var rowDate = row.dataset.joinedDate || '';
+                var okName = !nameQ || rowName.indexOf(nameQ) !== -1;
+                var okFrom = !from || (rowDate && rowDate >= from);
+                var okTo = !to || (rowDate && rowDate <= to);
+                row.classList.toggle('member-row-hidden', !(okName && okFrom && okTo));
+            });
         }
 
         function loadMembers() {
@@ -1943,19 +2204,41 @@
         function showDashboard(storeId, storeName, pointBalanceHint) {
             window.ADMIN_STORE_ID = storeId || '';
             var headerStoreNameEl = document.getElementById('headerStoreName');
-            if (headerStoreNameEl) headerStoreNameEl.textContent = storeName || storeId || '';
-            var sideName = document.getElementById('sidebarStoreNameLine');
-            if (sideName) sideName.textContent = storeName || storeId || '—';
+            if (headerStoreNameEl) headerStoreNameEl.textContent = storeName || storeId || '가맹점 어드민';
+            var overviewTitleEl = document.getElementById('overviewKpiTitle');
+            if (overviewTitleEl) overviewTitleEl.textContent = '주요 지표';
             document.getElementById('loginWrap').style.display = 'none';
             document.getElementById('dashboardWrap').classList.add('show');
             switchDashboardView('overview');
             var qrUrl = baseKycUrl + '&store=' + encodeURIComponent(storeId || '');
             var imgEl = document.getElementById('storeAdminQrImg');
-            var urlEl = document.getElementById('storeAdminQrUrl');
             if (imgEl) imgEl.src = qrApi + encodeURIComponent(qrUrl);
-            if (urlEl) { urlEl.textContent = qrUrl; urlEl.dataset.url = qrUrl; }
             loadStorePointBalance(pointBalanceHint);
             loadMembers();
+        }
+
+        async function copyImageFromImgElement(imgEl, successMsg) {
+            var src = imgEl ? String(imgEl.currentSrc || imgEl.src || '').trim() : '';
+            if (!src) {
+                alert('QR 이미지가 없습니다.');
+                return;
+            }
+            if (!(navigator.clipboard && navigator.clipboard.write && window.ClipboardItem)) {
+                alert('이 브라우저는 이미지 클립보드 복사를 지원하지 않습니다.');
+                return;
+            }
+            try {
+                var res = await fetch(src, { mode: 'cors', cache: 'no-store' });
+                if (!res.ok) throw new Error('image fetch failed');
+                var blob = await res.blob();
+                var mime = blob.type || 'image/png';
+                var itemData = {};
+                itemData[mime] = blob;
+                await navigator.clipboard.write([new ClipboardItem(itemData)]);
+                alert(successMsg || 'QR 이미지가 복사되었습니다.');
+            } catch (e) {
+                alert('이미지 복사에 실패했습니다.');
+            }
         }
 
         function fallbackCopy(text, successMsg, failMsg) {
@@ -1981,6 +2264,98 @@
         }
 
         var pointRechargePollTimer = null;
+        var walletIssuancePollTimer = null;
+        var lastWalletIssuanceAddress = '';
+
+        function getWalletUnlockStorageKey() {
+            return 'kyc_wallet_unlocked_val_' + (window.ADMIN_STORE_ID || '');
+        }
+
+        function stopWalletIssuancePoll() {
+            if (walletIssuancePollTimer) {
+                clearInterval(walletIssuancePollTimer);
+                walletIssuancePollTimer = null;
+            }
+        }
+
+        function applyStoreWalletIssuanceUI(payload) {
+            var st = payload && payload.status ? String(payload.status) : 'idle';
+            var w = payload && payload.wallet ? String(payload.wallet).trim() : '';
+            if (st === 'completed' && w) lastWalletIssuanceAddress = w;
+            var line = document.getElementById('pointRechargeWalletStatusLine');
+            var btnComplete = document.getElementById('btnWalletIssuanceComplete');
+            var btnCopy = document.getElementById('btnCopyRechargeWallet');
+            var unlocked = '';
+            try { unlocked = sessionStorage.getItem(getWalletUnlockStorageKey()) || ''; } catch (e) {}
+            if (btnComplete) {
+                btnComplete.classList.remove('is-visible');
+                btnComplete.classList.add('is-concealed');
+            }
+            if (btnCopy) {
+                btnCopy.classList.remove('is-visible');
+                btnCopy.classList.add('is-concealed');
+            }
+            if (line) {
+                line.classList.add('is-muted');
+                line.textContent = '';
+            }
+            if (st === 'pending') {
+                if (line) {
+                    line.classList.remove('is-muted');
+                    line.textContent = '주소발급중…';
+                }
+            } else if (st === 'completed' && w) {
+                if (unlocked === w) {
+                    window.STORE_RECHARGE_WALLET = w;
+                    if (line) {
+                        line.classList.remove('is-muted');
+                        line.textContent = '복사 버튼으로 주소를 복사하세요.';
+                    }
+                    if (btnCopy) {
+                        btnCopy.classList.remove('is-concealed');
+                        btnCopy.classList.add('is-visible');
+                    }
+                } else {
+                    if (line) {
+                        line.classList.remove('is-muted');
+                        line.textContent = '지갑 주소가 준비되었습니다. 완료를 눌러 주세요.';
+                    }
+                    if (btnComplete) {
+                        btnComplete.classList.remove('is-concealed');
+                        btnComplete.classList.add('is-visible');
+                    }
+                }
+            } else {
+                if (line) {
+                    line.textContent = '신청 후 본사에서 입금 주소를 발급합니다.';
+                }
+            }
+        }
+
+        function fetchStoreWalletIssuanceOnce() {
+            var api = window.ADMIN_API_BASE || '';
+            var storeId = window.ADMIN_STORE_ID || '';
+            if (!api || !storeId) return Promise.resolve(null);
+            return fetch(api + '/api/store-wallet-issuance?storeId=' + encodeURIComponent(storeId))
+                .then(function (r) { return r.json().catch(function () { return {}; }); })
+                .then(function (d) {
+                    if (d && d.ok) {
+                        applyStoreWalletIssuanceUI({ status: d.status, wallet: d.wallet || '' });
+                        return d;
+                    }
+                    return null;
+                });
+        }
+
+        function startWalletIssuancePoll() {
+            stopWalletIssuancePoll();
+            var api = window.ADMIN_API_BASE || '';
+            var storeId = window.ADMIN_STORE_ID || '';
+            if (!api || !storeId) return;
+            walletIssuancePollTimer = setInterval(function () {
+                fetchStoreWalletIssuanceOnce();
+            }, 3000);
+        }
 
         function stopPointRechargePoll() {
             if (pointRechargePollTimer) {
@@ -1993,9 +2368,13 @@
             var formPh = document.getElementById('pointRechargeFormPhase');
             var statPh = document.getElementById('pointRechargeStatusPhase');
             var okBtn = document.getElementById('btnPointRechargeStatusOk');
+            var dep = document.getElementById('pointRechargeDepositStatus');
+            var dok = document.getElementById('btnPointRechargeDepositOk');
             if (formPh) formPh.hidden = false;
             if (statPh) statPh.hidden = true;
             if (okBtn) okBtn.hidden = true;
+            if (dep) { dep.hidden = true; dep.textContent = '입금 확인 중입니다.'; }
+            if (dok) dok.hidden = true;
         }
 
         function showPointRechargeStatusMessage(msg, showOkButton) {
@@ -2013,7 +2392,14 @@
             stopPointRechargePoll();
             var api = window.ADMIN_API_BASE || '';
             if (!api || !storeId || !historyId) return;
-            showPointRechargeStatusMessage('확인중입니다.', false);
+            var depEl = document.getElementById('pointRechargeDepositStatus');
+            var dokBtn = document.getElementById('btnPointRechargeDepositOk');
+            if (depEl) {
+                depEl.hidden = false;
+                depEl.classList.remove('is-muted');
+                depEl.textContent = '입금 확인 중입니다.';
+            }
+            if (dokBtn) dokBtn.hidden = true;
             function pollOnce() {
                 var url = api + '/api/store-point-recharge-resolve?storeId=' + encodeURIComponent(storeId) + '&historyId=' + encodeURIComponent(historyId);
                 fetch(url)
@@ -2023,14 +2409,16 @@
                         var st = data.status != null ? String(data.status).trim() : '';
                         if (st === '진행중' || st === '처리중') return;
                         stopPointRechargePoll();
+                        if (depEl) depEl.classList.remove('is-muted');
                         if (st === '완료') {
-                            showPointRechargeStatusMessage('충전되었습니다.', true);
+                            if (depEl) depEl.textContent = '충전이 반영되었습니다.';
                             loadStorePointBalance();
                         } else if (st === '취소') {
-                            showPointRechargeStatusMessage('취소되었습니다. 텔레그램으로 문의하세요.', true);
+                            if (depEl) depEl.textContent = '취소되었습니다. 텔레그램으로 문의하세요.';
                         } else {
-                            showPointRechargeStatusMessage('처리가 완료되었습니다.', true);
+                            if (depEl) depEl.textContent = '처리가 완료되었습니다.';
                         }
+                        if (dokBtn) dokBtn.hidden = false;
                     })
                     .catch(function () {});
             }
@@ -2044,23 +2432,27 @@
             var walletEl = document.getElementById('pointRechargeWalletAddr');
             if (!modal || !input) return;
             stopPointRechargePoll();
+            stopWalletIssuancePoll();
+            lastWalletIssuanceAddress = '';
             showPointRechargeFormPhase();
             var sub = document.getElementById('btnPointRechargeSubmit');
             if (sub) sub.disabled = false;
             input.value = '';
-            if (walletEl) {
-                var w = (window.STORE_RECHARGE_WALLET || '').trim();
-                walletEl.textContent = w || '지갑 주소가 설정되지 않았습니다. 관리자에게 문의하세요.';
-            }
+            if (walletEl) walletEl.textContent = '';
+            applyStoreWalletIssuanceUI({ status: 'idle' });
             modal.classList.add('show');
             modal.setAttribute('aria-hidden', 'false');
             input.focus();
+            fetchStoreWalletIssuanceOnce().then(function (d) {
+                if (d && d.ok && d.status === 'pending') startWalletIssuancePoll();
+            });
         }
 
         function closePointRechargeModal() {
             var modal = document.getElementById('pointRechargeModal');
             if (!modal) return;
             stopPointRechargePoll();
+            stopWalletIssuancePoll();
             showPointRechargeFormPhase();
             var sub = document.getElementById('btnPointRechargeSubmit');
             if (sub) sub.disabled = false;
@@ -2080,6 +2472,7 @@
             var krw = Math.round(usdt * getUsdtKrwRate());
             var apiBase = window.ADMIN_API_BASE || '';
             var storeId = window.ADMIN_STORE_ID || '';
+            try { sessionStorage.removeItem(getWalletUnlockStorageKey()); } catch (e) {}
             var wallet = (window.STORE_RECHARGE_WALLET || '').trim();
             var payload = {
                 storeId: storeId,
@@ -2094,32 +2487,63 @@
                 alert(msg);
                 closePointRechargeModal();
             }
-            if (apiBase && storeId) {
-                fetch(apiBase + '/api/store-point-recharge-request', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                })
-                    .then(function (r) { return r.json().catch(function () { return {}; }); })
-                    .then(function (data) {
-                        if (btn) btn.disabled = false;
-                        if (data && data.ok) {
-                            var hid = data.historyId != null ? String(data.historyId) : '';
-                            if (hid) {
-                                startPointRechargeStatusPoll(storeId, hid);
+            var storeName = '';
+            try { storeName = sessionStorage.getItem('kyc_store_name') || ''; } catch (e) {}
+            function postRechargeRequest() {
+                if (apiBase && storeId) {
+                    fetch(apiBase + '/api/store-point-recharge-request', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            storeId: storeId,
+                            usdt: usdt,
+                            krw: krw,
+                            rate: getUsdtKrwRate(),
+                            wallet: (window.STORE_RECHARGE_WALLET || '').trim()
+                        })
+                    })
+                        .then(function (r) { return r.json().catch(function () { return {}; }); })
+                        .then(function (data) {
+                            if (btn) btn.disabled = false;
+                            if (data && data.ok) {
+                                var hid = data.historyId != null ? String(data.historyId) : '';
+                                if (hid) {
+                                    startPointRechargeStatusPoll(storeId, hid);
+                                    return;
+                                }
+                                alert(data.message || '충전 신청이 접수되었습니다.');
+                                closePointRechargeModal();
+                                loadStorePointBalance();
                                 return;
                             }
-                            alert(data.message || '충전 신청이 접수되었습니다.');
-                            closePointRechargeModal();
-                            loadStorePointBalance();
-                            return;
-                        }
-                        doneOk((data && data.error) ? data.error : '신청 정보가 전송되지 않았습니다. 아래 안내를 확인하세요.\n\n' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑으로 입금 후 본사에 문의해 주세요.');
+                            doneOk((data && data.error) ? data.error : '신청 정보가 전송되지 않았습니다. 아래 안내를 확인하세요.\n\n' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑으로 입금 후 본사에 문의해 주세요.');
+                        })
+                        .catch(function () {
+                            doneOk('충전 신청: ' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑 주소로 입금해 주세요.');
+                        });
+                } else {
+                    doneOk('충전 신청: ' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑 주소로 입금해 주세요.');
+                }
+            }
+            if (apiBase && storeId) {
+                fetch(apiBase + '/api/store-wallet-issuance', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ storeId: storeId, storeName: storeName })
+                })
+                    .then(function (r) { return r.json().catch(function () { return {}; }); })
+                    .then(function () {
+                        applyStoreWalletIssuanceUI({ status: 'pending' });
+                        startWalletIssuancePoll();
+                        postRechargeRequest();
                     })
                     .catch(function () {
-                        doneOk('충전 신청: ' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑 주소로 입금해 주세요.');
+                        applyStoreWalletIssuanceUI({ status: 'pending' });
+                        startWalletIssuancePoll();
+                        postRechargeRequest();
                     });
             } else {
+                if (btn) btn.disabled = false;
                 doneOk('충전 신청: ' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑 주소로 입금해 주세요.');
             }
         }
@@ -2199,15 +2623,28 @@
         });
 
         document.getElementById('btnCopyStoreQr').addEventListener('click', function () {
-            var urlEl = document.getElementById('storeAdminQrUrl');
-            var url = (urlEl && urlEl.dataset.url) ? urlEl.dataset.url : (urlEl ? urlEl.textContent.trim() : '');
-            if (!url) { alert('QR 링크가 없습니다.'); return; }
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(url).then(function () { alert('링크가 복사되었습니다.'); }).catch(function () { fallbackCopy(url); });
-            } else {
-                fallbackCopy(url);
-            }
+            var imgEl = document.getElementById('storeAdminQrImg');
+            copyImageFromImgElement(imgEl, 'QR 이미지가 복사되었습니다.');
         });
+
+        var memberFilterApplyBtn = document.getElementById('btnMemberFilterApply');
+        if (memberFilterApplyBtn) {
+            memberFilterApplyBtn.addEventListener('click', applyMemberFilters);
+        }
+        var memberFilterNameEl = document.getElementById('memberFilterName');
+        if (memberFilterNameEl) {
+            memberFilterNameEl.addEventListener('input', applyMemberFilters);
+            memberFilterNameEl.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    applyMemberFilters();
+                }
+            });
+        }
+        var memberFilterDateFromEl = document.getElementById('memberFilterDateFrom');
+        if (memberFilterDateFromEl) memberFilterDateFromEl.addEventListener('change', applyMemberFilters);
+        var memberFilterDateToEl = document.getElementById('memberFilterDateTo');
+        if (memberFilterDateToEl) memberFilterDateToEl.addEventListener('change', applyMemberFilters);
 
         document.getElementById('btnStoreSettlementQuery').addEventListener('click', function () {
             loadStoreSettlement();
@@ -2218,8 +2655,7 @@
         });
 
         document.getElementById('btnCopyRechargeWallet').addEventListener('click', function () {
-            var el = document.getElementById('pointRechargeWalletAddr');
-            var text = el ? (el.textContent || '').trim() : '';
+            var text = (window.STORE_RECHARGE_WALLET || '').trim();
             if (!text) {
                 alert('복사할 주소가 없습니다.');
                 return;
@@ -2231,6 +2667,28 @@
             } else {
                 fallbackCopy(text, '지갑 주소가 복사되었습니다.', '복사에 실패했습니다. 주소를 직접 선택해 복사해 주세요.');
             }
+        });
+
+        document.getElementById('btnWalletIssuanceComplete').addEventListener('click', function () {
+            var w = (lastWalletIssuanceAddress || '').trim();
+            function reveal(addr) {
+                var a = (addr || '').trim();
+                if (!a) return;
+                try { sessionStorage.setItem(getWalletUnlockStorageKey(), a); } catch (e) {}
+                window.STORE_RECHARGE_WALLET = a;
+                applyStoreWalletIssuanceUI({ status: 'completed', wallet: a });
+            }
+            if (w) {
+                reveal(w);
+                return;
+            }
+            fetchStoreWalletIssuanceOnce().then(function () {
+                reveal((lastWalletIssuanceAddress || '').trim());
+            });
+        });
+
+        document.getElementById('btnPointRechargeDepositOk').addEventListener('click', function () {
+            closePointRechargeModal();
         });
 
         document.getElementById('btnPointRechargeCancel').addEventListener('click', closePointRechargeModal);

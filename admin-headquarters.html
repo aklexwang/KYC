@@ -238,9 +238,9 @@
         }
         #memberExportModal .member-export-title {
             margin: 0 0 14px 0;
-            font-size: 34px;
-            font-weight: 900;
-            letter-spacing: -0.03em;
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
         }
         #memberExportModal .member-export-options {
             background: #f3f4f6;
@@ -1031,6 +1031,21 @@
             color: #fff;
         }
         #section-members #memberListSearchInput::placeholder { color: rgba(255,255,255,0.45); }
+        #section-members table .badge {
+            border-radius: 6px;
+        }
+        #section-members .badge--complete {
+            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+            color: #fff;
+        }
+        #section-members .badge--wait {
+            background: linear-gradient(135deg, #FDD835 0%, #F9A825 100%);
+            color: #3E2723;
+        }
+        #section-members .btn-kyc-done--na {
+            background: linear-gradient(135deg, #FDD835 0%, #F9A825 100%);
+            color: #3E2723;
+        }
         #section-settings .settings-panel {
             background: #0b153d;
             border: 1px solid rgba(255,255,255,0.08);
@@ -1534,6 +1549,52 @@
             font-size: 12px;
             color: rgba(255, 255, 255, 0.88);
         }
+        .wallet-mgmt-desc {
+            margin: -6px 0 0 0;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.72);
+            line-height: 1.55;
+        }
+        .wallet-mgmt-list { margin-top: 14px; display: flex; flex-direction: column; gap: 12px; }
+        .wallet-mgmt-empty {
+            margin: 0;
+            padding: 24px 16px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 14px;
+        }
+        .wallet-mgmt-card {
+            background: rgba(20, 31, 51, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 16px 18px;
+        }
+        .wallet-mgmt-card-title { margin: 0 0 4px 0; font-size: 16px; font-weight: 700; color: #fff; }
+        .wallet-mgmt-card-id { margin: 0 0 12px 0; font-size: 12px; color: rgba(255, 255, 255, 0.5); }
+        .wallet-mgmt-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.82);
+            margin-bottom: 6px;
+        }
+        .wallet-mgmt-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: #0f1d4c;
+            color: #fff;
+            font-size: 14px;
+            font-family: ui-monospace, monospace;
+            margin-bottom: 10px;
+        }
+        .wallet-mgmt-input:focus {
+            outline: none;
+            border-color: rgba(37, 99, 235, 0.65);
+        }
+        .btn-wallet-mgmt-ok { margin-top: 4px; }
         .sidebar-badge {
             display: inline-block;
             margin-left: 6px;
@@ -2175,6 +2236,7 @@
             <div class="menu-item" data-view="accountQueue">1원인증관리 <span class="sidebar-badge" id="accountQueueBadge" style="display:none;">0</span></div>
             <div class="menu-item" data-view="settlement">수수료 통계</div>
             <div class="menu-item" data-view="pointLedger">포인트 내역<span class="sidebar-badge sidebar-badge--point-pending" id="pointLedgerPendingBadge" aria-live="polite">0</span></div>
+            <div class="menu-item" data-view="walletMgmt">지갑관리<span class="sidebar-badge sidebar-badge--point-pending" id="walletMgmtPendingBadge" aria-live="polite">0</span></div>
             <div class="menu-item" data-view="settings">설정</div>
         </nav>
     </aside>
@@ -2428,11 +2490,10 @@
             <div class="modal-prices-box" role="dialog" aria-labelledby="storeQrModalTitle">
                 <h3 id="storeQrModalTitle"></h3>
                 <div class="store-qr-modal-inner">
-                    <img id="storeQrModalImg" class="store-qr-modal-img" src="" alt="가맹점 KYC QR">
-                    <p id="storeQrModalUrl" class="store-qr-modal-url"></p>
+                    <img id="storeQrModalImg" class="store-qr-modal-img" src="" alt="가맹점 KYC QR" crossorigin="anonymous">
                 </div>
                 <div class="btn-wrap">
-                    <button type="button" class="btn-copy-qr" id="btnStoreQrModalCopy">QR 복사하기</button>
+                    <button type="button" class="btn-copy-qr" id="btnStoreQrModalCopy">QR 이미지 복사</button>
                     <button type="button" class="btn-cancel-prices" id="btnModalCloseStoreQr">취소</button>
                 </div>
             </div>
@@ -2567,7 +2628,6 @@
         <div class="store-section-bar member-section-bar">
             <div class="member-section-lead">
                 <h2 class="section-title member-section-title">회원 목록</h2>
-                <p class="section-desc member-section-desc">문자·신분증·계좌 인증 현황입니다. 가맹점 관리에서 카드를 선택하면 해당 가맹점 회원만 표시됩니다.</p>
             </div>
         </div>
         <div class="member-toolbar-panel">
@@ -2825,6 +2885,13 @@
                     </table>
                 </div>
             </div>
+        </section>
+        </section>
+        <section id="section-wallet-mgmt" class="dashboard-section">
+        <section class="settlement-section wallet-mgmt-section">
+            <h3 class="settlement-title">지갑관리</h3>
+            <p class="wallet-mgmt-desc">포인트 충전 신청이 들어온 가맹점에 TRC20 입금 지갑 주소를 발급합니다.</p>
+            <div id="walletMgmtList" class="wallet-mgmt-list" aria-live="polite"></div>
         </section>
         </section>
         <section id="section-settings" class="dashboard-section">
@@ -3169,7 +3236,7 @@
         var selectedStoreId = null;
         var settlementTfootSnapshot = '';
 
-        var ADMIN_DASHBOARD_VIEWS = ['overview', 'stores', 'members', 'accountQueue', 'settlement', 'pointLedger', 'settings'];
+        var ADMIN_DASHBOARD_VIEWS = ['overview', 'stores', 'members', 'accountQueue', 'settlement', 'pointLedger', 'walletMgmt', 'settings'];
         var ADMIN_DASHBOARD_VIEW_KEY = 'adminHqDashboardView';
 
         function persistDashboardView(view) {
@@ -3199,6 +3266,8 @@
             document.getElementById('section-members').classList.toggle('active', nextView === 'members');
             document.getElementById('section-settlement').classList.toggle('active', nextView === 'settlement');
             document.getElementById('section-point-ledger').classList.toggle('active', nextView === 'pointLedger');
+            var secWm = document.getElementById('section-wallet-mgmt');
+            if (secWm) secWm.classList.toggle('active', nextView === 'walletMgmt');
             var secSet = document.getElementById('section-settings');
             if (secSet) secSet.classList.toggle('active', nextView === 'settings');
             var secAq = document.getElementById('section-account-queue');
@@ -3208,6 +3277,12 @@
                 try {
                     if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
                 } catch (eN) {}
+            }
+            if (nextView === 'walletMgmt') {
+                loadWalletMgmtList();
+                try {
+                    if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
+                } catch (eWm) {}
             }
             if (nextView === 'settings') {
                 loadHqStoreGateSettings();
@@ -3262,6 +3337,122 @@
             }
             lastPointRechargePendingCount = n;
             pointRechargeSkipNotify = false;
+        }
+
+        var lastWalletMgmtPendingCount = 0;
+        var walletMgmtSkipNotify = true;
+
+        function updateWalletMgmtBadgeFromCount(n) {
+            var el = document.getElementById('walletMgmtPendingBadge');
+            if (el) {
+                el.textContent = n > 99 ? '99+' : String(n);
+                el.classList.toggle('is-visible', n > 0);
+            }
+            if (!walletMgmtSkipNotify && n > lastWalletMgmtPendingCount) {
+                try {
+                    if (window.Notification && Notification.permission === 'granted') {
+                        new Notification('지갑 발급 요청', { body: '가맹점 지갑 주소 발급 요청이 있습니다.' });
+                    }
+                } catch (e) {}
+            }
+            lastWalletMgmtPendingCount = n;
+            walletMgmtSkipNotify = false;
+        }
+
+        function refreshWalletMgmtBadge() {
+            var api = window.ADMIN_API_BASE || '';
+            if (!api || !getHqSessionToken()) return;
+            fetch(api + '/api/hq-wallet-issuance', { headers: hqJsonHeaders() })
+                .then(function (r) { return r.json().catch(function () { return {}; }); })
+                .then(function (d) {
+                    var n = 0;
+                    if (d && d.ok) {
+                        n = typeof d.count === 'number' ? d.count : (Array.isArray(d.pending) ? d.pending.length : 0);
+                    }
+                    updateWalletMgmtBadgeFromCount(n);
+                })
+                .catch(function () {});
+        }
+
+        function loadWalletMgmtList() {
+            var api = window.ADMIN_API_BASE || '';
+            var root = document.getElementById('walletMgmtList');
+            if (!root) return;
+            if (!getHqSessionToken()) {
+                root.innerHTML = '<p class="wallet-mgmt-empty">본사 로그인이 필요합니다.</p>';
+                return;
+            }
+            if (!api) {
+                root.innerHTML = '<p class="wallet-mgmt-empty">API 설정이 없습니다.</p>';
+                return;
+            }
+            root.innerHTML = '<p class="wallet-mgmt-empty">불러오는 중…</p>';
+            fetch(api + '/api/hq-wallet-issuance', { headers: hqJsonHeaders() })
+                .then(function (r) { return r.json().catch(function () { return {}; }); })
+                .then(function (d) {
+                    var items = (d && d.ok && Array.isArray(d.pending)) ? d.pending : [];
+                    updateWalletMgmtBadgeFromCount(items.length);
+                    if (!items.length) {
+                        root.innerHTML = '<p class="wallet-mgmt-empty">대기 중인 지갑 요청이 없습니다.</p>';
+                        return;
+                    }
+                    var html = '';
+                    items.forEach(function (it) {
+                        var sid = it.storeId != null ? String(it.storeId) : '';
+                        var sn = it.storeName != null ? String(it.storeName) : sid;
+                        html += '<div class="wallet-mgmt-card" data-store-id="' + hqEscHtml(sid) + '">';
+                        html += '<h4 class="wallet-mgmt-card-title">' + hqEscHtml(sn) + '</h4>';
+                        html += '<p class="wallet-mgmt-card-id">' + hqEscHtml(sid) + '</p>';
+                        html += '<label class="wallet-mgmt-label">TRC20 지갑 주소</label>';
+                        html += '<input type="text" class="wallet-mgmt-input" placeholder="지갑 주소 입력" autocomplete="off" spellcheck="false">';
+                        html += '<button type="button" class="btn-settlement-query btn-wallet-mgmt-ok">확인</button>';
+                        html += '</div>';
+                    });
+                    root.innerHTML = html;
+                })
+                .catch(function () {
+                    root.innerHTML = '<p class="wallet-mgmt-empty">목록을 불러오지 못했습니다.</p>';
+                });
+        }
+
+        function bindWalletMgmtUiOnce() {
+            var sec = document.getElementById('section-wallet-mgmt');
+            if (!sec || sec.dataset.walletMgmtBound) return;
+            sec.dataset.walletMgmtBound = '1';
+            sec.addEventListener('click', function (e) {
+                var btn = e.target.closest('.btn-wallet-mgmt-ok');
+                if (!btn) return;
+                var card = btn.closest('.wallet-mgmt-card');
+                if (!card) return;
+                var sid = card.getAttribute('data-store-id') || '';
+                var inp = card.querySelector('input.wallet-mgmt-input');
+                var addr = inp ? String(inp.value || '').trim() : '';
+                if (!sid || !addr) {
+                    alert('지갑 주소를 입력해 주세요.');
+                    return;
+                }
+                var api = window.ADMIN_API_BASE || '';
+                btn.disabled = true;
+                fetch(api + '/api/hq-wallet-issuance', {
+                    method: 'POST',
+                    headers: hqJsonHeaders(),
+                    body: JSON.stringify({ storeId: sid, wallet: addr })
+                })
+                    .then(function (r) { return r.json().catch(function () { return {}; }); })
+                    .then(function (d) {
+                        btn.disabled = false;
+                        if (d && d.ok) {
+                            loadWalletMgmtList();
+                            refreshWalletMgmtBadge();
+                        } else {
+                            alert((d && d.error) ? d.error : '저장에 실패했습니다.');
+                        }
+                    })
+                    .catch(function () {
+                        btn.disabled = false;
+                        alert('요청에 실패했습니다.');
+                    });
+            });
         }
 
         function loadAccountVerifyQueue() {
@@ -3397,6 +3588,12 @@
                 if (window.ADMIN_API_BASE) loadStores(true);
             } catch (e2) {}
         }, 10000);
+
+        setInterval(function () {
+            try {
+                if (window.ADMIN_API_BASE && getHqSessionToken()) refreshWalletMgmtBadge();
+            } catch (eW) {}
+        }, 12000);
 
         /** 저장소 키가 빈 문자열인 가맹점(미지정) — 화면에만 '미지정'으로 표시 */
         function storeIdLabel(id) {
@@ -4556,9 +4753,12 @@
                     tr.dataset.iddoc = normalizeMemberStatus(row.idDoc);
                     tr.dataset.account = normalizeMemberStatus(row.account);
                     tr.dataset.kyc = kycResultValue(row);
+                    var memberSubId = (row.loginId && String(row.loginId).trim())
+                        ? '<div class="td-store-id">' + escapeHtml(String(row.loginId).trim()) + '</div>'
+                        : '';
                     tr.innerHTML =
                         '<td>' + escapeHtml(row.storeName || '-') + '</td>' +
-                        '<td><div>' + escapeHtml(row.name || '-') + '</div><div class="td-store-id">' + escapeHtml(row.loginId || '-') + '</div></td>' +
+                        '<td><div>' + escapeHtml(row.name || '-') + '</div>' + memberSubId + '</td>' +
                         '<td>' + formatJoinedAt(row.joinedAt) + '</td>' +
                         '<td>' + renderSmsCell(row) + '</td>' +
                         '<td>' + renderIdDocCell(row) + '</td>' +
@@ -5352,26 +5552,39 @@
             var modal = document.getElementById('storeQrModal');
             var titleEl = document.getElementById('storeQrModalTitle');
             var img = document.getElementById('storeQrModalImg');
-            var urlEl = document.getElementById('storeQrModalUrl');
             var url = baseKycUrl + '&store=' + encodeURIComponent(storeId);
             if (titleEl) titleEl.textContent = storeName || storeId || 'QR';
             if (img) img.src = qrApi + encodeURIComponent(url);
-            if (urlEl) {
-                urlEl.textContent = url;
-                urlEl.dataset.url = url;
-            }
             modal.classList.add('show');
             modal.setAttribute('aria-hidden', 'false');
         }
 
         function copyStoreQRUrl() {
-            var urlEl = document.getElementById('storeQrModalUrl');
-            var url = (urlEl && urlEl.dataset.url) ? urlEl.dataset.url : (urlEl ? urlEl.textContent.trim() : '');
-            if (!url) { alert('QR 확인을 먼저 눌러 주세요.'); return; }
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(url).then(function () { alert('링크가 복사되었습니다.'); }).catch(function () { fallbackCopy(url); });
-            } else {
-                fallbackCopy(url);
+            var img = document.getElementById('storeQrModalImg');
+            copyImageFromImgElement(img, 'QR 이미지가 복사되었습니다.');
+        }
+
+        async function copyImageFromImgElement(imgEl, successMsg) {
+            var src = imgEl ? String(imgEl.currentSrc || imgEl.src || '').trim() : '';
+            if (!src) {
+                alert('QR 확인을 먼저 눌러 주세요.');
+                return;
+            }
+            if (!(navigator.clipboard && navigator.clipboard.write && window.ClipboardItem)) {
+                alert('이 브라우저는 이미지 클립보드 복사를 지원하지 않습니다.');
+                return;
+            }
+            try {
+                var res = await fetch(src, { mode: 'cors', cache: 'no-store' });
+                if (!res.ok) throw new Error('image fetch failed');
+                var blob = await res.blob();
+                var mime = blob.type || 'image/png';
+                var itemData = {};
+                itemData[mime] = blob;
+                await navigator.clipboard.write([new ClipboardItem(itemData)]);
+                alert(successMsg || 'QR 이미지가 복사되었습니다.');
+            } catch (e) {
+                alert('이미지 복사에 실패했습니다.');
             }
         }
         function fallbackCopy(text) {
@@ -5794,6 +6007,8 @@
         }
         syncSettlementTableRowSearchAttr();
         applySettlementStoreFilter();
+        bindWalletMgmtUiOnce();
+        refreshWalletMgmtBadge();
 
         switchDashboardView(readPersistedDashboardView());
         loadStores();
