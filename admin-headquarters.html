@@ -2719,7 +2719,7 @@
                         bootHqDashboard();
                     } else {
                         if (err) {
-                            err.textContent = (d && d.error) ? d.error : ((d && d.message) ? d.message : '로그인에 실패했습니다.');
+                            err.textContent = (d && d.message) ? d.message : ((d && d.error) ? d.error : '로그인에 실패했습니다.');
                             err.classList.add('show');
                         }
                     }
