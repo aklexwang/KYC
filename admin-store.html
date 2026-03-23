@@ -1254,6 +1254,22 @@
         .modal-recharge-submit-wrap:has(.btn-recharge-submit:disabled):hover .modal-recharge-submit-block-x {
             display: flex;
         }
+        #pointRechargeFormPhase.point-recharge-form--terminal .modal-recharge-field,
+        #pointRechargeFormPhase.point-recharge-form--terminal .modal-recharge-wallet,
+        #pointRechargeFormPhase.point-recharge-form--terminal .modal-recharge-actions {
+            display: none !important;
+        }
+        #pointRechargeFormPhase.point-recharge-form--terminal #pointRechargeDepositStatus {
+            margin-top: 4px !important;
+            margin-bottom: 18px;
+            font-size: 15px;
+        }
+        #pointRechargeFormPhase.point-recharge-form--terminal #btnPointRechargeDepositOk {
+            display: block;
+            width: 100%;
+            max-width: none;
+            margin-top: 0;
+        }
         .modal-recharge-status-phase {
             padding: 8px 4px 4px;
         }
@@ -2517,12 +2533,18 @@
             }
         }
 
+        function setPointRechargeFormTerminalLayout(isTerminal) {
+            var formPh = document.getElementById('pointRechargeFormPhase');
+            if (formPh) formPh.classList.toggle('point-recharge-form--terminal', !!isTerminal);
+        }
+
         function showPointRechargeFormPhase() {
             var formPh = document.getElementById('pointRechargeFormPhase');
             var statPh = document.getElementById('pointRechargeStatusPhase');
             var okBtn = document.getElementById('btnPointRechargeStatusOk');
             var dep = document.getElementById('pointRechargeDepositStatus');
             var dok = document.getElementById('btnPointRechargeDepositOk');
+            setPointRechargeFormTerminalLayout(false);
             if (formPh) formPh.hidden = false;
             if (statPh) statPh.hidden = true;
             if (okBtn) okBtn.hidden = true;
@@ -2566,6 +2588,7 @@
                         if (st === '완료') {
                             if (depEl) depEl.textContent = '충전이 반영되었습니다.';
                             loadStorePointBalance();
+                            setPointRechargeFormTerminalLayout(true);
                         } else if (st === '취소') {
                             if (depEl) depEl.textContent = '취소되었습니다. 텔레그램으로 문의하세요.';
                         } else {
