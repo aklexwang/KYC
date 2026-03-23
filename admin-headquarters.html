@@ -2121,6 +2121,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div id="hqLoginWrap" class="hq-login-section is-visible" aria-hidden="false">
@@ -2656,6 +2657,8 @@
                     <label class="member-export-option"><input type="checkbox" data-export-col="idDoc" checked>신분증 인증</label>
                     <label class="member-export-option"><input type="checkbox" data-export-col="accountInfo" checked>계좌 정보</label>
                     <label class="member-export-option"><input type="checkbox" data-export-col="kycResult" checked>KYC 결과</label>
+                    <label class="member-export-option"><input type="checkbox" id="memberExportIncludeIdPhoto" checked>신분증 사진 (ZIP)</label>
+                    <label class="member-export-option"><input type="checkbox" id="memberExportIncludeFacePhoto" checked>얼굴 사진 (ZIP)</label>
                 </div>
                 <div class="member-export-actions">
                     <button type="button" class="btn-member-export-cancel" id="btnMemberExportCancel">취소</button>
@@ -4281,8 +4284,8 @@
                         account: m.account,
                         phone: m.phone || m.phoneNumber || m.mobile || m.tel || '',
                         loginId: m.id || m.loginId || m.username || m.userId || '',
-                        idDocImage: m.idDocImage,
-                        faceImage: m.faceImage,
+                        idDocImage: m.idDocImage || m.idCardImage || m.idImage || '',
+                        faceImage: m.faceImage || m.selfieImage || m.facePhoto || '',
                         bankName: m.bankName || m.bank || '',
                         accountNumber: m.accountNumber || m.accountNo || '',
                         accountHolder: m.accountHolder || m.holderName || m.holder || ''
@@ -4686,7 +4689,41 @@
             modal.classList.remove('show');
             modal.setAttribute('aria-hidden', 'true');
         }
-        function downloadFilteredMembersCsv() {
+        function guessMemberImageExt(url) {
+            var u = String(url || '').trim();
+            if (!u) return 'jpg';
+            if (/^data:image\/png/i.test(u) || /\.png(\?|#|$)/i.test(u)) return 'png';
+            if (/^data:image\/webp/i.test(u) || /\.webp(\?|#|$)/i.test(u)) return 'webp';
+            if (/^data:image\/gif/i.test(u) || /\.gif(\?|#|$)/i.test(u)) return 'gif';
+            if (/^data:image\/jpe?g/i.test(u) || /\.jpe?g(\?|#|$)/i.test(u)) return 'jpg';
+            return 'jpg';
+        }
+        function safeMemberExportBase(row, idx) {
+            var sid = String(row.storeId || 'store').replace(/[^\w\-]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '') || 'store';
+            return sid + '_' + (idx + 1);
+        }
+        function fetchMemberImageBytes(url) {
+            var u = String(url || '').trim();
+            if (!u) return Promise.resolve(null);
+            if (u.indexOf('data:') === 0) {
+                try {
+                    var m = u.match(/^data:([^;]*);base64,(.+)$/i);
+                    if (!m) return Promise.resolve(null);
+                    var bin = atob(m[2].replace(/\s/g, ''));
+                    var arr = new Uint8Array(bin.length);
+                    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+                    return Promise.resolve(arr);
+                } catch (e) {
+                    return Promise.resolve(null);
+                }
+            }
+            return fetch(u, { mode: 'cors', credentials: 'omit', cache: 'no-store' })
+                .then(function (r) { return r.ok ? r.arrayBuffer() : null; })
+                .then(function (ab) { return ab ? new Uint8Array(ab) : null; })
+                .catch(function () { return null; });
+        }
+        async function downloadFilteredMembersCsv() {
+            var btn = document.getElementById('btnMemberExportDownload');
             var selected = Array.prototype.filter.call(
                 document.querySelectorAll('#memberExportModal input[type="checkbox"][data-export-col]'),
                 function (el) { return el.checked; }
@@ -4700,6 +4737,11 @@
                 alert('다운로드할 회원 데이터가 없습니다.');
                 return;
             }
+            var incIdEl = document.getElementById('memberExportIncludeIdPhoto');
+            var incFaceEl = document.getElementById('memberExportIncludeFacePhoto');
+            var includeIdPhoto = incIdEl ? incIdEl.checked : false;
+            var includeFacePhoto = incFaceEl ? incFaceEl.checked : false;
+            var wantZip = includeIdPhoto || includeFacePhoto;
             var defs = {
                 storeName: { h: '가맹명', v: function (r) { return r.storeName || ''; } },
                 name: { h: '이름', v: function (r) { return r.name || ''; } },
@@ -4718,21 +4760,92 @@
                 kycResult: { h: 'KYC 결과', v: function (r) { return kycResultValue(r) === 'complete' ? '완료' : '미완료'; } }
             };
             var headers = selected.map(function (k) { return defs[k].h; });
+            var idPhotoRel = [];
+            var facePhotoRel = [];
+            if (wantZip) {
+                headers.push('신분증사진파일', '얼굴사진파일');
+            }
             var lines = [headers.map(csvCell).join(',')];
-            rows.forEach(function (r) {
-                lines.push(selected.map(function (k) { return csvCell(defs[k].v(r)); }).join(','));
-            });
-            var blob = new Blob(["\uFEFF" + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
-            var a = document.createElement('a');
+            for (var ri = 0; ri < rows.length; ri++) {
+                var r = rows[ri];
+                var base = safeMemberExportBase(r, ri);
+                var idRel = '';
+                var faceRel = '';
+                if (wantZip) {
+                    if (includeIdPhoto && r.idDocImage) {
+                        idRel = 'images/' + base + '_id.' + guessMemberImageExt(r.idDocImage);
+                    }
+                    if (includeFacePhoto && r.faceImage) {
+                        faceRel = 'images/' + base + '_face.' + guessMemberImageExt(r.faceImage);
+                    }
+                }
+                idPhotoRel.push(idRel);
+                facePhotoRel.push(faceRel);
+                var cells = selected.map(function (k) { return csvCell(defs[k].v(r)); });
+                if (wantZip) {
+                    cells.push(csvCell(idRel), csvCell(faceRel));
+                }
+                lines.push(cells.join(','));
+            }
+            var csvText = '\uFEFF' + lines.join('\r\n');
             var d = new Date();
             function p(n) { return n < 10 ? '0' + n : '' + n; }
-            a.href = URL.createObjectURL(blob);
-            a.download = 'members_' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '_' + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds()) + '.csv';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(a.href);
-            closeMemberExportModal();
+            var ts = d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '_' + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds());
+            if (btn) btn.disabled = true;
+            try {
+                if (!wantZip) {
+                    var blobCsv = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+                    var a0 = document.createElement('a');
+                    a0.href = URL.createObjectURL(blobCsv);
+                    a0.download = 'members_' + ts + '.csv';
+                    document.body.appendChild(a0);
+                    a0.click();
+                    a0.remove();
+                    URL.revokeObjectURL(a0.href);
+                    closeMemberExportModal();
+                    return;
+                }
+                if (typeof JSZip === 'undefined') {
+                    alert('ZIP 생성 도구를 불러오지 못했습니다. 네트워크 확인 후 새로고침해 주세요.');
+                    return;
+                }
+                var zip = new JSZip();
+                zip.file('members.csv', csvText);
+                var imgFolder = zip.folder('images');
+                var added = 0;
+                for (var j = 0; j < rows.length; j++) {
+                    var rj = rows[j];
+                    var bj = safeMemberExportBase(rj, j);
+                    if (includeIdPhoto && rj.idDocImage && idPhotoRel[j]) {
+                        var bytesId = await fetchMemberImageBytes(rj.idDocImage);
+                        if (bytesId) {
+                            imgFolder.file(bj + '_id.' + guessMemberImageExt(rj.idDocImage), bytesId);
+                            added++;
+                        }
+                    }
+                    if (includeFacePhoto && rj.faceImage && facePhotoRel[j]) {
+                        var bytesFace = await fetchMemberImageBytes(rj.faceImage);
+                        if (bytesFace) {
+                            imgFolder.file(bj + '_face.' + guessMemberImageExt(rj.faceImage), bytesFace);
+                            added++;
+                        }
+                    }
+                }
+                var zipBlob = await zip.generateAsync({ type: 'blob' });
+                var a1 = document.createElement('a');
+                a1.href = URL.createObjectURL(zipBlob);
+                a1.download = 'members_export_' + ts + '.zip';
+                document.body.appendChild(a1);
+                a1.click();
+                a1.remove();
+                URL.revokeObjectURL(a1.href);
+                if (wantZip && added === 0 && (rows.some(function (x) { return includeIdPhoto && x.idDocImage; }) || rows.some(function (x) { return includeFacePhoto && x.faceImage; }))) {
+                    alert('ZIP에는 CSV가 포함되었습니다. 일부 사진은 CORS·URL 문제로 가져오지 못했을 수 있습니다.');
+                }
+                closeMemberExportModal();
+            } finally {
+                if (btn) btn.disabled = false;
+            }
         }
 
         function setStoreFilter(storeId) {
