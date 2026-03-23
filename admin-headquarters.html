@@ -4676,6 +4676,35 @@
             var sid = String(row.storeId || 'store').replace(/[^\w\-]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '') || 'store';
             return sid + '_' + (idx + 1);
         }
+        function fetchMemberImageBytesViaHqProxy(u) {
+            var api = window.ADMIN_API_BASE || '';
+            var tok = typeof getHqSessionToken === 'function' ? getHqSessionToken() : '';
+            if (!api || !tok) return Promise.resolve(null);
+            return fetch(api + '/api/hq-fetch-member-asset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-HQ-Admin-Token': tok },
+                body: JSON.stringify({ url: u }),
+            })
+                .then(function (r) {
+                    return r.json().then(function (d) {
+                        return { ok: r.ok, d: d };
+                    }).catch(function () {
+                        return { ok: false, d: {} };
+                    });
+                })
+                .then(function (x) {
+                    if (!x.ok || !x.d || !x.d.ok || !x.d.data) return null;
+                    try {
+                        var bin = atob(String(x.d.data).replace(/\s/g, ''));
+                        var arr = new Uint8Array(bin.length);
+                        for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+                        return arr;
+                    } catch (e) {
+                        return null;
+                    }
+                })
+                .catch(function () { return null; });
+        }
         function fetchMemberImageBytes(url) {
             var u = String(url || '').trim();
             if (!u) return Promise.resolve(null);
@@ -4694,7 +4723,11 @@
             return fetch(u, { mode: 'cors', credentials: 'omit', cache: 'no-store' })
                 .then(function (r) { return r.ok ? r.arrayBuffer() : null; })
                 .then(function (ab) { return ab ? new Uint8Array(ab) : null; })
-                .catch(function () { return null; });
+                .catch(function () { return null; })
+                .then(function (bytes) {
+                    if (bytes && bytes.length) return bytes;
+                    return fetchMemberImageBytesViaHqProxy(u);
+                });
         }
         async function downloadFilteredMembersCsv() {
             var btn = document.getElementById('btnMemberExportDownload');
@@ -4733,12 +4766,18 @@
                 },
                 kycResult: { h: 'KYC 결과', v: function (r) { return kycResultValue(r) === 'complete' ? '완료' : '미완료'; } }
             };
-            var headers = selected.map(function (k) { return defs[k].h; });
-            var idPhotoRel = [];
-            var facePhotoRel = [];
-            if (wantZip) {
+            var headers = [];
+            selected.forEach(function (k) {
+                headers.push(defs[k].h);
+                if (wantZip && k === 'idDoc') {
+                    headers.push('신분증사진파일', '얼굴사진파일');
+                }
+            });
+            if (wantZip && selected.indexOf('idDoc') === -1) {
                 headers.push('신분증사진파일', '얼굴사진파일');
             }
+            var idPhotoRel = [];
+            var facePhotoRel = [];
             var lines = [headers.map(csvCell).join(',')];
             for (var ri = 0; ri < rows.length; ri++) {
                 var r = rows[ri];
@@ -4755,8 +4794,14 @@
                 }
                 idPhotoRel.push(idRel);
                 facePhotoRel.push(faceRel);
-                var cells = selected.map(function (k) { return csvCell(defs[k].v(r)); });
-                if (wantZip) {
+                var cells = [];
+                selected.forEach(function (k) {
+                    cells.push(csvCell(defs[k].v(r)));
+                    if (wantZip && k === 'idDoc') {
+                        cells.push(csvCell(idRel), csvCell(faceRel));
+                    }
+                });
+                if (wantZip && selected.indexOf('idDoc') === -1) {
                     cells.push(csvCell(idRel), csvCell(faceRel));
                 }
                 lines.push(cells.join(','));
@@ -4785,6 +4830,17 @@
                 }
                 var zip = new JSZip();
                 zip.file('members.csv', csvText);
+                zip.file(
+                    '다운로드_안내.txt',
+                    [
+                        '회원보내기 안내',
+                        '================',
+                        '1) Excel에서 여는 members.csv의 "신분증 인증" 열에는 상태(완료/대기/실패)만 들어갑니다. 사진이 셀 안에 들어가지 않는 것이 정상입니다.',
+                        '2) 신분증·얼굴 사진은 반드시 "images" 폴더 안의 파일을 확인하세요.',
+                        '3) "신분증사진파일" / "얼굴사진파일" 열은 압축을 푼 폴더 기준 상대 경로입니다. (예: images/가맹점ID_1_id.jpg)',
+                        '4) ZIP에 사진이 비어 있으면 브라우저 보안(CORS) 때문일 수 있습니다. 최신 버전은 본사 서버를 경유해 다시 받습니다. 본사 로그인이 필요합니다.',
+                    ].join('\r\n')
+                );
                 var imgFolder = zip.folder('images');
                 var added = 0;
                 for (var j = 0; j < rows.length; j++) {
@@ -4814,7 +4870,7 @@
                 a1.remove();
                 URL.revokeObjectURL(a1.href);
                 if (wantZip && added === 0 && (rows.some(function (x) { return includeIdPhoto && x.idDocImage; }) || rows.some(function (x) { return includeFacePhoto && x.faceImage; }))) {
-                    alert('ZIP에는 CSV가 포함되었습니다. 일부 사진은 CORS·URL 문제로 가져오지 못했을 수 있습니다.');
+                    alert('ZIP에는 CSV·다운로드_안내.txt가 포함되었습니다. 사진은 images 폴더에 들어가야 합니다. 비어 있으면 본사 로그인 만료·이미지 URL 오류·서버 차단일 수 있습니다. 압축을 풀고 다운로드_안내.txt를 확인하세요.');
                 }
                 closeMemberExportModal();
             } finally {

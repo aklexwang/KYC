@@ -111,3 +111,9 @@
   to = "/.netlify/functions/hq-admins"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/api/hq-fetch-member-asset"
+  to = "/.netlify/functions/hq-fetch-member-asset"
+  status = 200
+  force = true

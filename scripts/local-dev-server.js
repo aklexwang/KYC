@@ -53,6 +53,7 @@ const API_MAP = {
   '/api/account-verify': 'account-verify.js',
   '/api/hq-login': 'hq-login.js',
   '/api/hq-admins': 'hq-admins.js',
+  '/api/hq-fetch-member-asset': 'hq-fetch-member-asset.js',
 };
 
 const MIME = {
