@@ -660,8 +660,13 @@
             gap: 8px;
             flex-wrap: wrap;
         }
-        #section-members .member-filter-actions input[type="search"],
-        #section-members .member-filter-actions input[type="date"] {
+        #section-members .member-filter-date-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: rgba(226, 232, 240, 0.9);
+            white-space: nowrap;
+        }
+        #section-members .member-filter-actions input[type="search"] {
             height: 34px;
             padding: 6px 10px;
             border-radius: 8px;
@@ -670,12 +675,12 @@
             color: #fff;
             font-size: 13px;
             font-family: inherit;
-        }
-        #section-members .member-filter-actions input[type="search"] {
             width: 168px;
         }
-        #section-members .member-filter-actions input[type="date"] {
-            width: 136px;
+        #section-members .member-filter-actions .drp-wrap .drp-trigger {
+            min-height: 34px;
+            min-width: 210px;
+            padding: 6px 12px;
         }
         #section-members .member-filter-actions input::placeholder { color: rgba(255,255,255,0.45); }
         #section-members .btn-member-query {
@@ -743,7 +748,8 @@
             gap: 10px 14px;
             margin: 0 0 16px 0;
         }
-        .settlement-date-bar label {
+        .settlement-date-bar label,
+        .settlement-date-inline-label {
             font-size: 13px;
             font-weight: 600;
             color: rgba(255,255,255,0.88);
@@ -761,6 +767,9 @@
             filter: invert(0.85);
             opacity: 0.85;
             cursor: pointer;
+        }
+        .settlement-date-bar .drp-wrap .drp-trigger {
+            min-width: 260px;
         }
         .settlement-date-sep { color: rgba(255,255,255,0.45); font-size: 14px; }
         .btn-settlement-query {
@@ -1427,11 +1436,15 @@
                 </div>
                 <section id="storeSettlementSection" class="settlement-section">
                     <div class="settlement-date-bar">
-                        <label for="storeSettlementDateFrom">시작일</label>
-                        <input type="date" id="storeSettlementDateFrom" autocomplete="off" aria-label="수수료 통계 시작일">
-                        <span class="settlement-date-sep">~</span>
-                        <label for="storeSettlementDateTo">종료일</label>
-                        <input type="date" id="storeSettlementDateTo" autocomplete="off" aria-label="수수료 통계 종료일">
+                        <span class="settlement-date-inline-label">기간</span>
+                        <div class="drp-wrap" data-drp-from="storeSettlementDateFrom" data-drp-to="storeSettlementDateTo" data-drp-placeholder="연도-월-일 ~ 연도-월-일">
+                            <input type="hidden" id="storeSettlementDateFrom" autocomplete="off" aria-label="수수료 통계 시작일">
+                            <input type="hidden" id="storeSettlementDateTo" autocomplete="off" aria-label="수수료 통계 종료일">
+                            <button type="button" class="drp-trigger" aria-label="수수료 통계 기간 선택" aria-expanded="false" aria-haspopup="dialog">
+                                <span class="drp-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+                                <span class="drp-label">연도-월-일 ~ 연도-월-일</span>
+                            </button>
+                        </div>
                         <button type="button" class="btn-settlement-query" id="btnStoreSettlementQuery">조회</button>
                     </div>
                     <div class="table-wrap">
@@ -1485,11 +1498,15 @@
                 </div>
                 <section class="point-history-section">
                     <div class="point-history-toolbar">
-                        <label for="storePointHistoryDateFrom">시작일</label>
-                        <input type="date" id="storePointHistoryDateFrom" class="point-history-date-input" autocomplete="off" aria-label="포인트 내역 시작일">
-                        <span class="point-history-date-sep">~</span>
-                        <label for="storePointHistoryDateTo">종료일</label>
-                        <input type="date" id="storePointHistoryDateTo" class="point-history-date-input" autocomplete="off" aria-label="포인트 내역 종료일">
+                        <span class="settlement-date-inline-label">기간</span>
+                        <div class="drp-wrap" data-drp-from="storePointHistoryDateFrom" data-drp-to="storePointHistoryDateTo" data-drp-placeholder="연도-월-일 ~ 연도-월-일">
+                            <input type="hidden" id="storePointHistoryDateFrom" class="point-history-date-input" autocomplete="off" aria-label="포인트 내역 시작일">
+                            <input type="hidden" id="storePointHistoryDateTo" class="point-history-date-input" autocomplete="off" aria-label="포인트 내역 종료일">
+                            <button type="button" class="drp-trigger" aria-label="포인트 내역 기간 선택" aria-expanded="false" aria-haspopup="dialog">
+                                <span class="drp-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+                                <span class="drp-label">연도-월-일 ~ 연도-월-일</span>
+                            </button>
+                        </div>
                         <label for="storePointHistoryKindFilter">구분</label>
                         <select id="storePointHistoryKindFilter" class="point-history-kind-select" aria-label="포인트 내역 구분">
                             <option value="all" selected>전체</option>
@@ -1536,8 +1553,15 @@
                     <h3 class="member-toolbar-title">전체 회원 현황 (문자·신분증·1원 인증)</h3>
                     <div class="member-filter-actions">
                         <input type="search" id="memberFilterName" placeholder="이름 검색" autocomplete="off" aria-label="회원 이름 검색">
-                        <input type="date" id="memberFilterDateFrom" autocomplete="off" aria-label="가입일 시작">
-                        <input type="date" id="memberFilterDateTo" autocomplete="off" aria-label="가입일 종료">
+                        <span class="member-filter-date-label">가입일</span>
+                        <div class="drp-wrap" data-drp-from="memberFilterDateFrom" data-drp-to="memberFilterDateTo" data-drp-placeholder="연도-월-일 ~ 연도-월-일">
+                            <input type="hidden" id="memberFilterDateFrom" autocomplete="off" aria-label="가입일 시작">
+                            <input type="hidden" id="memberFilterDateTo" autocomplete="off" aria-label="가입일 종료">
+                            <button type="button" class="drp-trigger" aria-label="가입일 범위 선택" aria-expanded="false" aria-haspopup="dialog">
+                                <span class="drp-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+                                <span class="drp-label">연도-월-일 ~ 연도-월-일</span>
+                            </button>
+                        </div>
                         <button type="button" class="btn-member-query" id="btnMemberFilterApply">검색</button>
                     </div>
                 </div>
@@ -1601,6 +1625,7 @@
         </div>
     </div>
 
+    <script src="scripts/date-range-picker.js"></script>
     <script>
         window.ADMIN_API_BASE = window.ADMIN_API_BASE || (typeof location !== 'undefined' ? location.origin : '');
         /** USDT→KRW 환율 (원화 표시용). 서버에서 덮어쓰거나 로그인 응답의 usdtKrwRate 등으로 갱신 가능 */
@@ -2357,10 +2382,16 @@
             document.getElementById('section-point-history').classList.toggle('active', nextView === 'pointHistory');
             if (nextView === 'settlement') {
                 initStoreSettlementDateRange();
+                try {
+                    if (window.DateRangePicker && window.DateRangePicker.refreshAll) window.DateRangePicker.refreshAll();
+                } catch (eDr) {}
                 loadStoreSettlement();
             }
             if (nextView === 'pointHistory') {
                 initStorePointHistoryDateRange();
+                try {
+                    if (window.DateRangePicker && window.DateRangePicker.refreshAll) window.DateRangePicker.refreshAll();
+                } catch (eDr2) {}
                 loadStorePointHistory();
             }
         }
@@ -3072,6 +3103,13 @@
                 switchDashboardView(item.dataset.view || 'overview');
             });
         });
+
+        try {
+            if (window.DateRangePicker && window.DateRangePicker.initAll) {
+                window.DateRangePicker.initAll();
+                window.DateRangePicker.refreshAll();
+            }
+        } catch (eDrInit) {}
 
         loadStoreGateConfig(function () {
             if (!checkStoredLogin()) {

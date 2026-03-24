@@ -1,4 +1,11 @@
+const crypto = require('crypto');
 const { getKycData, setKycData, incrementUsage, getStorageErrorHelp } = require('./storage');
+
+/** 1원 인증용 4자리 (0000–9999, 서버 자동 부여) */
+function randomDepositCode4() {
+  const n = crypto.randomInt(0, 10000);
+  return String(n).padStart(4, '0');
+}
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -72,6 +79,9 @@ exports.handler = async (event, context) => {
     let depositCode4 = prev.depositCode4 || '';
     let accountVerifyRequestedAt = prev.accountVerifyRequestedAt || '';
     let accountVerifyExpiresAt = prev.accountVerifyExpiresAt || '';
+    let accountVerifyCodeSentAt = prev.accountVerifyCodeSentAt || '';
+    let accountVerifyCodeSentByNickname = prev.accountVerifyCodeSentByNickname || '';
+    let accountVerifyCodeSentById = prev.accountVerifyCodeSentById || '';
     let resetAccountVerifyMeta = false;
 
     if (
@@ -80,13 +90,17 @@ exports.handler = async (event, context) => {
       && idDocNext === 'complete'
       && prev.account !== 'complete'
     ) {
-      accountVerifyStatus = 'pending';
-      depositCode4 = '';
+      /** 신청 즉시 4자리 자동 생성 → 회원 화면에 표시, 회원이 동일 번호 입력 시 인증 완료 */
+      accountVerifyStatus = 'code_sent';
+      depositCode4 = randomDepositCode4();
       accountVerifyRequestedAt = new Date().toISOString();
       /** 회원 화면 1원 타이머(3분)과 동일하게 서버에 만료 시각 저장 */
       accountVerifyExpiresAt = new Date(Date.now() + 180 * 1000).toISOString();
       accountNext = 'wait';
-      /** 본사 취소 후 재신청 시 이전 취소·코드 메타 제거 */
+      accountVerifyCodeSentAt = new Date().toISOString();
+      accountVerifyCodeSentByNickname = '자동';
+      accountVerifyCodeSentById = '';
+      /** 본사 취소 후 재신청 시 이전 취소 메타만 제거 (코드는 위에서 새로 설정) */
       resetAccountVerifyMeta = true;
     }
 
@@ -107,13 +121,13 @@ exports.handler = async (event, context) => {
       depositCode4,
       accountVerifyRequestedAt,
       accountVerifyExpiresAt,
+      accountVerifyCodeSentAt,
+      accountVerifyCodeSentByNickname,
+      accountVerifyCodeSentById,
       ...(resetAccountVerifyMeta
         ? {
             accountVerifyCancelReason: '',
             accountVerifyCancelledAt: '',
-            accountVerifyCodeSentAt: '',
-            accountVerifyCodeSentByNickname: '',
-            accountVerifyCodeSentById: '',
             accountVerifyCompletedAt: '',
           }
         : {}),
