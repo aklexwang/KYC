@@ -77,15 +77,47 @@ exports.handler = async (event) => {
     bal = Math.round(bal * 2) / 2;
 
     const wallet = typeof body.wallet === 'string' ? body.wallet.trim() : '';
-    const historyId = genHistoryId();
     const hist = Array.isArray(cur.pointHistory) ? cur.pointHistory.slice() : [];
+    const noteStr = wallet || '가맹점 USDT 충전(입금)';
+    const now = Date.now();
+    const dupWindowMs = 120000;
+    const existingPending = [...hist].reverse().find((h) => {
+      if (!h || h.kind !== 'deposit') return false;
+      const st = h.status != null ? String(h.status).trim() : '';
+      if (st !== '진행중' && st !== '처리중') return false;
+      const ha = Number(h.amount);
+      if (!isFinite(ha) || Math.round(ha * 2) / 2 !== amt) return false;
+      const n = typeof h.note === 'string' ? h.note.trim() : '';
+      if (n !== noteStr) return false;
+      const t = h.at ? new Date(h.at).getTime() : 0;
+      if (!t || now - t > dupWindowMs) return false;
+      return true;
+    });
+    if (existingPending && existingPending.historyId) {
+      return {
+        statusCode: 200,
+        headers: { ...CORS, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ok: true,
+          message: '동일한 충전 신청이 이미 접수되어 있습니다.',
+          storeId,
+          historyId: String(existingPending.historyId),
+          status: '진행중',
+          pointBalanceUsdt: bal,
+          pointBalance: bal,
+          pointHistory: hist,
+          deduped: true,
+        }),
+      };
+    }
+    const historyId = genHistoryId();
     hist.push({
       at: new Date().toISOString(),
       kind: 'deposit',
       amount: amt,
       historyId,
       status: '진행중',
-      note: wallet || '가맹점 USDT 충전(입금)',
+      note: noteStr,
     });
 
     map[storeId] = {

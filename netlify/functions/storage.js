@@ -548,13 +548,19 @@ const DEFAULT_HQ_ADMIN = Object.freeze({
   id: 'admin',
   password: '111111',
   nickname: '본사관리자',
+  level: 1,
 });
 
 async function ensureDefaultHqAdminIfEmpty(event) {
   const admins = await getHqAdmins(event);
   if (admins.length > 0) return;
   await setHqAdmins(event, [
-    { id: DEFAULT_HQ_ADMIN.id, password: DEFAULT_HQ_ADMIN.password, nickname: DEFAULT_HQ_ADMIN.nickname },
+    {
+      id: DEFAULT_HQ_ADMIN.id,
+      password: DEFAULT_HQ_ADMIN.password,
+      nickname: DEFAULT_HQ_ADMIN.nickname,
+      level: DEFAULT_HQ_ADMIN.level,
+    },
   ]);
 }
 

@@ -45,6 +45,7 @@ const API_MAP = {
   '/api/store-login': 'store-login.js',
   '/api/store-prices': 'store-prices.js',
   '/api/store-points': 'store-points.js',
+  '/api/store-settlement': 'store-settlement.js',
   '/api/store-gate-config': 'store-gate-config.js',
   '/api/store-point-recharge-request': 'store-point-recharge-request.js',
   '/api/store-point-recharge-resolve': 'store-point-recharge-resolve.js',

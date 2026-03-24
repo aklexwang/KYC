@@ -2474,6 +2474,70 @@
             font-family: inherit;
         }
         .btn-hq-admin-remove:disabled { opacity: 0.45; cursor: not-allowed; }
+        .btn-hq-admin-edit {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            background: #1565c0;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            margin-right: 6px;
+        }
+        .btn-hq-admin-edit:disabled { opacity: 0.45; cursor: not-allowed; }
+        .settings-hq-admins-panel .hq-admin-add-form { flex-wrap: wrap; align-items: flex-end; }
+        .settings-hq-admins-panel .hq-admin-add-form select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #E5E5EA;
+            font-size: 14px;
+            width: 100%;
+            min-width: 0;
+            font-family: inherit;
+            background: #fff;
+        }
+        .hq-admin-menus-row {
+            flex: 1 1 100%;
+            margin-top: 4px;
+        }
+        .hq-admin-menus-row .hq-admin-menus-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #5c5c5c;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .hq-admin-menu-checks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 16px;
+        }
+        .hq-admin-menu-checks label {
+            font-size: 13px;
+            color: #333;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        #hqAdminEditModal .hq-admin-edit-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 440px;
+            width: 100%;
+            box-sizing: border-box;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        #hqAdminEditModal .hq-admin-edit-box h3 { margin: 0 0 16px; font-size: 18px; }
+        #hqAdminEditModal .hq-admin-edit-box .field { margin-bottom: 14px; }
+        #hqAdminEditModal .hq-admin-edit-box label { display: block; font-size: 12px; font-weight: 600; color: #5c5c5c; margin-bottom: 4px; }
+        #hqAdminEditModal .hq-admin-edit-box input,
+        #hqAdminEditModal .hq-admin-edit-box select { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #E5E5EA; font-size: 14px; box-sizing: border-box; }
+        #hqAdminEditModal .hq-admin-edit-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
 
         @media (max-width: 1000px) {
             .dashboard-shell { display: block; }
@@ -3330,7 +3394,15 @@
                     <label for="hqAdminAddNickname">닉네임</label>
                     <input type="text" id="hqAdminAddNickname" placeholder="화면에 표시될 이름" autocomplete="off">
                 </div>
+                <div class="field">
+                    <label for="hqAdminAddLevel">등급</label>
+                    <select id="hqAdminAddLevel" aria-label="신규 관리자 등급"></select>
+                </div>
                 <button type="button" class="btn-settlement-query" id="btnHqAdminAdd">추가</button>
+                <div class="hq-admin-menus-row" id="hqAdminAddMenusRow" style="display:none;">
+                    <span class="hq-admin-menus-title">허용 메뉴 (운영 관리자)</span>
+                    <div class="hq-admin-menu-checks" id="hqAdminAddMenuChecks"></div>
+                </div>
             </div>
             <p class="settings-hint" id="hqAdminsSaveStatus" aria-live="polite"></p>
             <div class="table-wrap">
@@ -3340,6 +3412,9 @@
                             <tr>
                                 <th>아이디</th>
                                 <th>닉네임</th>
+                                <th>등급</th>
+                                <th>허용 메뉴</th>
+                                <th>수정</th>
                                 <th>삭제</th>
                             </tr>
                         </thead>
@@ -3352,6 +3427,36 @@
     </main>
     </div>
     </div>
+    </div>
+    <div id="hqAdminEditModal" class="modal-overlay-prices" aria-hidden="true">
+        <div class="hq-admin-edit-box" role="dialog" aria-modal="true" aria-labelledby="hqAdminEditTitle">
+            <h3 id="hqAdminEditTitle">관리자 수정</h3>
+            <div class="field">
+                <label>아이디</label>
+                <input type="text" id="hqAdminEditId" readonly>
+            </div>
+            <div class="field">
+                <label for="hqAdminEditNickname">닉네임</label>
+                <input type="text" id="hqAdminEditNickname" autocomplete="off">
+            </div>
+            <div class="field">
+                <label for="hqAdminEditPw">새 비밀번호 (변경 시만 입력)</label>
+                <input type="password" id="hqAdminEditPw" autocomplete="new-password" placeholder="비워두면 유지">
+            </div>
+            <div class="field" id="hqAdminEditLevelWrap">
+                <label for="hqAdminEditLevel">등급</label>
+                <select id="hqAdminEditLevel"></select>
+            </div>
+            <div class="field" id="hqAdminEditMenusWrap" style="display:none;">
+                <span class="hq-admin-menus-title">허용 메뉴</span>
+                <div class="hq-admin-menu-checks" id="hqAdminEditMenuChecks"></div>
+            </div>
+            <p class="settings-hint" id="hqAdminEditError" style="color:#c62828;margin:0;"></p>
+            <div class="hq-admin-edit-actions">
+                <button type="button" class="btn-member-export-cancel" id="hqAdminEditCancel">취소</button>
+                <button type="button" class="btn-member-export-download" id="hqAdminEditSave">저장</button>
+            </div>
+        </div>
     </div>
     <div id="memberImagePreview" class="member-image-preview-overlay" role="dialog" aria-modal="true" aria-hidden="true">
         <div class="member-image-preview-box">
@@ -3366,15 +3471,126 @@
         var HQ_SESSION_TOKEN_KEY = 'hqSessionToken';
         var HQ_ADMIN_NICK_KEY = 'hqAdminNickname';
         var HQ_ADMIN_ID_KEY = 'hqAdminId';
+        var HQ_ADMIN_LEVEL_KEY = 'hqAdminLevel';
+        var HQ_ADMIN_MENU_VIEWS_KEY = 'hqAdminMenuViews';
+
+        var HQ_MENU_META = [
+            { key: 'overview', label: '현황판' },
+            { key: 'stores', label: '가맹점 관리' },
+            { key: 'members', label: '회원 목록' },
+            { key: 'accountQueue', label: '1원 인증 관리' },
+            { key: 'settlement', label: '수수료 통계' },
+            { key: 'pointLedger', label: '포인트 내역' },
+            { key: 'walletMgmt', label: '지갑관리' },
+            { key: 'settings', label: '설정' }
+        ];
+        var HQ_LEVEL_LABEL = { 1: '최고', 2: '관리자', 3: '운영' };
+        var ADMIN_DASHBOARD_VIEWS = ['overview', 'stores', 'members', 'accountQueue', 'settlement', 'pointLedger', 'walletMgmt', 'settings'];
+        var ADMIN_DASHBOARD_VIEW_KEY = 'adminHqDashboardView';
 
         function getHqSessionToken() {
             try { return sessionStorage.getItem(HQ_SESSION_TOKEN_KEY) || ''; } catch (e) { return ''; }
         }
-        function setHqSession(token, nickname, adminId) {
+        function getHqSessionLevel() {
+            try {
+                var s = sessionStorage.getItem(HQ_ADMIN_LEVEL_KEY);
+                var n = parseInt(s, 10);
+                if (n === 1 || n === 2 || n === 3) return n;
+            } catch (e) {}
+            return 1;
+        }
+        function getHqSessionMenuViews() {
+            if (getHqSessionLevel() < 3) return null;
+            try {
+                var j = sessionStorage.getItem(HQ_ADMIN_MENU_VIEWS_KEY);
+                if (!j) return [];
+                var a = JSON.parse(j);
+                return Array.isArray(a) ? a : [];
+            } catch (e2) {}
+            return [];
+        }
+        function hqCanAccessView(view) {
+            if (ADMIN_DASHBOARD_VIEWS.indexOf(view) === -1) return false;
+            var lv = getHqSessionLevel();
+            if (lv <= 2) return true;
+            var mv = getHqSessionMenuViews();
+            return mv.indexOf(view) !== -1;
+        }
+        function hqFirstAllowedView() {
+            for (var i = 0; i < ADMIN_DASHBOARD_VIEWS.length; i++) {
+                if (hqCanAccessView(ADMIN_DASHBOARD_VIEWS[i])) return ADMIN_DASHBOARD_VIEWS[i];
+            }
+            return 'overview';
+        }
+        function applyHqMenuVisibility() {
+            document.querySelectorAll('.sidebar-menu .menu-item').forEach(function (item) {
+                var v = item.dataset.view;
+                if (!v) return;
+                item.style.display = hqCanAccessView(v) ? '' : 'none';
+            });
+            var sc = document.querySelector('.hq-overview-shortcuts-btns');
+            if (sc) {
+                sc.querySelectorAll('.hq-sc-btn').forEach(function (btn) {
+                    var vv = btn.getAttribute('data-hq-shortcut');
+                    btn.style.display = (!vv || hqCanAccessView(vv)) ? '' : 'none';
+                });
+            }
+            var admPanel = document.querySelector('.settings-hq-admins-panel');
+            if (admPanel) admPanel.style.display = getHqSessionLevel() <= 2 ? '' : 'none';
+        }
+        function syncHqAdminAddLevelSelect() {
+            var sel = document.getElementById('hqAdminAddLevel');
+            if (!sel) return;
+            var lv = getHqSessionLevel();
+            sel.innerHTML = '';
+            if (lv >= 3) return;
+            if (lv === 1) {
+                sel.appendChild(new Option('관리자 (2)', '2'));
+                sel.appendChild(new Option('운영 관리자 (3)', '3'));
+            } else if (lv === 2) {
+                sel.appendChild(new Option('운영 관리자 (3)', '3'));
+            }
+            syncHqAdminAddMenusVisibility();
+        }
+        function renderHqMenuCheckboxes(containerId, namePrefix, checkedSet) {
+            var box = document.getElementById(containerId);
+            if (!box) return;
+            var set = checkedSet || {};
+            box.innerHTML = HQ_MENU_META.map(function (m) {
+                var chk = set[m.key] ? ' checked' : '';
+                return '<label><input type="checkbox" data-hq-menucheck="' + m.key + '" name="' + namePrefix + '_' + m.key + '"' + chk + '> ' + hqEscHtml(m.label) + '</label>';
+            }).join('');
+        }
+        function readCheckedMenuKeys(containerId) {
+            var box = document.getElementById(containerId);
+            if (!box) return [];
+            var keys = [];
+            box.querySelectorAll('input[type="checkbox"][data-hq-menucheck]').forEach(function (inp) {
+                if (inp.checked) keys.push(inp.getAttribute('data-hq-menucheck'));
+            });
+            return keys;
+        }
+        function syncHqAdminAddMenusVisibility() {
+            var row = document.getElementById('hqAdminAddMenusRow');
+            var sel = document.getElementById('hqAdminAddLevel');
+            if (!row || !sel) return;
+            var show = sel.value === '3';
+            row.style.display = show ? '' : 'none';
+            if (show) renderHqMenuCheckboxes('hqAdminAddMenuChecks', 'hqAdd', {});
+        }
+        function setHqSession(token, nickname, adminId, level, menuViews) {
             try {
                 if (token) sessionStorage.setItem(HQ_SESSION_TOKEN_KEY, token);
                 if (nickname != null) sessionStorage.setItem(HQ_ADMIN_NICK_KEY, nickname);
                 if (adminId != null) sessionStorage.setItem(HQ_ADMIN_ID_KEY, adminId);
+                var lv = level != null ? parseInt(level, 10) : 1;
+                if (lv !== 1 && lv !== 2 && lv !== 3) lv = 1;
+                sessionStorage.setItem(HQ_ADMIN_LEVEL_KEY, String(lv));
+                if (lv === 3 && Array.isArray(menuViews)) {
+                    sessionStorage.setItem(HQ_ADMIN_MENU_VIEWS_KEY, JSON.stringify(menuViews));
+                } else {
+                    sessionStorage.removeItem(HQ_ADMIN_MENU_VIEWS_KEY);
+                }
             } catch (e) {}
         }
         function clearHqSession() {
@@ -3382,6 +3598,8 @@
                 sessionStorage.removeItem(HQ_SESSION_TOKEN_KEY);
                 sessionStorage.removeItem(HQ_ADMIN_NICK_KEY);
                 sessionStorage.removeItem(HQ_ADMIN_ID_KEY);
+                sessionStorage.removeItem(HQ_ADMIN_LEVEL_KEY);
+                sessionStorage.removeItem(HQ_ADMIN_MENU_VIEWS_KEY);
             } catch (e) {}
         }
         function hqJsonHeaders() {
@@ -3477,7 +3695,7 @@
                 .then(function (d) {
                     if (btn) btn.disabled = false;
                     if (d && d.ok && d.token) {
-                        setHqSession(d.token, d.nickname, d.adminId);
+                        setHqSession(d.token, d.nickname, d.adminId, d.level != null ? d.level : 1, d.menuViews);
                         hideHqLoginScreen();
                         updateHqHeaderUser();
                         bootHqDashboard();
@@ -3539,10 +3757,89 @@
                 });
         }
 
+        function hqMenuSummaryText(menuViews, level) {
+            if (level !== 3 || !Array.isArray(menuViews) || menuViews.length === 0) return '—';
+            var labels = {};
+            HQ_MENU_META.forEach(function (m) { labels[m.key] = m.label; });
+            return menuViews.map(function (k) { return labels[k] || k; }).join(', ');
+        }
+        function canHqEditRow(sessionLevel, selfId, row) {
+            if (row.id === selfId) return true;
+            return row.level > sessionLevel;
+        }
+        function canHqDeleteRow(sessionLevel, selfId, row, totalLen) {
+            if (totalLen <= 1 || row.id === selfId) return false;
+            return row.level > sessionLevel;
+        }
+        function openHqAdminEditModal(row) {
+            var modal = document.getElementById('hqAdminEditModal');
+            var selfId = '';
+            try { selfId = sessionStorage.getItem(HQ_ADMIN_ID_KEY) || ''; } catch (e0) {}
+            var sessionLevel = getHqSessionLevel();
+            var isSelf = row.id === selfId;
+            var idEl = document.getElementById('hqAdminEditId');
+            var nnEl = document.getElementById('hqAdminEditNickname');
+            var pwEl = document.getElementById('hqAdminEditPw');
+            var lvlWrap = document.getElementById('hqAdminEditLevelWrap');
+            var menusWrap = document.getElementById('hqAdminEditMenusWrap');
+            var errEl = document.getElementById('hqAdminEditError');
+            if (errEl) errEl.textContent = '';
+            if (idEl) idEl.value = row.id;
+            if (nnEl) nnEl.value = row.nickname || row.id;
+            if (pwEl) pwEl.value = '';
+            var lvlSel = document.getElementById('hqAdminEditLevel');
+            if (lvlSel) {
+                lvlSel.innerHTML = '';
+                if (isSelf) {
+                    if (lvlWrap) lvlWrap.style.display = 'none';
+                } else {
+                    if (lvlWrap) lvlWrap.style.display = '';
+                    for (var nl = sessionLevel + 1; nl <= 3; nl++) {
+                        lvlSel.appendChild(new Option(HQ_LEVEL_LABEL[nl] + ' (' + nl + ')', String(nl)));
+                    }
+                    lvlSel.value = String(row.level);
+                }
+            }
+            if (isSelf) {
+                if (menusWrap) menusWrap.style.display = 'none';
+            } else {
+                var showMenus = row.level === 3 || parseInt(lvlSel && lvlSel.value, 10) === 3;
+                if (menusWrap) menusWrap.style.display = showMenus ? '' : 'none';
+                var chk = {};
+                (row.menuViews || []).forEach(function (k) { chk[k] = true; });
+                renderHqMenuCheckboxes('hqAdminEditMenuChecks', 'hqEd', chk);
+            }
+            if (lvlSel && !isSelf) {
+                lvlSel.onchange = function () {
+                    var v = parseInt(lvlSel.value, 10);
+                    var mw = document.getElementById('hqAdminEditMenusWrap');
+                    if (mw) {
+                        mw.style.display = v === 3 ? '' : 'none';
+                        if (v === 3) {
+                            var ck = {};
+                            (row.menuViews || []).forEach(function (k) { ck[k] = true; });
+                            renderHqMenuCheckboxes('hqAdminEditMenuChecks', 'hqEd', ck);
+                        }
+                    }
+                };
+            }
+            if (modal) {
+                modal.classList.add('show');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+        }
+        function closeHqAdminEditModal() {
+            var modal = document.getElementById('hqAdminEditModal');
+            if (modal) {
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        }
         function loadHqAdminsList() {
             var api = window.ADMIN_API_BASE || '';
             var tbody = document.getElementById('hqAdminsListBody');
             if (!tbody || !getHqSessionToken()) return;
+            if (getHqSessionLevel() >= 3) return;
             fetch(api + '/api/hq-admins', {
                 method: 'POST',
                 headers: hqJsonHeaders(),
@@ -3551,16 +3848,37 @@
                 .then(function (r) { return r.json(); })
                 .then(function (d) {
                     if (!d || !d.ok) {
-                        tbody.innerHTML = '<tr><td colspan="3">목록을 불러오지 못했습니다.</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="6">' + hqEscHtml((d && d.error) ? d.error : '목록을 불러오지 못했습니다.') + '</td></tr>';
                         return;
                     }
                     var admins = d.admins || [];
                     var selfId = '';
+                    var sessionLevel = getHqSessionLevel();
                     try { selfId = sessionStorage.getItem(HQ_ADMIN_ID_KEY) || ''; } catch (e2) {}
                     tbody.innerHTML = admins.map(function (a) {
-                        var dis = (admins.length <= 1 || a.id === selfId) ? ' disabled' : '';
-                        return '<tr><td>' + hqEscHtml(a.id) + '</td><td>' + hqEscHtml(a.nickname) + '</td><td><button type="button" class="btn-hq-admin-remove" data-id="' + hqEscHtml(a.id) + '"' + dis + '>삭제</button></td></tr>';
+                        var lv = a.level != null ? parseInt(a.level, 10) : 1;
+                        if (lv !== 1 && lv !== 2 && lv !== 3) lv = 1;
+                        var lvLabel = HQ_LEVEL_LABEL[lv] || String(lv);
+                        var menuCell = hqEscHtml(hqMenuSummaryText(a.menuViews, lv));
+                        var canEd = canHqEditRow(sessionLevel, selfId, { id: a.id, level: lv });
+                        var canDel = canHqDeleteRow(sessionLevel, selfId, { id: a.id, level: lv }, admins.length);
+                        var editDis = canEd ? '' : ' disabled';
+                        var delDis = canDel ? '' : ' disabled';
+                        return '<tr><td>' + hqEscHtml(a.id) + '</td><td>' + hqEscHtml(a.nickname) + '</td><td>' + hqEscHtml(lvLabel) + '</td><td style="font-size:12px;max-width:220px;">' + menuCell + '</td><td><button type="button" class="btn-hq-admin-edit" data-id="' + hqEscHtml(a.id) + '"' + editDis + '>수정</button></td><td><button type="button" class="btn-hq-admin-remove" data-id="' + hqEscHtml(a.id) + '"' + delDis + '>삭제</button></td></tr>';
                     }).join('');
+                    admins.forEach(function (a, idx) {
+                        var lv = a.level != null ? parseInt(a.level, 10) : 1;
+                        if (lv !== 1 && lv !== 2 && lv !== 3) lv = 1;
+                        var row = { id: a.id, nickname: a.nickname, level: lv, menuViews: Array.isArray(a.menuViews) ? a.menuViews : [] };
+                        var tr = tbody.children[idx];
+                        if (!tr) return;
+                        var editBtn = tr.querySelector('.btn-hq-admin-edit');
+                        if (editBtn && !editBtn.disabled) {
+                            editBtn.addEventListener('click', function () {
+                                openHqAdminEditModal(row);
+                            });
+                        }
+                    });
                     tbody.querySelectorAll('.btn-hq-admin-remove').forEach(function (b) {
                         b.addEventListener('click', function () {
                             var rid = b.getAttribute('data-id');
@@ -3581,7 +3899,7 @@
                     });
                 })
                 .catch(function () {
-                    tbody.innerHTML = '<tr><td colspan="3">목록을 불러오지 못했습니다.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6">목록을 불러오지 못했습니다.</td></tr>';
                 });
         }
 
@@ -3600,7 +3918,8 @@
                 .then(function (r) { return r.json(); })
                 .then(function (d) {
                     if (d && d.ok && d.admin) {
-                        setHqSession(tok, d.admin.nickname, d.admin.id);
+                        var adm = d.admin;
+                        setHqSession(tok, adm.nickname, adm.id, adm.level != null ? adm.level : 1, adm.menuViews);
                         hideHqLoginScreen();
                         updateHqHeaderUser();
                         bootHqDashboard();
@@ -3652,9 +3971,6 @@
         var selectedStoreId = null;
         var settlementTfootSnapshot = '';
 
-        var ADMIN_DASHBOARD_VIEWS = ['overview', 'stores', 'members', 'accountQueue', 'settlement', 'pointLedger', 'walletMgmt', 'settings'];
-        var ADMIN_DASHBOARD_VIEW_KEY = 'adminHqDashboardView';
-
         function persistDashboardView(view) {
             try {
                 if (ADMIN_DASHBOARD_VIEWS.indexOf(view) !== -1) {
@@ -3674,6 +3990,7 @@
         function switchDashboardView(view) {
             var nextView = view || 'overview';
             if (ADMIN_DASHBOARD_VIEWS.indexOf(nextView) === -1) nextView = 'overview';
+            if (!hqCanAccessView(nextView)) nextView = hqFirstAllowedView();
             document.querySelectorAll('.sidebar-menu .menu-item').forEach(function (item) {
                 item.classList.toggle('active', item.dataset.view === nextView);
             });
@@ -3702,7 +4019,7 @@
             }
             if (nextView === 'settings') {
                 loadHqStoreGateSettings();
-                loadHqAdminsList();
+                if (getHqSessionLevel() <= 2) loadHqAdminsList();
             }
             if (nextView === 'accountQueue') {
                 loadAccountVerifyQueue();
@@ -4162,9 +4479,16 @@
                     var r = row.cancelReason || '';
                     txCell = '<span class="aq-tx-pill aq-tx-pill--cancel">취소 / ' + esc(aqCancelReasonKo(r)) + '</span>';
                 } else if (hasCode && (st === 'code_sent' || st === 'pending')) {
-                    txCell = '<div class="aq-split">' +
-                        '<button type="button" class="aq-split-yes" disabled aria-disabled="true">완료</button>' +
-                        '<button type="button" class="aq-split-no" data-aq-store-enc="' + sidEnc + '" data-aq-member-enc="' + memEnc + '">취소</button></div>';
+                    var hqNotified = !!(row.hqOneWonTransferConfirmedAt);
+                    if (hqNotified) {
+                        txCell = '<div class="aq-split aq-split--hq-done">' +
+                            '<span class="aq-tx-pill aq-tx-pill--done">회원 알림 발송</span>' +
+                            '<button type="button" class="aq-split-no" data-aq-store-enc="' + sidEnc + '" data-aq-member-enc="' + memEnc + '">취소</button></div>';
+                    } else {
+                        txCell = '<div class="aq-split">' +
+                            '<button type="button" class="aq-split-yes" data-aq-hq-confirm="1" data-aq-store-enc="' + sidEnc + '" data-aq-member-enc="' + memEnc + '">완료</button>' +
+                            '<button type="button" class="aq-split-no" data-aq-store-enc="' + sidEnc + '" data-aq-member-enc="' + memEnc + '">취소</button></div>';
+                    }
                 } else if (st === 'pending' && !hasCode) {
                     txCell = '<div class="aq-split">' +
                         '<button type="button" class="aq-split-yes">완료</button>' +
@@ -4235,6 +4559,34 @@
                 sec.addEventListener('click', function (e) {
                     var yes = e.target.closest('.aq-split-yes');
                     if (yes && !yes.disabled) {
+                        if (yes.getAttribute('data-aq-hq-confirm') === '1') {
+                            var sidHq = decodeURIComponent(yes.getAttribute('data-aq-store-enc') || '');
+                            var memHq = decodeURIComponent(yes.getAttribute('data-aq-member-enc') || '');
+                            if (!sidHq || !memHq) return;
+                            yes.disabled = true;
+                            fetch((window.ADMIN_API_BASE || '') + '/api/account-verify', {
+                                method: 'POST',
+                                headers: hqJsonHeaders(),
+                                body: JSON.stringify({
+                                    action: 'hqConfirmOneWonTransfer',
+                                    storeId: sidHq,
+                                    memberName: memHq
+                                })
+                            })
+                                .then(function (r) { return r.json(); })
+                                .then(function (d) {
+                                    if (d && d.ok) loadAccountVerifyQueue();
+                                    else {
+                                        alert((d && d.error) ? d.error : '처리에 실패했습니다.');
+                                        yes.disabled = false;
+                                    }
+                                })
+                                .catch(function () {
+                                    alert('요청에 실패했습니다.');
+                                    yes.disabled = false;
+                                });
+                            return;
+                        }
                         var tr = yes.closest('tr');
                         if (!tr) return;
                         var storeId = decodeURIComponent(tr.getAttribute('data-store-id') || '');
@@ -6775,6 +7127,63 @@
         }
 
         function bootHqDashboard() {
+        syncHqAdminAddLevelSelect();
+        var addLvl = document.getElementById('hqAdminAddLevel');
+        if (addLvl && !addLvl.dataset.hqLvlBound) {
+            addLvl.dataset.hqLvlBound = '1';
+            addLvl.addEventListener('change', syncHqAdminAddMenusVisibility);
+        }
+        var hqEditModal = document.getElementById('hqAdminEditModal');
+        if (hqEditModal && !hqEditModal.dataset.hqBound) {
+            hqEditModal.dataset.hqBound = '1';
+            hqEditModal.addEventListener('click', function (e) {
+                if (e.target === hqEditModal) closeHqAdminEditModal();
+            });
+            var c = document.getElementById('hqAdminEditCancel');
+            if (c) c.addEventListener('click', closeHqAdminEditModal);
+            var s = document.getElementById('hqAdminEditSave');
+            if (s) {
+                s.addEventListener('click', function () {
+                    var api = window.ADMIN_API_BASE || '';
+                    var idEl = document.getElementById('hqAdminEditId');
+                    var nnEl = document.getElementById('hqAdminEditNickname');
+                    var pwEl = document.getElementById('hqAdminEditPw');
+                    var lvlSel = document.getElementById('hqAdminEditLevel');
+                    var errEl = document.getElementById('hqAdminEditError');
+                    var selfId = '';
+                    try { selfId = sessionStorage.getItem(HQ_ADMIN_ID_KEY) || ''; } catch (eS) {}
+                    var id = idEl && idEl.value ? idEl.value.trim() : '';
+                    if (!id) return;
+                    var isSelf = id === selfId;
+                    var payload = { action: 'update', id: id, nickname: nnEl && nnEl.value ? nnEl.value.trim() : '' };
+                    if (pwEl && pwEl.value) payload.password = pwEl.value;
+                    if (!isSelf && lvlSel) {
+                        var nl = parseInt(lvlSel.value, 10);
+                        if (nl === 1 || nl === 2 || nl === 3) payload.level = nl;
+                        if (nl === 3) payload.menuViews = readCheckedMenuKeys('hqAdminEditMenuChecks');
+                    }
+                    if (!isSelf && payload.level === 3 && (!payload.menuViews || payload.menuViews.length === 0)) {
+                        if (errEl) errEl.textContent = '운영 관리자는 허용 메뉴를 하나 이상 선택하세요.';
+                        return;
+                    }
+                    if (errEl) errEl.textContent = '';
+                    fetch(api + '/api/hq-admins', {
+                        method: 'POST',
+                        headers: hqJsonHeaders(),
+                        body: JSON.stringify(payload)
+                    })
+                        .then(function (r) { return r.json(); })
+                        .then(function (d) {
+                            if (d && d.ok) {
+                                closeHqAdminEditModal();
+                                loadHqAdminsList();
+                            } else if (errEl) errEl.textContent = (d && d.error) ? d.error : '저장에 실패했습니다.';
+                        })
+                        .catch(function () { if (errEl) errEl.textContent = '요청에 실패했습니다.'; });
+                });
+            }
+        }
+        applyHqMenuVisibility();
         initSettlementDateRange();
         try {
             if (window.DateRangePicker && window.DateRangePicker.initAll) {
@@ -6866,19 +7275,32 @@
                 var idEl = document.getElementById('hqAdminAddId');
                 var pwEl = document.getElementById('hqAdminAddPw');
                 var nnEl = document.getElementById('hqAdminAddNickname');
+                var lvEl = document.getElementById('hqAdminAddLevel');
                 var st = document.getElementById('hqAdminsSaveStatus');
                 var aid = idEl && idEl.value ? idEl.value.trim() : '';
                 var apw = pwEl && pwEl.value ? pwEl.value : '';
                 var ann = nnEl && nnEl.value ? nnEl.value.trim() : '';
+                var nlv = lvEl && lvEl.value ? parseInt(lvEl.value, 10) : 0;
                 if (!aid || !apw) {
                     if (st) st.textContent = '아이디와 비밀번호를 입력하세요.';
                     return;
                 }
+                if (nlv !== 2 && nlv !== 3) {
+                    if (st) st.textContent = '등급을 선택하세요.';
+                    return;
+                }
+                var menus = nlv === 3 ? readCheckedMenuKeys('hqAdminAddMenuChecks') : [];
+                if (nlv === 3 && menus.length === 0) {
+                    if (st) st.textContent = '운영 관리자는 허용 메뉴를 하나 이상 선택하세요.';
+                    return;
+                }
                 if (st) st.textContent = '';
+                var addBody = { action: 'add', id: aid, password: apw, nickname: ann || aid, level: nlv };
+                if (nlv === 3) addBody.menuViews = menus;
                 fetch(api + '/api/hq-admins', {
                     method: 'POST',
                     headers: hqJsonHeaders(),
-                    body: JSON.stringify({ action: 'add', id: aid, password: apw, nickname: ann || aid })
+                    body: JSON.stringify(addBody)
                 })
                     .then(function (r) { return r.json(); })
                     .then(function (d) {
@@ -6887,6 +7309,7 @@
                             if (pwEl) pwEl.value = '';
                             if (nnEl) nnEl.value = '';
                             if (st) st.textContent = '추가했습니다.';
+                            syncHqAdminAddMenusVisibility();
                             loadHqAdminsList();
                         } else if (st) st.textContent = (d && d.error) ? d.error : '추가에 실패했습니다.';
                     })

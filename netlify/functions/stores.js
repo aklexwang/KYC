@@ -15,6 +15,9 @@ exports.handler = async (event, context) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
   if (event.httpMethod !== 'GET') return { statusCode: 405, headers: CORS, body: '' };
 
+  const qs = event.queryStringParameters || {};
+  const onlyStoreId = typeof qs.storeId === 'string' ? qs.storeId.trim() : '';
+
   try {
     const [kycResult, globalPrices, counts, storePricesMap, suspendedMap, pointsMap, allowedIpsMap] = await Promise.all([
       getKycData(event),
@@ -31,7 +34,11 @@ exports.handler = async (event, context) => {
     const dataObj = typeof data === 'object' && data !== null ? data : {};
     const namesObj = typeof names === 'object' && names !== null ? names : {};
     const isKycComplete = (m) => m.sms === 'complete' && m.idDoc === 'complete' && m.account === 'complete';
-    const stores = Object.entries(dataObj).map(([id, members]) => {
+    const storeEntries = Object.entries(dataObj).filter(([id]) => {
+      if (!onlyStoreId) return true;
+      return id === onlyStoreId;
+    });
+    const stores = storeEntries.map(([id, members]) => {
       const prices = { ...globalPrices, ...(storePricesMap[id] || {}) };
       const c = counts[id] || { sms: 0, idDoc: 0, account: 0 };
       const memberList = Array.isArray(members) ? members : [];

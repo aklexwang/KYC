@@ -6,14 +6,22 @@ function getSecret() {
   return str.length > 0 ? str : null;
 }
 
-function createToken(adminId, nickname) {
+function createToken(adminId, nickname, level, menuViews) {
   const secret = getSecret();
   if (!secret) throw new Error('missing HQ session secret');
   const exp = Date.now() + 7 * 24 * 60 * 60 * 1000;
+  const lvNum = Number(level);
+  const lv = [1, 2, 3].includes(lvNum) ? lvNum : 1;
+  const mv =
+    lv === 3 && Array.isArray(menuViews)
+      ? menuViews.filter((x) => typeof x === 'string')
+      : null;
   const payloadObj = {
     id: String(adminId),
     n: String(nickname || adminId),
     exp,
+    lv,
+    mv,
   };
   const payload = JSON.stringify(payloadObj);
   const sig = crypto.createHmac('sha256', secret).update(payload).digest('base64url');
@@ -31,7 +39,13 @@ function verifyToken(tokenStr) {
     if (expect !== outer.s) return null;
     const { id, n, exp } = outer.p;
     if (!exp || Date.now() > exp) return null;
-    return { id, nickname: n };
+    const lvRaw = outer.p.lv;
+    const lvNum = Number(lvRaw);
+    const level = [1, 2, 3].includes(lvNum) ? lvNum : 1;
+    let menuViews = outer.p.mv;
+    if (!Array.isArray(menuViews)) menuViews = null;
+    if (level < 3) menuViews = null;
+    return { id, nickname: n, level, menuViews };
   } catch (e) {
     return null;
   }

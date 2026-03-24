@@ -1,6 +1,35 @@
 const { getHqAdmins, ensureDefaultHqAdminIfEmpty } = require('./storage');
 const { createToken, verifyToken, getSecret } = require('./hq-session');
 
+const HQ_MENU_KEYS = [
+  'overview',
+  'stores',
+  'members',
+  'accountQueue',
+  'settlement',
+  'pointLedger',
+  'walletMgmt',
+  'settings',
+];
+
+function normalizeHqAdminRow(row) {
+  if (!row || typeof row !== 'object') return null;
+  let level = parseInt(row.level, 10);
+  if (![1, 2, 3].includes(level)) level = 1;
+  let menuViews = [];
+  if (level === 3 && Array.isArray(row.menuViews)) {
+    menuViews = row.menuViews.filter((k) => typeof k === 'string' && HQ_MENU_KEYS.includes(k));
+  }
+  const id = String(row.id || '').trim();
+  return {
+    id,
+    password: String(row.password || ''),
+    nickname: row.nickname != null && String(row.nickname).trim() !== '' ? String(row.nickname).trim() : id,
+    level,
+    ...(level === 3 && menuViews.length ? { menuViews } : {}),
+  };
+}
+
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -41,7 +70,16 @@ exports.handler = async (event) => {
 
   if (body.action === 'validate') {
     const v = verifyToken(String(body.token || '').trim());
-    return json(200, { ok: !!v, admin: v || null });
+    if (!v) return json(200, { ok: false, admin: null });
+    return json(200, {
+      ok: true,
+      admin: {
+        id: v.id,
+        nickname: v.nickname,
+        level: v.level,
+        menuViews: v.level === 3 ? v.menuViews || [] : null,
+      },
+    });
   }
 
   const id = typeof body.id === 'string' ? body.id.trim() : '';
@@ -52,13 +90,24 @@ exports.handler = async (event) => {
 
   try {
     const admins = await getHqAdmins(event);
-    const row = admins.find((a) => a && a.id === id && a.password === password);
+    const rawRow = admins.find((a) => a && a.id === id && a.password === password);
+    if (!rawRow) {
+      return json(401, { error: '아이디 또는 비밀번호가 올바르지 않습니다.' });
+    }
+    const row = normalizeHqAdminRow(rawRow);
     if (!row) {
       return json(401, { error: '아이디 또는 비밀번호가 올바르지 않습니다.' });
     }
-    const nickname = row.nickname != null && String(row.nickname).trim() !== '' ? String(row.nickname).trim() : id;
-    const token = createToken(row.id, nickname);
-    return json(200, { ok: true, token, adminId: row.id, nickname });
+    const nickname = row.nickname;
+    const token = createToken(row.id, nickname, row.level, row.level === 3 ? row.menuViews || [] : null);
+    return json(200, {
+      ok: true,
+      token,
+      adminId: row.id,
+      nickname,
+      level: row.level,
+      menuViews: row.level === 3 ? row.menuViews || [] : null,
+    });
   } catch (err) {
     console.error('hq-login', err);
     return json(500, { error: 'Server error' });

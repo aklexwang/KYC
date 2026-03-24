@@ -2002,14 +2002,14 @@
                 fetch(url)
                     .then(function (r) { return r.json(); })
                     .then(function (data) {
-                        if (data && Array.isArray(data.rows)) {
+                        if (data && Array.isArray(data.rows) && data.rows.length) {
                             applyFiltered(data.rows);
                             return;
                         }
-                        applyFiltered(buildStoreSettlementDemoRows());
+                        applyFiltered([]);
                     })
                     .catch(function () {
-                        applyFiltered(buildStoreSettlementDemoRows());
+                        applyFiltered([]);
                     });
             } else {
                 applyFiltered(buildStoreSettlementDemoRows());
@@ -2118,7 +2118,7 @@
                 return;
             }
             applyStoreUsdtGate(0);
-            fetch(apiBase + '/api/stores')
+            fetch(apiBase + '/api/stores?storeId=' + encodeURIComponent(sid))
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
                     var stores = (data && data.stores) ? data.stores : [];
@@ -2332,17 +2332,12 @@
             }
 
             if (apiBase && sid) {
-                fetch(apiBase + '/api/stores')
+                fetch(apiBase + '/api/stores?storeId=' + encodeURIComponent(sid))
                     .then(function (r) { return r.json(); })
                     .then(function (data) {
                         var stores = (data && data.stores) ? data.stores : [];
-                        var found = null;
-                        for (var i = 0; i < stores.length; i++) {
-                            if (stores[i] && String(stores[i].id) === String(sid)) {
-                                found = stores[i];
-                                break;
-                            }
-                        }
+                        var found = stores.length ? stores[0] : null;
+                        if (found && String(found.id) !== String(sid)) found = null;
                         var list = found && Array.isArray(found.pointHistory) ? found.pointHistory : [];
                         applyFromListAndBalance(list, found);
                     })
@@ -2479,6 +2474,14 @@
             var sub = document.getElementById('btnPointRechargeSubmit');
             var btnCopy = document.getElementById('btnCopyRechargeWallet');
             if (!sub) return;
+            if (sub.dataset.rechargeModalConfirmOnly === '1') {
+                sub.disabled = false;
+                return;
+            }
+            if (sub.dataset.rechargeDepositPending === '1') {
+                sub.disabled = true;
+                return;
+            }
             var copyVisible = btnCopy && btnCopy.classList.contains('is-visible');
             sub.disabled = !copyVisible;
             if (copyVisible) {
@@ -2681,9 +2684,11 @@
                 if (sub.dataset.rechargeModalConfirmOnly === '1') return;
                 sub.classList.toggle('is-deposit-polling-label', !!isPolling);
                 if (isPolling) {
+                    sub.dataset.rechargeDepositPending = '1';
                     sub.textContent = '입금 확인 중입니다.';
                     sub.disabled = true;
                 } else {
+                    delete sub.dataset.rechargeDepositPending;
                     sub.textContent = POINT_RECHARGE_SUBMIT_LABEL_DEFAULT;
                 }
             }
@@ -2824,6 +2829,9 @@
             var btn = document.getElementById('btnPointRechargeSubmit');
             if (btn && btn.dataset.rechargeModalConfirmOnly === '1') {
                 closePointRechargeModal();
+                return;
+            }
+            if (btn && btn.dataset.rechargeDepositPending === '1') {
                 return;
             }
             var input = document.getElementById('pointRechargeUsdtInput');

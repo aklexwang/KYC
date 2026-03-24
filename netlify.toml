@@ -65,6 +65,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/store-settlement"
+  to = "/.netlify/functions/store-settlement"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/store-gate-config"
   to = "/.netlify/functions/store-gate-config"
   status = 200

@@ -550,18 +550,7 @@
         .btn-account-verify { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: auto; }
         .btn-account-verify:active { opacity: 0.9; }
         .onwon-poll-wait { font-size: 14px; color: #8E8E93; text-align: center; margin: 8px 0 16px; line-height: 1.45; }
-        .onwon-dark-card {
-            display: none;
-            background: #2c2c2e;
-            border-radius: 16px;
-            padding: 18px 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,.2);
-        }
-        .onwon-dark-card.show { display: block; }
-        .onwon-dark-card .onwon-dark-bank-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: rgba(255,255,255,0.95); margin: 0 0 14px 0; }
-        .onwon-dark-card .onwon-dark-bank-svg { flex-shrink: 0; color: rgba(255,255,255,0.95); }
-        .onwon-dark-card .onwon-dark-main { font-size: 16px; font-weight: 500; color: #fff; line-height: 1.45; text-align: center; margin: 0; }
+        .onwon-poll-wait.is-ready { color: #1a1a1a; font-weight: 600; }
 
         /* ===== 5. 완료 화면 ===== */
         .view-complete .view-body { padding: env(safe-area-inset-top) 24px 32px; display: flex; flex-direction: column; justify-content: center; align-items: center; flex: 1; text-align: center; }
@@ -993,14 +982,7 @@
                     </div>
                     <p class="onwon-title1">본사에서 입력하신 계좌로 1원을 보내면, 입금 내역에 표시되는 숫자 4자리를 확인할 수 있습니다.</p>
                     <p class="onwon-title2">통장·알림에서 <span class="highlight">1원 뒤 4자리</span>를 아래 칸에 입력해 주세요.</p>
-                    <div id="onwonPollWait" class="onwon-poll-wait">본사에서 입금 처리 중입니다. 아래 안내가 나타나면 표시된 숫자를 확인하세요.</div>
-                    <div id="onwonDarkCard" class="onwon-dark-card" aria-live="polite">
-                        <p class="onwon-dark-bank-row">
-                            <svg class="onwon-dark-bank-svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2L2 7v2h20V7L12 2zm0 2.5L18 7H6l6-2.5zM2 11v8h2v-6h4v6h8v-6h4v6h2v-8H2z"/></svg>
-                            <span id="onwonDarkBankLine">은행명: —</span>
-                        </p>
-                        <p class="onwon-dark-main" id="onwonDarkMainMsg">1원이 입금되었습니다. 1원 —</p>
-                    </div>
+                    <div id="onwonPollWait" class="onwon-poll-wait">본사에서 입금 처리 중입니다. 처리가 완료되면 통장·알림에서 1원 뒤 4자리를 확인한 뒤 아래에 입력해 주세요.</div>
                     <div class="onwon-bank-section">
                         <h3>은행 계좌 정보</h3>
                         <div class="onwon-bank-row"><span>은행명</span><span class="value" id="displayBankName">-</span></div>
@@ -2217,16 +2199,18 @@
                 }
             }
 
-            function showOnwonDarkCard(bankLabel, code4) {
+            /** 본사 입금 확인 후 서버에서 코드가 내려올 때 — 알림 말풍선(다크 카드)·테스트 모달은 표시하지 않음 */
+            function onOneWonDepositReady() {
                 var waitEl = document.getElementById('onwonPollWait');
-                var card = document.getElementById('onwonDarkCard');
-                var line = document.getElementById('onwonDarkBankLine');
-                var msg = document.getElementById('onwonDarkMainMsg');
-                if (waitEl) waitEl.style.display = 'none';
-                if (line) line.textContent = '은행명: ' + (bankLabel || '—');
-                if (msg) msg.textContent = '1원이 입금되었습니다. 1원 ' + (code4 || '');
-                if (card) card.classList.add('show');
-                showTestAuthModal(code4, bankLabel || '', '');
+                if (waitEl) {
+                    waitEl.style.display = '';
+                    waitEl.classList.add('is-ready');
+                    waitEl.textContent = '입금이 확인되었습니다. 통장·알림에서 1원 입금 뒤 4자리를 아래 칸에 입력해 주세요.';
+                }
+                try {
+                    var c1 = document.getElementById('onwonCode1');
+                    if (c1) c1.focus();
+                } catch (eF) {}
             }
 
             function startAccountPoll(bankLabel) {
@@ -2237,13 +2221,15 @@
                 var memberName = (nameEl && nameEl.value) ? nameEl.value.trim() : '';
                 var storeId = getKycStoreId();
                 var waitEl = document.getElementById('onwonPollWait');
-                var card = document.getElementById('onwonDarkCard');
-                if (waitEl) waitEl.style.display = '';
-                if (card) card.classList.remove('show');
+                if (waitEl) {
+                    waitEl.style.display = '';
+                    waitEl.classList.remove('is-ready');
+                    waitEl.textContent = '본사에서 입금 처리 중입니다. 처리가 완료되면 통장·알림에서 1원 뒤 4자리를 확인한 뒤 아래에 입력해 주세요.';
+                }
 
                 if (!apiBase || !storeId || !memberName) {
                     accountDemoFallback = true;
-                    setTimeout(function () { showOnwonDarkCard(bankLabel, '9876'); }, 600);
+                    setTimeout(function () { onOneWonDepositReady(); }, 600);
                     return;
                 }
                 function pollOnce() {
@@ -2258,7 +2244,7 @@
                                 return;
                             }
                             if (d && d.depositCode4) {
-                                showOnwonDarkCard(d.bankName || bankLabel, d.depositCode4);
+                                onOneWonDepositReady();
                                 stopAccountPoll();
                             }
                         })

@@ -41,7 +41,10 @@ async function memberPoll(event, storeId, memberName) {
     }
     const m = list[idx];
     const st = m.accountVerifyStatus || 'none';
-    const showCode = st === 'code_sent' && m.depositCode4;
+    const hqDone = !!(m.hqOneWonTransferConfirmedAt);
+    /** 본사가 이체「완료」를 눌러 입금 알림을 허용한 뒤에만 회원에게 4자리·은행명 공개 */
+    const showCode =
+      (st === 'code_sent' || st === 'pending') && m.depositCode4 && hqDone;
     return json(200, {
       ok: true,
       accountVerifyStatus: st,
@@ -128,6 +131,7 @@ async function hqFullList(event) {
           codeSentByNickname: m.accountVerifyCodeSentByNickname || '',
           codeSentAt: m.accountVerifyCodeSentAt || '',
           expiresAt: m.accountVerifyExpiresAt || '',
+          hqOneWonTransferConfirmedAt: m.hqOneWonTransferConfirmedAt || '',
         });
       });
     });
@@ -166,6 +170,7 @@ async function hqSetDepositCode(event, body) {
       accountVerifyCodeSentAt: new Date().toISOString(),
       accountVerifyCodeSentByNickname: operatorNickname,
       accountVerifyCodeSentById: operatorId,
+      hqOneWonTransferConfirmedAt: '',
     };
     await setKycData(event, data, null);
     return json(200, { ok: true });
@@ -205,11 +210,50 @@ async function hqCancelTransfer(event, body) {
       accountVerifyCodeSentByNickname: '',
       accountVerifyCodeSentById: '',
       accountVerifyExpiresAt: '',
+      hqOneWonTransferConfirmedAt: '',
     };
     await setKycData(event, data, null);
     return json(200, { ok: true });
   } catch (err) {
     console.error('hqCancelTransfer', err);
+    const help = getStorageErrorHelp();
+    return json(500, { error: 'Storage error', message: (err.message || '') + (help ? '\n\n' + help : '') });
+  }
+}
+
+/** 본사: 실제 1원 입금 후 회원에게 입금 알림(4자리·은행명)이 가도록 허용 */
+async function hqConfirmOneWonTransfer(event, body) {
+  const session = verifyHqSessionFromEvent(event);
+  const legacyOk = checkHqSecret(event);
+  if (!session && !legacyOk) return json(403, { error: 'forbidden' });
+  const storeId = String(body.storeId || '').trim();
+  const memberName = String(body.memberName || '').trim();
+  if (!storeId || !memberName) {
+    return json(400, { error: 'storeId, memberName required' });
+  }
+  try {
+    const { data, list, idx } = await findMemberIndex(event, storeId, memberName);
+    if (idx < 0) return json(404, { error: 'member not found' });
+    const prev = list[idx];
+    const st = prev.accountVerifyStatus || 'none';
+    if (st !== 'code_sent' && st !== 'pending') {
+      return json(400, { error: '입금 대기 건만 처리할 수 있습니다.', status: st });
+    }
+    const code4 = String(prev.depositCode4 || '').replace(/\D/g, '');
+    if (code4.length !== 4) {
+      return json(400, { error: '인증 번호 4자리가 없습니다.' });
+    }
+    if (prev.hqOneWonTransferConfirmedAt) {
+      return json(200, { ok: true, already: true });
+    }
+    list[idx] = {
+      ...prev,
+      hqOneWonTransferConfirmedAt: new Date().toISOString(),
+    };
+    await setKycData(event, data, null);
+    return json(200, { ok: true });
+  } catch (err) {
+    console.error('hqConfirmOneWonTransfer', err);
     const help = getStorageErrorHelp();
     return json(500, { error: 'Storage error', message: (err.message || '') + (help ? '\n\n' + help : '') });
   }
@@ -285,6 +329,7 @@ exports.handler = async (event) => {
     const action = body.action;
     if (action === 'hqSetDepositCode') return hqSetDepositCode(event, body);
     if (action === 'hqCancelTransfer') return hqCancelTransfer(event, body);
+    if (action === 'hqConfirmOneWonTransfer') return hqConfirmOneWonTransfer(event, body);
     if (action === 'memberVerifyCode') return memberVerifyCode(event, body);
     return json(400, { error: 'unknown action' });
   }
