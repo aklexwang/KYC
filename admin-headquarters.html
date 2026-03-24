@@ -1832,6 +1832,148 @@
         #section-account-queue .account-queue-status--sent { color: #86efac; }
         #section-account-queue .td-code-sent-by { font-size: 12px; color: rgba(255, 255, 255, 0.72); max-width: 140px; }
 
+        #section-account-queue .aq-section-desc { max-width: 920px; }
+        #section-account-queue .aq-login-hint {
+            font-size: 13px;
+            color: #fbbf24;
+            margin: 0 0 12px 0;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: rgba(251, 191, 36, 0.12);
+            border: 1px solid rgba(251, 191, 36, 0.35);
+        }
+        #section-account-queue .aq-toolbar { margin: 16px 0 14px; }
+        #section-account-queue .aq-toolbar-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 10px 12px;
+        }
+        #section-account-queue .aq-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+        #section-account-queue .aq-field--grow { flex: 1 1 160px; }
+        #section-account-queue .aq-lbl { font-size: 12px; font-weight: 600; color: rgba(148, 163, 184, 0.95); }
+        #section-account-queue .aq-field input[type="search"],
+        #section-account-queue .aq-field input[type="date"],
+        #section-account-queue .aq-field select {
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: #0f1d4c;
+            color: #f1f5f9;
+            font-size: 14px;
+            font-family: inherit;
+            min-width: 0;
+        }
+        #section-account-queue .aq-date-range { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        #section-account-queue .aq-dash { color: rgba(148, 163, 184, 0.9); }
+        #section-account-queue .aq-btn-search { margin-left: auto; flex-shrink: 0; }
+        #section-account-queue .table--account-queue.aq-table { min-width: 1180px; }
+        #section-account-queue .aq-tx-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        #section-account-queue .aq-tx-pill--done {
+            background: #f8fafc;
+            color: #0f172a;
+        }
+        #section-account-queue .aq-tx-pill--cancel {
+            background: #ffedd5;
+            color: #9a3412;
+            border-radius: 10px;
+        }
+        #section-account-queue .aq-split {
+            display: inline-flex;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            vertical-align: middle;
+        }
+        #section-account-queue .aq-split-yes,
+        #section-account-queue .aq-split-no {
+            border: none;
+            padding: 7px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        #section-account-queue .aq-split-yes {
+            background: #86efac;
+            color: #14532d;
+        }
+        #section-account-queue .aq-split-no {
+            background: #e9d5ff;
+            color: #6b21a8;
+        }
+        #section-account-queue .aq-split-yes:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+        #section-account-queue .aq-ms-badge {
+            display: inline-flex;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        #section-account-queue .aq-ms--done { background: #dcfce7; color: #166534; }
+        #section-account-queue .aq-ms--apply { background: #dbeafe; color: #1e40af; }
+        #section-account-queue .aq-ms--timeout { background: #fef9c3; color: #854d0e; }
+        #section-account-queue .aq-ms--fail3 { background: #fce7f3; color: #9f1239; }
+        #section-account-queue .aq-ms--dash { background: transparent; color: rgba(255, 255, 255, 0.4); font-weight: 600; }
+
+        #aqCancelModal .aq-cancel-box {
+            width: min(400px, 92vw);
+            background: #fff;
+            border-radius: 16px;
+            padding: 22px 20px 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+        }
+        #aqCancelModal .aq-cancel-title {
+            margin: 0 0 6px 0;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        #aqCancelModal .aq-cancel-sub {
+            margin: 0 0 16px 0;
+            font-size: 14px;
+            color: #64748b;
+        }
+        #aqCancelModal .aq-cancel-reasons { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+        #aqCancelModal .aq-reason-btn {
+            width: 100%;
+            text-align: center;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f172a;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+        }
+        #aqCancelModal .aq-reason-btn:hover { background: #f8fafc; }
+        #aqCancelModal .aq-cancel-close {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
         /* 본사 현황판 (overview) */
         #section-overview.hq-overview-wrap {
             max-width: 1200px;
@@ -2387,7 +2529,7 @@
             <div class="menu-item active" data-view="overview">현황판</div>
             <div class="menu-item" data-view="stores">가맹점 관리</div>
             <div class="menu-item" data-view="members">회원 목록</div>
-            <div class="menu-item" data-view="accountQueue">1원인증관리 <span class="sidebar-badge" id="accountQueueBadge" style="display:none;">0</span></div>
+            <div class="menu-item" data-view="accountQueue">1원 인증 관리 <span class="sidebar-badge" id="accountQueueBadge" style="display:none;">0</span></div>
             <div class="menu-item" data-view="settlement">수수료 통계</div>
             <div class="menu-item" data-view="pointLedger">포인트 내역<span class="sidebar-badge sidebar-badge--point-pending" id="pointLedgerPendingBadge" aria-live="polite">0</span></div>
             <div class="menu-item" data-view="walletMgmt">지갑관리<span class="sidebar-badge sidebar-badge--point-pending" id="walletMgmtPendingBadge" aria-live="polite">0</span></div>
@@ -2506,22 +2648,65 @@
         </section>
 
         <section id="section-account-queue" class="dashboard-section">
-            <h2 class="section-title">1원인증관리</h2>
-            <p class="section-desc">회원이 계좌 정보를 제출하면 목록에 표시됩니다. 전용 계좌에서 1원 입금 시 적요에 넣은 <strong>숫자 4자리</strong>를 입력한 뒤 확인을 누르면, 회원 화면에 동일한 4자리가 표시되고 회원이 입력해 인증을 완료합니다.</p>
+            <h2 class="section-title">1원 인증 관리</h2>
+            <p class="section-desc aq-section-desc">회원이 계좌 정보를 제출하면 목록에 표시됩니다. 전용 계좌에서 1원 입금 시 적요에 넣은 <strong>숫자 4자리</strong>를 인증 번호 칸에 입력한 뒤 <strong>완료</strong>를 누르면, 회원 화면에 동일한 4자리가 표시되고 회원이 입력해 인증을 완료합니다.</p>
+            <p id="aqLoginHint" class="aq-login-hint" style="display:none;">본사 로그인 시 전체 이력·필터·취소 사유 등록을 사용할 수 있습니다. (미로그인 시 대기 건만 조회됩니다.)</p>
+            <div class="aq-toolbar">
+                <div class="aq-toolbar-row">
+                    <label class="aq-field">
+                        <span class="aq-lbl">신청 일자</span>
+                        <span class="aq-date-range">
+                            <input type="date" id="aqFilterDateFrom" autocomplete="off" aria-label="시작일">
+                            <span class="aq-dash">–</span>
+                            <input type="date" id="aqFilterDateTo" autocomplete="off" aria-label="종료일">
+                        </span>
+                    </label>
+                    <label class="aq-field aq-field--grow">
+                        <span class="aq-lbl">가맹점</span>
+                        <input type="search" id="aqFilterStore" placeholder="가맹점명·계정 검색" autocomplete="off">
+                    </label>
+                    <label class="aq-field aq-field--grow">
+                        <span class="aq-lbl">회원</span>
+                        <input type="search" id="aqFilterMember" placeholder="회원 이름 검색" autocomplete="off">
+                    </label>
+                    <label class="aq-field">
+                        <span class="aq-lbl">이체 상태</span>
+                        <select id="aqFilterTransfer" aria-label="이체 상태">
+                            <option value="all" selected>전체</option>
+                            <option value="pending">입금 대기</option>
+                            <option value="code_sent">코드 발송</option>
+                            <option value="complete">완료</option>
+                            <option value="cancelled">취소</option>
+                        </select>
+                    </label>
+                    <label class="aq-field">
+                        <span class="aq-lbl">회원 상태</span>
+                        <select id="aqFilterMemberSt" aria-label="회원 상태">
+                            <option value="all" selected>전체</option>
+                            <option value="apply">신청중</option>
+                            <option value="done">완료</option>
+                            <option value="timeout">시간초과</option>
+                            <option value="fail3">3회 틀림</option>
+                            <option value="dash">—</option>
+                        </select>
+                    </label>
+                    <button type="button" class="hq-sc-btn aq-btn-search" id="btnAqSearch">조회</button>
+                </div>
+            </div>
             <div class="table-wrap account-queue-wrap">
                 <div class="table-scroll">
-                    <table class="table--account-queue">
+                    <table class="table--account-queue aq-table">
                         <thead>
                             <tr>
                                 <th>가맹점</th>
-                                <th>회원명</th>
+                                <th>회원</th>
                                 <th>은행</th>
-                                <th>계좌번호</th>
-                                <th>예금주</th>
-                                <th>상태</th>
-                                <th>4자리 입력</th>
-                                <th>입금코드 처리</th>
-                                <th>확인</th>
+                                <th>계좌</th>
+                                <th>인증 번호</th>
+                                <th>이체 상태</th>
+                                <th>회원 상태</th>
+                                <th>신청 일시</th>
+                                <th>완료 일시</th>
                             </tr>
                         </thead>
                         <tbody id="accountQueueBody"></tbody>
@@ -2881,6 +3066,18 @@
                 </div>
             </div>
         </div>
+        <div id="aqCancelModal" class="modal-overlay-prices" aria-hidden="true">
+            <div class="aq-cancel-box" role="dialog" aria-modal="true" aria-labelledby="aqCancelTitle">
+                <h3 id="aqCancelTitle" class="aq-cancel-title">취소 사유</h3>
+                <p class="aq-cancel-sub">사유를 선택해 주세요.</p>
+                <div class="aq-cancel-reasons">
+                    <button type="button" class="aq-reason-btn" data-aq-reason="bank_maintenance">은행 점검 취소</button>
+                    <button type="button" class="aq-reason-btn" data-aq-reason="holder_mismatch">예금주 불일치</button>
+                    <button type="button" class="aq-reason-btn" data-aq-reason="wrong_account">잘못된 계좌번호</button>
+                </div>
+                <button type="button" class="aq-cancel-close" id="btnAqCancelClose">닫기</button>
+            </div>
+        </div>
         <section id="section-settlement" class="dashboard-section">
         <section id="settlementSection" class="settlement-section">
             <h3 class="settlement-title">수수료 통계</h3>
@@ -3166,6 +3363,10 @@
             var t = getHqSessionToken();
             if (t) h['X-HQ-Admin-Token'] = t;
             return h;
+        }
+        function hqFetchHeaders() {
+            var t = getHqSessionToken();
+            return t ? { 'X-HQ-Admin-Token': t } : {};
         }
         function hqEscHtml(t) {
             return String(t == null ? '' : t)
@@ -3803,17 +4004,275 @@
             });
         }
 
-        function loadAccountVerifyQueue() {
+        var accountQueueRawItems = [];
+        var aqCancelCtx = { storeId: '', memberName: '' };
+        var aqSectionActionsBound = false;
+
+        function aqCancelReasonKo(code) {
+            var m = { bank_maintenance: '은행 점검 취소', holder_mismatch: '예금주 불일치', wrong_account: '잘못된 계좌번호' };
+            return m[code] || String(code || '');
+        }
+
+        function formatAqDateTime(iso) {
+            if (!iso) return '—';
+            try {
+                var d = new Date(iso);
+                if (isNaN(d.getTime())) return '—';
+                return d.toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false });
+            } catch (e) { return '—'; }
+        }
+
+        function aqDateOnlyLocal(iso) {
+            if (!iso) return '';
+            try {
+                var d = new Date(iso);
+                if (isNaN(d.getTime())) return '';
+                var y = d.getFullYear();
+                var mo = d.getMonth() + 1;
+                var day = d.getDate();
+                function z2(n) { return (n < 10 ? '0' : '') + n; }
+                return y + '-' + z2(mo) + '-' + z2(day);
+            } catch (e) { return ''; }
+        }
+
+        function computeMemberStatusUi(row) {
+            var st = row.status || '';
+            var acc = row.memberAccount || 'wait';
+            var exp = row.expiresAt || '';
+            if (st === 'cancelled') return { cls: 'aq-ms--dash', text: '—', key: 'dash' };
+            if (acc === 'complete' && st === 'complete') return { cls: 'aq-ms--done', text: '완료', key: 'done' };
+            if (acc === 'fail') return { cls: 'aq-ms--fail3', text: '3회 틀림', key: 'fail3' };
+            var expired = false;
+            if (exp && (st === 'pending' || st === 'code_sent') && acc === 'wait') {
+                try { expired = new Date(exp).getTime() < Date.now(); } catch (e) {}
+            }
+            if (!expired && row.requestedAt && (st === 'pending' || st === 'code_sent') && acc === 'wait') {
+                try { expired = new Date(row.requestedAt).getTime() + 180000 < Date.now(); } catch (e) {}
+            }
+            if (expired) return { cls: 'aq-ms--timeout', text: '시간초과', key: 'timeout' };
+            if (st === 'pending' || st === 'code_sent') return { cls: 'aq-ms--apply', text: '신청중', key: 'apply' };
+            return { cls: 'aq-ms--dash', text: '—', key: 'dash' };
+        }
+
+        function filterAccountQueueItems(items) {
+            var fromEl = document.getElementById('aqFilterDateFrom');
+            var toEl = document.getElementById('aqFilterDateTo');
+            var storeEl = document.getElementById('aqFilterStore');
+            var memEl = document.getElementById('aqFilterMember');
+            var storeQ = (storeEl && storeEl.value) ? storeEl.value.trim().toLowerCase() : '';
+            var memQ = (memEl && memEl.value) ? memEl.value.trim().toLowerCase() : '';
+            var tf = document.getElementById('aqFilterTransfer') ? document.getElementById('aqFilterTransfer').value : 'all';
+            var mf = document.getElementById('aqFilterMemberSt') ? document.getElementById('aqFilterMemberSt').value : 'all';
+            var dFrom = fromEl && fromEl.value ? fromEl.value : '';
+            var dTo = toEl && toEl.value ? toEl.value : '';
+
+            return items.filter(function (row) {
+                if (tf !== 'all' && (row.status || '') !== tf) return false;
+                var ms = computeMemberStatusUi(row);
+                if (mf !== 'all' && ms.key !== mf) return false;
+                if (storeQ) {
+                    var s = (String(row.storeName || '') + ' ' + String(row.storeId || '')).toLowerCase();
+                    if (s.indexOf(storeQ) < 0) return false;
+                }
+                if (memQ) {
+                    if (String(row.memberName || '').toLowerCase().indexOf(memQ) < 0) return false;
+                }
+                if (dFrom || dTo) {
+                    var rd = aqDateOnlyLocal(row.requestedAt);
+                    if (!rd) return false;
+                    if (dFrom && rd < dFrom) return false;
+                    if (dTo && rd > dTo) return false;
+                }
+                return true;
+            });
+        }
+
+        function renderFilteredAccountQueue() {
+            var tbody = document.getElementById('accountQueueBody');
+            if (!tbody) return;
+            var filtered = filterAccountQueueItems(accountQueueRawItems || []);
+            function esc(t) {
+                return String(t == null ? '' : t)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+            if (!filtered || filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="no-data">조건에 맞는 내역이 없습니다.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = filtered.map(function (row) {
+                var sidRaw = row.storeId || '';
+                var memRaw = row.memberName || '';
+                var sidEnc = encodeURIComponent(sidRaw);
+                var memEnc = encodeURIComponent(memRaw);
+                var key = sidEnc.replace(/[^a-zA-Z0-9]/g, '_') + '_' + memEnc.replace(/[^a-zA-Z0-9]/g, '_');
+                var st = row.status || '';
+                var storeCell = esc(row.storeName || '') + ' <span style="opacity:.75;font-size:12px;">' + esc(sidRaw) + '</span>';
+                var authNumCell = '';
+                if (st === 'pending') {
+                    var inputId = 'hqCode_' + key;
+                    authNumCell = '<input type="text" class="hq-code-input aq-auth-code" id="' + inputId + '" maxlength="4" inputmode="numeric" placeholder="4자리" aria-label="입금 4자리">';
+                } else if (st === 'code_sent' || st === 'complete') {
+                    authNumCell = '<span class="aq-auth-num">' + esc(row.depositCode4 || '') + '</span>';
+                } else {
+                    authNumCell = '—';
+                }
+
+                var txCell = '';
+                if (st === 'complete') {
+                    txCell = '<span class="aq-tx-pill aq-tx-pill--done">이체 완료</span>';
+                } else if (st === 'cancelled') {
+                    var r = row.cancelReason || '';
+                    txCell = '<span class="aq-tx-pill aq-tx-pill--cancel">취소 / ' + esc(aqCancelReasonKo(r)) + '</span>';
+                } else if (st === 'pending') {
+                    txCell = '<div class="aq-split">' +
+                        '<button type="button" class="aq-split-yes">완료</button>' +
+                        '<button type="button" class="aq-split-no" data-aq-store-enc="' + sidEnc + '" data-aq-member-enc="' + memEnc + '">취소</button></div>';
+                } else if (st === 'code_sent') {
+                    txCell = '<div class="aq-split">' +
+                        '<button type="button" class="aq-split-yes" disabled aria-disabled="true">완료</button>' +
+                        '<button type="button" class="aq-split-no" data-aq-store-enc="' + sidEnc + '" data-aq-member-enc="' + memEnc + '">취소</button></div>';
+                } else {
+                    txCell = '—';
+                }
+
+                var mui = computeMemberStatusUi(row);
+                var memCell = '<span class="aq-ms-badge ' + mui.cls + '">' + esc(mui.text) + '</span>';
+
+                var doneCell = '—';
+                if (st === 'complete') doneCell = formatAqDateTime(row.completedAt);
+                else if (st === 'cancelled') doneCell = formatAqDateTime(row.cancelledAt);
+
+                return '<tr data-store-id="' + sidEnc + '" data-member="' + memEnc + '">' +
+                    '<td>' + storeCell + '</td>' +
+                    '<td>' + esc(row.memberName) + '</td>' +
+                    '<td>' + esc(row.bankName) + '</td>' +
+                    '<td>' + esc(row.accountNumber) + '</td>' +
+                    '<td class="td-aq-auth">' + authNumCell + '</td>' +
+                    '<td>' + txCell + '</td>' +
+                    '<td>' + memCell + '</td>' +
+                    '<td>' + formatAqDateTime(row.requestedAt) + '</td>' +
+                    '<td>' + doneCell + '</td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        function openAqCancelModal(storeId, memberName) {
+            aqCancelCtx = { storeId: storeId, memberName: memberName };
+            var m = document.getElementById('aqCancelModal');
+            if (m) { m.classList.add('show'); m.setAttribute('aria-hidden', 'false'); }
+        }
+
+        function closeAqCancelModal() {
+            var m = document.getElementById('aqCancelModal');
+            if (m) { m.classList.remove('show'); m.setAttribute('aria-hidden', 'true'); }
+        }
+
+        function submitAqCancel(reason) {
             var api = window.ADMIN_API_BASE || '';
+            if (!api) return;
+            closeAqCancelModal();
+            fetch(api + '/api/account-verify', {
+                method: 'POST',
+                headers: hqJsonHeaders(),
+                body: JSON.stringify({
+                    action: 'hqCancelTransfer',
+                    storeId: aqCancelCtx.storeId,
+                    memberName: aqCancelCtx.memberName,
+                    reason: reason
+                })
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (d && d.ok) loadAccountVerifyQueue();
+                    else alert((d && d.error) ? d.error : '취소에 실패했습니다.');
+                })
+                .catch(function () { alert('요청에 실패했습니다.'); });
+        }
+
+        function initAqAccountQueueUiOnce() {
+            if (aqSectionActionsBound) return;
+            aqSectionActionsBound = true;
+            var sec = document.getElementById('section-account-queue');
+            if (sec) {
+                sec.addEventListener('click', function (e) {
+                    var yes = e.target.closest('.aq-split-yes');
+                    if (yes && !yes.disabled) {
+                        var tr = yes.closest('tr');
+                        if (!tr) return;
+                        var storeId = decodeURIComponent(tr.getAttribute('data-store-id') || '');
+                        var memberName = decodeURIComponent(tr.getAttribute('data-member') || '');
+                        var inp = tr.querySelector('.aq-auth-code');
+                        var code4 = (inp && inp.value) ? String(inp.value).replace(/\D/g, '').slice(0, 4) : '';
+                        if (code4.length !== 4) {
+                            alert('숫자 4자리를 입력해 주세요.');
+                            return;
+                        }
+                        yes.disabled = true;
+                        fetch((window.ADMIN_API_BASE || '') + '/api/account-verify', {
+                            method: 'POST',
+                            headers: hqJsonHeaders(),
+                            body: JSON.stringify({ action: 'hqSetDepositCode', storeId: storeId, memberName: memberName, code4: code4 })
+                        })
+                            .then(function (r) { return r.json(); })
+                            .then(function (d) {
+                                if (d && d.ok) loadAccountVerifyQueue();
+                                else {
+                                    alert((d && d.error) ? d.error : '저장에 실패했습니다.');
+                                    yes.disabled = false;
+                                }
+                            })
+                            .catch(function () {
+                                alert('요청에 실패했습니다.');
+                                yes.disabled = false;
+                            });
+                        return;
+                    }
+                    var no = e.target.closest('.aq-split-no');
+                    if (no) {
+                        var sid = decodeURIComponent(no.getAttribute('data-aq-store-enc') || '');
+                        var mem = decodeURIComponent(no.getAttribute('data-aq-member-enc') || '');
+                        if (sid && mem) openAqCancelModal(sid, mem);
+                    }
+                });
+            }
+            var btnClose = document.getElementById('btnAqCancelClose');
+            if (btnClose) btnClose.addEventListener('click', closeAqCancelModal);
+            var modal = document.getElementById('aqCancelModal');
+            if (modal) {
+                modal.addEventListener('click', function (e) { if (e.target === modal) closeAqCancelModal(); });
+            }
+            document.querySelectorAll('#aqCancelModal [data-aq-reason]').forEach(function (b) {
+                b.addEventListener('click', function () {
+                    var r = b.getAttribute('data-aq-reason');
+                    if (r) submitAqCancel(r);
+                });
+            });
+            var btnSearch = document.getElementById('btnAqSearch');
+            if (btnSearch) btnSearch.addEventListener('click', function () { renderFilteredAccountQueue(); });
+        }
+
+        function loadAccountVerifyQueue() {
+            initAqAccountQueueUiOnce();
+            var api = window.ADMIN_API_BASE || '';
+            var hint = document.getElementById('aqLoginHint');
+            if (hint) hint.style.display = getHqSessionToken() ? 'none' : 'block';
             if (!api) {
                 document.getElementById('accountQueueBody').innerHTML = '<tr><td colspan="9" class="no-data">API 베이스가 없습니다.</td></tr>';
                 return;
             }
-            fetch(api + '/api/account-verify')
+            fetch(api + '/api/account-verify', { headers: hqFetchHeaders() })
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
                     var items = (data && data.items) ? data.items : [];
-                    renderAccountQueueTable(items);
+                    accountQueueRawItems = items;
+                    if (!items.length) {
+                        document.getElementById('accountQueueBody').innerHTML = '<tr><td colspan="9" class="no-data">1원 인증 요청 내역이 없습니다.</td></tr>';
+                    } else {
+                        renderFilteredAccountQueue();
+                    }
                     var pending = items.filter(function (x) { return x.status === 'pending'; }).length;
                     var badge = document.getElementById('accountQueueBadge');
                     if (badge) {
@@ -3848,80 +4307,6 @@
                 .catch(function () {
                     document.getElementById('accountQueueBody').innerHTML = '<tr><td colspan="9" class="no-data">목록을 불러오지 못했습니다.</td></tr>';
                 });
-        }
-
-        function renderAccountQueueTable(items) {
-            var tbody = document.getElementById('accountQueueBody');
-            if (!tbody) return;
-            if (!items || items.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" class="no-data">대기 중인 계좌 인증이 없습니다.</td></tr>';
-                return;
-            }
-            function esc(t) {
-                return String(t == null ? '' : t)
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;');
-            }
-            tbody.innerHTML = items.map(function (row) {
-                var sid = esc(row.storeId);
-                var mname = esc(row.memberName);
-                var key = sid + '_' + mname;
-                var st = row.status || '';
-                var stLabel = st === 'pending' ? '<span class="account-queue-status account-queue-status--pending">입금 대기</span>' : '<span class="account-queue-status account-queue-status--sent">회원 입력 대기</span>';
-                var disabled = st !== 'pending' ? ' disabled' : '';
-                var inputId = 'hqCode_' + key.replace(/[^a-zA-Z0-9]/g, '_');
-                var sentBy = (st === 'code_sent' && row.codeSentByNickname) ? esc(row.codeSentByNickname) : '—';
-                return '<tr data-store-id="' + sid + '" data-member="' + esc(row.memberName) + '">' +
-                    '<td>' + esc(row.storeName || row.storeId) + '</td>' +
-                    '<td>' + esc(row.memberName) + '</td>' +
-                    '<td>' + esc(row.bankName) + '</td>' +
-                    '<td>' + esc(row.accountNumber) + '</td>' +
-                    '<td>' + esc(row.accountHolder) + '</td>' +
-                    '<td>' + stLabel + '</td>' +
-                    '<td><input type="text" class="hq-code-input" id="' + inputId + '" maxlength="4" inputmode="numeric" placeholder="0000"' + disabled + ' aria-label="입금 4자리"></td>' +
-                    '<td class="td-code-sent-by">' + sentBy + '</td>' +
-                    '<td><button type="button" class="btn-hq-confirm"' + disabled + ' data-input="' + inputId + '">확인</button></td>' +
-                    '</tr>';
-            }).join('');
-            tbody.querySelectorAll('.btn-hq-confirm').forEach(function (btn) {
-                btn.addEventListener('click', function () {
-                    var tr = btn.closest('tr');
-                    var storeId = tr.getAttribute('data-store-id');
-                    var memberName = tr.getAttribute('data-member');
-                    var input = document.getElementById(btn.getAttribute('data-input'));
-                    var code4 = (input && input.value) ? String(input.value).replace(/\D/g, '').slice(0, 4) : '';
-                    if (code4.length !== 4) {
-                        alert('숫자 4자리를 입력해 주세요.');
-                        return;
-                    }
-                    btn.disabled = true;
-                    fetch((window.ADMIN_API_BASE || '') + '/api/account-verify', {
-                        method: 'POST',
-                        headers: hqJsonHeaders(),
-                        body: JSON.stringify({
-                            action: 'hqSetDepositCode',
-                            storeId: storeId,
-                            memberName: memberName,
-                            code4: code4
-                        })
-                    })
-                        .then(function (r) { return r.json(); })
-                        .then(function (d) {
-                            if (d && d.ok) {
-                                loadAccountVerifyQueue();
-                            } else {
-                                alert((d && d.error) ? d.error : '저장에 실패했습니다.');
-                                btn.disabled = false;
-                            }
-                        })
-                        .catch(function () {
-                            alert('요청에 실패했습니다.');
-                            btn.disabled = false;
-                        });
-                });
-            });
         }
 
         setInterval(function () {
@@ -5594,7 +5979,7 @@
             renderOverviewRecentTable();
             var api = window.ADMIN_API_BASE || '';
             if (api) {
-                fetch(api + '/api/account-verify')
+                fetch(api + '/api/account-verify', { headers: hqFetchHeaders() })
                     .then(function (r) { return r.json(); })
                     .then(function (d) {
                         var items = (d && d.items) ? d.items : [];

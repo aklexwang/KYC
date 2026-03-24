@@ -47,6 +47,7 @@ async function memberPoll(event, storeId, memberName) {
       accountVerifyStatus: st,
       depositCode4: showCode ? String(m.depositCode4) : null,
       bankName: m.bankName || '',
+      cancelReason: st === 'cancelled' ? String(m.accountVerifyCancelReason || '') : '',
     });
   } catch (err) {
     console.error('memberPoll', err);
@@ -75,10 +76,16 @@ async function queueList(event) {
             accountNumber: m.accountNumber || '',
             accountHolder: m.accountHolder || '',
             status: st,
+            memberAccount: m.account || 'wait',
+            depositCode4: m.depositCode4 ? String(m.depositCode4) : '',
             requestedAt: m.accountVerifyRequestedAt || '',
+            completedAt: m.accountVerifyCompletedAt || '',
+            cancelledAt: m.accountVerifyCancelledAt || '',
+            cancelReason: m.accountVerifyCancelReason || '',
             codeSentByNickname: m.accountVerifyCodeSentByNickname || '',
             codeSentById: m.accountVerifyCodeSentById || '',
             codeSentAt: m.accountVerifyCodeSentAt || '',
+            expiresAt: m.accountVerifyExpiresAt || '',
           });
         }
       });
@@ -87,6 +94,47 @@ async function queueList(event) {
     return json(200, { ok: true, items });
   } catch (err) {
     console.error('queueList', err);
+    const help = getStorageErrorHelp();
+    return json(500, { error: 'Storage error', message: (err.message || '') + (help ? '\n\n' + help : '') });
+  }
+}
+
+/** 본사 로그인 시: 1원 인증 전체 이력(필터는 클라이언트) */
+async function hqFullList(event) {
+  try {
+    const { data, names } = await getKycData(event);
+    const items = [];
+    const dataObj = data && typeof data === 'object' ? data : {};
+    Object.keys(dataObj).forEach((sid) => {
+      const list = Array.isArray(dataObj[sid]) ? dataObj[sid] : [];
+      list.forEach((m) => {
+        if (!m || !m.name) return;
+        const st = m.accountVerifyStatus || 'none';
+        if (st === 'none') return;
+        items.push({
+          storeId: sid,
+          storeName: (names && names[sid]) ? names[sid] : sid,
+          memberName: m.name,
+          bankName: m.bankName || '',
+          accountNumber: m.accountNumber || '',
+          accountHolder: m.accountHolder || '',
+          status: st,
+          memberAccount: m.account || 'wait',
+          depositCode4: m.depositCode4 ? String(m.depositCode4) : '',
+          requestedAt: m.accountVerifyRequestedAt || '',
+          completedAt: m.accountVerifyCompletedAt || '',
+          cancelledAt: m.accountVerifyCancelledAt || '',
+          cancelReason: m.accountVerifyCancelReason || '',
+          codeSentByNickname: m.accountVerifyCodeSentByNickname || '',
+          codeSentAt: m.accountVerifyCodeSentAt || '',
+          expiresAt: m.accountVerifyExpiresAt || '',
+        });
+      });
+    });
+    items.sort((a, b) => String(b.requestedAt || '').localeCompare(String(a.requestedAt || '')));
+    return json(200, { ok: true, items });
+  } catch (err) {
+    console.error('hqFullList', err);
     const help = getStorageErrorHelp();
     return json(500, { error: 'Storage error', message: (err.message || '') + (help ? '\n\n' + help : '') });
   }
@@ -128,6 +176,45 @@ async function hqSetDepositCode(event, body) {
   }
 }
 
+async function hqCancelTransfer(event, body) {
+  const session = verifyHqSessionFromEvent(event);
+  const legacyOk = checkHqSecret(event);
+  if (!session && !legacyOk) return json(403, { error: 'forbidden' });
+  const storeId = String(body.storeId || '').trim();
+  const memberName = String(body.memberName || '').trim();
+  const reason = String(body.reason || '').trim();
+  const ALLOW = new Set(['bank_maintenance', 'holder_mismatch', 'wrong_account']);
+  if (!storeId || !memberName || !ALLOW.has(reason)) {
+    return json(400, { error: 'storeId, memberName, reason required' });
+  }
+  try {
+    const { data, list, idx } = await findMemberIndex(event, storeId, memberName);
+    if (idx < 0) return json(404, { error: 'member not found' });
+    const prev = list[idx];
+    const st = prev.accountVerifyStatus || 'none';
+    if (st !== 'pending' && st !== 'code_sent') {
+      return json(400, { error: 'pending 또는 code_sent만 취소할 수 있습니다.', status: st });
+    }
+    list[idx] = {
+      ...prev,
+      accountVerifyStatus: 'cancelled',
+      accountVerifyCancelReason: reason,
+      accountVerifyCancelledAt: new Date().toISOString(),
+      depositCode4: '',
+      accountVerifyCodeSentAt: '',
+      accountVerifyCodeSentByNickname: '',
+      accountVerifyCodeSentById: '',
+      accountVerifyExpiresAt: '',
+    };
+    await setKycData(event, data, null);
+    return json(200, { ok: true });
+  } catch (err) {
+    console.error('hqCancelTransfer', err);
+    const help = getStorageErrorHelp();
+    return json(500, { error: 'Storage error', message: (err.message || '') + (help ? '\n\n' + help : '') });
+  }
+}
+
 async function memberVerifyCode(event, body) {
   const storeId = String(body.storeId || '').trim();
   const memberName = String(body.memberName || '').trim();
@@ -139,17 +226,23 @@ async function memberVerifyCode(event, body) {
     const { data, list, idx } = await findMemberIndex(event, storeId, memberName);
     if (idx < 0) return json(404, { error: 'member not found' });
     const prev = list[idx];
-    if ((prev.accountVerifyStatus || 'none') !== 'code_sent') {
+    const avs0 = prev.accountVerifyStatus || 'none';
+    if (avs0 === 'cancelled') {
+      return json(400, { error: '취소된 요청입니다.' });
+    }
+    if (avs0 !== 'code_sent') {
       return json(400, { error: '입금 코드가 아직 없습니다.' });
     }
     if (String(prev.depositCode4) !== code4) {
       return json(200, { ok: true, match: false });
     }
     const wasComplete = prev.account === 'complete';
+    const completedAt = prev.accountVerifyCompletedAt || new Date().toISOString();
     list[idx] = {
       ...prev,
       account: 'complete',
       accountVerifyStatus: 'complete',
+      accountVerifyCompletedAt: completedAt,
     };
     await setKycData(event, data, null);
     if (!wasComplete) await incrementUsage(event, storeId, 'account');
@@ -175,6 +268,10 @@ exports.handler = async (event) => {
       } catch (e) {}
       return memberPoll(event, store, member);
     }
+    const session = verifyHqSessionFromEvent(event);
+    if (session) {
+      return hqFullList(event);
+    }
     return queueList(event);
   }
 
@@ -187,6 +284,7 @@ exports.handler = async (event) => {
     }
     const action = body.action;
     if (action === 'hqSetDepositCode') return hqSetDepositCode(event, body);
+    if (action === 'hqCancelTransfer') return hqCancelTransfer(event, body);
     if (action === 'memberVerifyCode') return memberVerifyCode(event, body);
     return json(400, { error: 'unknown action' });
   }

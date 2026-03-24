@@ -71,6 +71,8 @@ exports.handler = async (event, context) => {
     let accountVerifyStatus = prev.accountVerifyStatus || 'none';
     let depositCode4 = prev.depositCode4 || '';
     let accountVerifyRequestedAt = prev.accountVerifyRequestedAt || '';
+    let accountVerifyExpiresAt = prev.accountVerifyExpiresAt || '';
+    let resetAccountVerifyMeta = false;
 
     if (
       requestAccountVerification === true
@@ -81,7 +83,11 @@ exports.handler = async (event, context) => {
       accountVerifyStatus = 'pending';
       depositCode4 = '';
       accountVerifyRequestedAt = new Date().toISOString();
+      /** 회원 화면 1원 타이머(3분)과 동일하게 서버에 만료 시각 저장 */
+      accountVerifyExpiresAt = new Date(Date.now() + 180 * 1000).toISOString();
       accountNext = 'wait';
+      /** 본사 취소 후 재신청 시 이전 취소·코드 메타 제거 */
+      resetAccountVerifyMeta = true;
     }
 
     const row = {
@@ -100,6 +106,17 @@ exports.handler = async (event, context) => {
       accountVerifyStatus,
       depositCode4,
       accountVerifyRequestedAt,
+      accountVerifyExpiresAt,
+      ...(resetAccountVerifyMeta
+        ? {
+            accountVerifyCancelReason: '',
+            accountVerifyCancelledAt: '',
+            accountVerifyCodeSentAt: '',
+            accountVerifyCodeSentByNickname: '',
+            accountVerifyCodeSentById: '',
+            accountVerifyCompletedAt: '',
+          }
+        : {}),
     };
     if (idx >= 0) {
       list[idx] = row;

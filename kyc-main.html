@@ -2251,6 +2251,12 @@
                     fetch(url)
                         .then(function (r) { return r.json(); })
                         .then(function (d) {
+                            if (d && d.accountVerifyStatus === 'cancelled') {
+                                stopAccountPoll();
+                                alert('본사에서 1원 인증이 취소되었습니다. 처음부터 다시 진행해 주세요.');
+                                try { location.reload(); } catch (eR) {}
+                                return;
+                            }
                             if (d && d.depositCode4) {
                                 showOnwonDarkCard(d.bankName || bankLabel, d.depositCode4);
                                 stopAccountPoll();
