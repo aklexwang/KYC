@@ -110,7 +110,7 @@
 
         /* ===== 2. KYC 회사 화면 ===== */
         .view-company .view-body { padding: 0; display: flex; flex-direction: column; flex: 1; min-height: 0; }
-        .hero { flex-shrink: 0; position: relative; background: linear-gradient(135deg, #1A3A5B 0%, #0F2744 100%); padding: clamp(32px, 10vw, 48px) clamp(16px, 5vw, 24px) clamp(24px, 8vw, 40px); overflow: hidden; }
+        .hero { flex-shrink: 0; position: relative; background: #163552; padding: clamp(32px, 10vw, 48px) clamp(16px, 5vw, 24px) clamp(24px, 8vw, 40px); overflow: hidden; }
         .hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 32px; background: #E8ECF0; border-radius: 24px 24px 0 0; }
         .hero-inner { position: relative; z-index: 1; }
         .hero-title { font-size: 28px; font-weight: 800; letter-spacing: 0.08em; color: #fff; text-align: center; margin: 0 0 6px 0; text-transform: uppercase; font-family: 'Inter', sans-serif; }
@@ -164,9 +164,47 @@
             flex-shrink: 0;
         }
         .kyc-icon-wrap svg,
-        .kyc-icon-wrap img {
-            width: 100%; height: 100%; object-fit: contain;
+        .kyc-icon-wrap > img {
+            width: 100%; height: 100%; object-fit: cover;
             filter: drop-shadow(0 2px 8px rgba(0,122,255,0.25));
+            position: relative;
+            z-index: 0;
+        }
+        .kyc-icon-wrap::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 50% 52%, rgba(0,0,0,0) 0 22%, rgba(22,53,82,0.12) 30%, rgba(22,53,82,0.78) 62%, rgba(22,53,82,0.9) 100%);
+            mix-blend-mode: multiply;
+            opacity: 1;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .kyc-gif-text-mask {
+            position: absolute;
+            left: 30%;
+            right: 30%;
+            bottom: 36px;
+            height: 36px;
+            background: rgba(0, 22, 31, 0.95);
+            border-radius: 3px;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .kyc-gif-name-replace {
+            position: absolute;
+            left: 50%;
+            bottom: 42px;
+            transform: translateX(-50%);
+            z-index: 3;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: #35eaff;
+            text-shadow: 0 0 8px rgba(53,234,255,0.55);
+            pointer-events: none;
+            white-space: nowrap;
         }
         .kyc-icon-wrap svg {
             animation: kyc-icon-rotate 8s linear infinite;
@@ -217,7 +255,7 @@
         .kyc-sublabel { font-size: clamp(11px, 3vmin, 13px); font-weight: 600; color: #8E8E93; letter-spacing: 0.2em; margin: 0 0 6px 0; }
         .phone-footer { position: relative; height: clamp(24px, 6vmin, 40px); margin-top: 0; flex-shrink: 0; }
         .phone-footer svg { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; }
-        .btn-company-start { flex-shrink: 0; display: block; width: calc(100% - clamp(24px, 6vw, 40px)); margin: 0 clamp(12px, 4vw, 20px) calc(24px + env(safe-area-inset-bottom)); padding: 18px; background: #1A2F4A; color: #fff; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 2px 8px rgba(26,47,74,0.25); }
+        .btn-company-start { flex-shrink: 0; display: block; width: calc(100% - clamp(24px, 6vw, 40px)); margin: 0 clamp(12px, 4vw, 20px) calc(24px + env(safe-area-inset-bottom)); padding: 18px; background: #163552; color: #fff; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
         .btn-company-start:active { transform: scale(0.98); }
         .view-company .nav-bar { position: absolute; top: 0; left: 0; right: 0; padding-top: env(safe-area-inset-top); border: none; background: transparent; }
         .view-company .nav-back { display: none; }
@@ -695,11 +733,11 @@
                         <div class="phone-top-bar"></div>
                         <div class="phone-content">
                             <div class="kyc-icon-wrap">
-                                <img src="kyc-icon.png" alt="KYC">
-                                <div class="scan-line" aria-hidden="true"></div>
+                                <img src="assets/face-detect.gif" alt="KYC">
+                                <div class="kyc-gif-text-mask" aria-hidden="true"></div>
+                                <div class="kyc-gif-name-replace" aria-hidden="true">KYC</div>
                             </div>
                             <h2 class="kyc-label" id="companyStoreName">가맹점명</h2>
-                            <p class="kyc-sublabel">KYC</p>
                             <div class="phone-footer">
                                 <svg viewBox="0 0 400 80" preserveAspectRatio="none">
                                     <defs><linearGradient id="footerGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#1A3A5B"/><stop offset="100%" style="stop-color:#0F2744"/></linearGradient></defs>

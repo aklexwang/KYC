@@ -352,6 +352,8 @@
             flex-shrink: 0;
         }
         .store-qr-card .qr-img-wrap img { display: block; width: 160px; height: 160px; }
+        .store-admin-qr-host { width: 160px; height: 160px; }
+        .store-admin-qr-host canvas { display: block; width: 160px; height: 160px; }
         .store-qr-card .qr-info { flex: 1; min-width: 200px; }
         .store-qr-card .qr-url { font-size: 13px; color: #007AFF; word-break: break-all; margin: 0 0 12px 0; }
         .store-qr-card .btn-copy-qr {
@@ -365,6 +367,214 @@
             cursor: pointer;
         }
         .store-qr-card .btn-copy-qr:hover { opacity: 0.9; }
+        /* QR 섹션: 왼쪽 옵션 + 오른쪽 미리보기 */
+        .store-qr-layout {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 28px 36px;
+            margin-top: 10px;
+        }
+        .store-qr-layout__col--options {
+            flex: 1 1 0;
+            min-width: 260px;
+            max-width: 540px;
+        }
+        .store-qr-layout__col--preview {
+            flex: 0 0 auto;
+            width: min(100%, 400px);
+        }
+        .store-qr-layout .store-qr-options { margin-bottom: 0; }
+        .store-qr-layout .store-qr-card {
+            margin-bottom: 0;
+            width: 100%;
+        }
+        /* 미리보기 카드: QR · 제목 · 버튼 박스 가운데 */
+        .store-qr-layout__col--preview .store-qr-card {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 18px;
+        }
+        .store-qr-layout__col--preview .store-qr-card .qr-info {
+            flex: none;
+            min-width: 0;
+            width: 100%;
+            max-width: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .store-qr-layout__col--preview .store-qr-card .qr-title {
+            margin: 0;
+            text-align: center;
+        }
+        .store-qr-layout__col--preview .store-qr-card .btn-copy-qr {
+            width: 100%;
+            max-width: 220px;
+        }
+        @media (max-width: 960px) {
+            .store-qr-layout {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .store-qr-layout__col--options {
+                max-width: none;
+            }
+            .store-qr-layout__col--preview {
+                width: 100%;
+            }
+        }
+        /* QR 옵션 (코드 스타일 · 스킨 색상) */
+        .store-qr-options { margin-bottom: 20px; display: flex; flex-direction: column; gap: 22px; }
+        .store-qr-opt-block { display: flex; flex-direction: column; gap: 12px; }
+        .store-qr-opt-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .store-qr-opt-badge {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            color: #2e7d32;
+            background: #e8f5e9;
+            padding: 4px 10px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        .store-qr-opt-title { font-size: 15px; font-weight: 700; color: #1a1a1a; margin: 0; }
+        .store-qr-style-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .store-qr-style-card {
+            width: 104px;
+            border: 2px solid #e5e5ea;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fff;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+            font: inherit;
+            text-align: left;
+            transition: border-color 0.15s ease;
+        }
+        .store-qr-style-card:hover { border-color: #c7c7cc; }
+        .store-qr-style-card.is-selected { border-color: #1a1a1a; }
+        .store-qr-style-card-preview {
+            height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            padding: 6px;
+            box-sizing: border-box;
+        }
+        .store-qr-style-card-preview > * { max-width: 100%; max-height: 100%; }
+        .store-qr-style-card-label {
+            display: block;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 8px 6px;
+            background: #f2f2f7;
+            color: #3a3a3c;
+            transition: background 0.15s, color 0.15s;
+        }
+        .store-qr-style-card.is-selected .store-qr-style-card-label {
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .store-qr-skin-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .store-qr-layout__col--options .store-qr-skin-row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 14px;
+        }
+        .store-qr-hex-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #e5e5ea;
+            border-radius: 10px;
+            padding: 0 12px;
+            background: #fff;
+            flex: 1;
+            min-width: 160px;
+            max-width: 240px;
+        }
+        .store-qr-layout__col--options .store-qr-hex-wrap {
+            max-width: none;
+            width: 100%;
+        }
+        .store-qr-hex-input {
+            flex: 1;
+            border: none;
+            padding: 11px 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a1a;
+            background: transparent;
+            min-width: 0;
+            font-family: ui-monospace, 'Consolas', monospace;
+        }
+        .store-qr-hex-input:focus { outline: none; }
+        .store-qr-hex-swatch {
+            width: 24px;
+            height: 24px;
+            border-radius: 5px;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            flex-shrink: 0;
+        }
+        .store-qr-palette { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .store-qr-layout__col--options .store-qr-palette {
+            width: 100%;
+        }
+        .store-qr-swatch {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            padding: 0;
+            cursor: pointer;
+            box-sizing: border-box;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .store-qr-swatch:hover { filter: brightness(1.08); }
+        .store-qr-swatch.is-selected {
+            border-color: #1a1a1a;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+        }
+        .store-qr-swatch.is-selected::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            margin: auto;
+            width: 8px;
+            height: 4px;
+            border: 2px solid #fff;
+            border-top: none;
+            border-right: none;
+            transform: rotate(-45deg) translateY(-1px);
+            pointer-events: none;
+            filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.65));
+        }
+        .store-qr-swatch.store-qr-swatch--dark.is-selected::after {
+            border-color: #fff;
+        }
+        /* 검정 스와치: 어두운 UI에서 윤곽이 보이도록 */
+        .store-qr-swatch.store-qr-swatch--dark:not(.is-selected) {
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.12),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+        .store-qr-swatch.store-qr-swatch--dark:hover:not(.is-selected) {
+            border-color: rgba(255, 255, 255, 0.72);
+            filter: none;
+        }
         /* ===== 대시보드 UI (가맹점 어드민 v2) ===== */
         .dashboard-shell { display: flex; min-height: 100vh; }
         .dashboard-sidebar {
@@ -422,7 +632,7 @@
             pointer-events: none;
         }
         .sidebar-point-label {
-            font-size: 11px;
+            font-size: 14px;
             font-weight: 700;
             color: rgba(255, 255, 255, 0.95);
             letter-spacing: -0.02em;
@@ -439,14 +649,6 @@
             color: rgba(255, 255, 255, 0.88);
             position: relative;
             z-index: 1;
-        }
-        .sidebar-point-network span {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 999px;
-            background: rgba(0, 0, 0, 0.18);
-            border: 1px solid rgba(255, 255, 255, 0.28);
-            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset;
         }
         .sidebar-point-value {
             margin: 0;
@@ -477,9 +679,11 @@
             border-radius: 10px;
             background: transparent;
             border: 1px solid transparent;
+            transition: transform .22s ease, color .22s ease, background-color .22s ease, border-color .22s ease;
         }
         .menu-item.active { background: #232d45; color: #fff; border-color: rgba(255,255,255,0.06); }
         .menu-item { cursor: pointer; }
+        .menu-item:hover { transform: translateY(-2px); }
         .dashboard-main { flex: 1; min-width: 0; padding: 20px 20px 30px; position: relative; background: #050a18; }
         .low-balance-overlay {
             display: none;
@@ -554,7 +758,7 @@
             grid-template-areas:
                 "all all all done done done"
                 "progress progress fail fail wait wait";
-            gap: 12px;
+            gap: 14px;
             margin-bottom: 16px;
         }
         .summary-card {
@@ -565,25 +769,20 @@
             justify-content: space-between;
             gap: 14px;
             border-radius: 16px;
-            padding: 16px 16px 14px;
+            padding: 16px;
             min-height: 156px;
             background:
-                radial-gradient(120% 90% at 100% 0%, rgba(147, 197, 253, 0.14) 0%, rgba(147, 197, 253, 0) 62%),
-                linear-gradient(180deg, #121d35 0%, #0d162d 100%);
-            border: 1px solid rgba(255,255,255,0.09);
-            box-shadow: 0 10px 24px rgba(0,0,0,.24);
+                linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.02) 100%),
+                rgba(11, 15, 25, 0.78);
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow:
+                0 10px 24px rgba(0,0,0,.26),
+                0 1px 0 rgba(255,255,255,0.08) inset;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: transform .28s ease, border-color .28s ease, box-shadow .28s ease;
         }
-        .summary-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 10px;
-            right: 10px;
-            height: 2px;
-            border-radius: 999px;
-            background: linear-gradient(90deg, rgba(96,165,250,0.95) 0%, rgba(56,189,248,0.72) 55%, rgba(167,139,250,0.9) 100%);
-            pointer-events: none;
-        }
+        .summary-card:hover { transform: translateY(-3px); }
         .summary-card--all { grid-area: all; }
         .summary-card--done { grid-area: done; }
         .summary-card--progress { grid-area: progress; }
@@ -598,26 +797,62 @@
             color: rgba(223, 237, 255, 0.84);
             font-size: 13px;
             font-weight: 600;
-            letter-spacing: -0.01em;
+            letter-spacing: 0.08em;
             align-self: flex-start;
+            z-index: 1;
         }
         .summary-card .num {
             line-height: 1.05;
             font-weight: 900;
             letter-spacing: -0.03em;
             font-variant-numeric: tabular-nums;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+            color: #fff;
             align-self: flex-end;
             text-align: right;
+            z-index: 1;
         }
-        .summary-card--all .num { font-size: 64px; background-image: linear-gradient(135deg, #a5f3fc 0%, #60a5fa 55%, #a78bfa 100%); }
-        .summary-card--done .num { font-size: 64px; background-image: linear-gradient(135deg, #93c5fd 0%, #38bdf8 50%, #22d3ee 100%); }
-        .summary-card--progress .num { font-size: 44px; background-image: linear-gradient(135deg, #86efac 0%, #4ade80 100%); }
-        .summary-card--fail .num { font-size: 44px; background-image: linear-gradient(135deg, #fda4af 0%, #fb7185 100%); }
-        .summary-card--wait .num { font-size: 44px; background-image: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%); }
+        .summary-card--all,
+        .summary-card--done { min-height: 176px; }
+        .summary-card--progress,
+        .summary-card--fail,
+        .summary-card--wait { min-height: 124px; }
+
+        .summary-card--all { border-color: rgba(168, 85, 247, 0.35); }
+        .summary-card--done { border-color: rgba(6, 182, 212, 0.35); }
+        .summary-card--progress { border-color: rgba(16, 185, 129, 0.35); }
+        .summary-card--fail { border-color: rgba(244, 63, 94, 0.35); }
+        .summary-card--wait { border-color: rgba(245, 158, 11, 0.35); }
+
+        .summary-card--all:hover { border-color: rgba(168, 85, 247, 0.62); box-shadow: 0 0 26px rgba(168,85,247,0.17), 0 10px 24px rgba(0,0,0,.3); }
+        .summary-card--done:hover { border-color: rgba(6, 182, 212, 0.62); box-shadow: 0 0 26px rgba(6,182,212,0.17), 0 10px 24px rgba(0,0,0,.3); }
+        .summary-card--progress:hover { border-color: rgba(16, 185, 129, 0.62); box-shadow: 0 0 22px rgba(16,185,129,0.16), 0 10px 24px rgba(0,0,0,.3); }
+        .summary-card--fail:hover { border-color: rgba(244, 63, 94, 0.62); box-shadow: 0 0 22px rgba(244,63,94,0.16), 0 10px 24px rgba(0,0,0,.3); }
+        .summary-card--wait:hover { border-color: rgba(245, 158, 11, 0.62); box-shadow: 0 0 22px rgba(245,158,11,0.16), 0 10px 24px rgba(0,0,0,.3); }
+
+        .summary-card--all .num { font-size: 64px; color: #d8b4fe; text-shadow: 0 0 16px rgba(168,85,247,.8); }
+        .summary-card--done .num { font-size: 64px; color: #67e8f9; text-shadow: 0 0 16px rgba(6,182,212,.8); }
+        .summary-card--progress .num { font-size: 52px; color: #6ee7b7; text-shadow: 0 0 12px rgba(16,185,129,.78); }
+        .summary-card--fail .num { font-size: 52px; color: #fda4af; text-shadow: 0 0 12px rgba(244,63,94,.78); }
+        .summary-card--wait .num { font-size: 52px; color: #fcd34d; text-shadow: 0 0 12px rgba(245,158,11,.78); }
+
+        .summary-card-spark {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 84px;
+            opacity: 0.28;
+            transition: opacity .28s ease;
+            pointer-events: none;
+        }
+        .summary-card:hover .summary-card-spark { opacity: 0.44; }
+        .summary-card-spark path {
+            fill: none;
+            stroke-width: 2.2;
+        }
+        .summary-card--all .summary-card-spark path { stroke: #a855f7; }
+        .summary-card--done .summary-card-spark path { stroke: #06b6d4; }
         .member-section-title {
             font-size: 18px;
             font-weight: 700;
@@ -724,6 +959,38 @@
         .store-qr-card .qr-img-wrap { background: #141f33; border-color: rgba(255,255,255,0.1); }
         .store-qr-card .qr-url { color: #93c5fd; }
         .store-qr-card .btn-copy-qr { background: #2563eb; }
+        .store-qr-opt-title { color: #fff; }
+        .store-qr-opt-badge {
+            color: #81c784;
+            background: rgba(46, 125, 50, 0.22);
+        }
+        .store-qr-style-card {
+            background: #141f33;
+            border-color: rgba(255, 255, 255, 0.14);
+        }
+        .store-qr-style-card:hover { border-color: rgba(255, 255, 255, 0.28); }
+        .store-qr-style-card.is-selected { border-color: #fff; }
+        .store-qr-style-card-preview { background: #fff; }
+        .store-qr-style-card-label {
+            background: #1c2639;
+            color: rgba(255, 255, 255, 0.88);
+        }
+        .store-qr-style-card.is-selected .store-qr-style-card-label {
+            background: #fff;
+            color: #0d1425;
+        }
+        .store-qr-hex-wrap {
+            background: #141f33;
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+        .store-qr-hex-input { color: #fff; }
+        .store-qr-hex-input::placeholder { color: rgba(255, 255, 255, 0.4); }
+        .store-qr-swatch.is-selected { border-color: #fff; }
+        .store-qr-swatch.store-qr-swatch--dark.is-selected {
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.35),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+        }
         th { background: #1c2639; }
         td { border-bottom-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.9); }
         td:first-child { color: #fff; }
@@ -943,8 +1210,10 @@
         }
         .table--point-history tbody tr:hover td { background: rgba(255,255,255,0.03); }
         .table--point-history .td-ph-grant { color: #86efac; font-weight: 600; }
+        .table--point-history .td-ph-deposit { color: #7dd3fc; font-weight: 600; }
         .table--point-history .td-ph-deduct { color: #fca5a5; font-weight: 600; }
         .table--point-history .td-ph-amt-grant { color: #86efac; font-weight: 700; font-variant-numeric: tabular-nums; }
+        .table--point-history .td-ph-amt-deposit { color: #7dd3fc; font-weight: 700; font-variant-numeric: tabular-nums; }
         .table--point-history .td-ph-amt-deduct { color: #fca5a5; font-weight: 700; font-variant-numeric: tabular-nums; }
         .table--point-history .td-ph-date { font-variant-numeric: tabular-nums; font-size: 12px; color: rgba(255,255,255,0.88); }
         .table--point-history .td-ph-balance {
@@ -1359,7 +1628,7 @@
             <h2 class="sidebar-title">Admin Dashboard</h2>
             <div class="sidebar-point-card is-loading" id="sidebarPointCard" aria-live="polite">
                 <p class="sidebar-point-label">보유 포인트</p>
-                <p class="sidebar-point-network" aria-label="네트워크 TRC-20"><span>USDT · TRC-20</span></p>
+                <p class="sidebar-point-network" aria-label="네트워크 TRC-20">TRC-20</p>
                 <p class="sidebar-point-value">
                     <span class="sidebar-point-num" id="sidebarPointBalance">—</span><span class="sidebar-point-unit">USDT</span>
                 </p>
@@ -1393,10 +1662,16 @@
                 </div>
                 <div class="summary-cards">
                     <div class="summary-card summary-card--all">
+                        <svg class="summary-card-spark" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true">
+                            <path d="M0,30 L10,25 L20,28 L30,15 L40,20 L50,10 L60,18 L70,5 L80,12 L90,2 L100,10"/>
+                        </svg>
                         <div class="num" id="totalCount">0</div>
                         <div class="label">전체 회원</div>
                     </div>
                     <div class="summary-card summary-card--done">
+                        <svg class="summary-card-spark" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true">
+                            <path d="M0,30 L15,20 L30,25 L45,10 L60,15 L75,5 L90,10 L100,0"/>
+                        </svg>
                         <div class="num" id="completeCount">0</div>
                         <div class="label">KYC 인증 완료</div>
                     </div>
@@ -1419,14 +1694,68 @@
                     <h2 class="section-title member-section-title">QR 코드</h2>
                     <p class="section-desc member-section-desc">회원 인증 페이지에 사용할 QR 코드입니다.</p>
                 </div>
+                <div class="store-qr-layout">
+                <div class="store-qr-layout__col store-qr-layout__col--options">
+                <div class="store-qr-options" id="storeQrOptions">
+                    <div class="store-qr-opt-block">
+                        <div class="store-qr-opt-head">
+                            <span class="store-qr-opt-badge">OPTION 1</span>
+                            <h3 class="store-qr-opt-title">코드 스타일 선택</h3>
+                        </div>
+                        <div class="store-qr-style-row" role="list">
+                            <button type="button" class="store-qr-style-card is-selected" data-qr-style="basic" role="listitem" aria-pressed="true">
+                                <div class="store-qr-style-card-preview" id="storeQrPrevBasic" aria-hidden="true"></div>
+                                <span class="store-qr-style-card-label">기본형</span>
+                            </button>
+                            <button type="button" class="store-qr-style-card" data-qr-style="round" role="listitem" aria-pressed="false">
+                                <div class="store-qr-style-card-preview" id="storeQrPrevRound" aria-hidden="true"></div>
+                                <span class="store-qr-style-card-label">라운드형</span>
+                            </button>
+                            <button type="button" class="store-qr-style-card" data-qr-style="circle" role="listitem" aria-pressed="false">
+                                <div class="store-qr-style-card-preview" id="storeQrPrevCircle" aria-hidden="true"></div>
+                                <span class="store-qr-style-card-label">원형</span>
+                            </button>
+                            <button type="button" class="store-qr-style-card" data-qr-style="soft" role="listitem" aria-pressed="false">
+                                <div class="store-qr-style-card-preview" id="storeQrPrevSoft" aria-hidden="true"></div>
+                                <span class="store-qr-style-card-label">부드러운형</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="store-qr-opt-block">
+                        <div class="store-qr-opt-head">
+                            <span class="store-qr-opt-badge">OPTION 2</span>
+                            <h3 class="store-qr-opt-title">스킨 스타일 선택</h3>
+                        </div>
+                        <div class="store-qr-skin-row">
+                            <div class="store-qr-hex-wrap">
+                                <input type="text" id="storeQrHexInput" class="store-qr-hex-input" value="#F27820" maxlength="7" autocomplete="off" inputmode="text" aria-label="QR 전경색 HEX">
+                                <span class="store-qr-hex-swatch" id="storeQrHexSwatch" aria-hidden="true"></span>
+                            </div>
+                            <div class="store-qr-palette" role="list">
+                                <button type="button" class="store-qr-swatch" data-hex="#E53935" style="background:#E53935" title="빨강" aria-label="색 빨강"></button>
+                                <button type="button" class="store-qr-swatch is-selected" data-hex="#F27820" style="background:#F27820" title="주황" aria-label="색 주황"></button>
+                                <button type="button" class="store-qr-swatch" data-hex="#F9A825" style="background:#F9A825" title="골드" aria-label="색 골드"></button>
+                                <button type="button" class="store-qr-swatch" data-hex="#43A047" style="background:#43A047" title="초록" aria-label="색 초록"></button>
+                                <button type="button" class="store-qr-swatch" data-hex="#29B6F6" style="background:#29B6F6" title="하늘" aria-label="색 하늘"></button>
+                                <button type="button" class="store-qr-swatch" data-hex="#1565C0" style="background:#1565C0" title="남색" aria-label="색 남색"></button>
+                                <button type="button" class="store-qr-swatch" data-hex="#7E57C2" style="background:#7E57C2" title="보라" aria-label="색 보라"></button>
+                                <button type="button" class="store-qr-swatch store-qr-swatch--dark" data-hex="#000000" style="background:#000000" title="검정" aria-label="색 검정"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <div class="store-qr-layout__col store-qr-layout__col--preview">
                 <div class="store-qr-card" id="storeQrCard">
                     <div class="qr-img-wrap">
-                        <img id="storeAdminQrImg" src="" alt="KYC QR 코드" width="160" height="160" crossorigin="anonymous">
+                        <div id="storeAdminQrHost" class="store-admin-qr-host" aria-hidden="false"></div>
                     </div>
                     <div class="qr-info">
                         <p class="qr-title">가맹점 KYC QR 코드</p>
                         <button type="button" class="btn-copy-qr" id="btnCopyStoreQr">QR 이미지 복사</button>
                     </div>
+                </div>
+                </div>
                 </div>
                 </section>
                 <section id="section-settlement" class="dashboard-section">
@@ -1512,6 +1841,7 @@
                             <option value="all" selected>전체</option>
                             <option value="grant">지급</option>
                             <option value="deduct">차감</option>
+                            <option value="deposit">충전</option>
                         </select>
                         <label for="storePointHistoryStatusFilter">상태</label>
                         <select id="storePointHistoryStatusFilter" class="point-history-status-select" aria-label="포인트 내역 상태">
@@ -1625,6 +1955,7 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/qr-code-styling@1.8.4/lib/qr-code-styling.js"></script>
     <script src="scripts/date-range-picker.js"></script>
     <script>
         window.ADMIN_API_BASE = window.ADMIN_API_BASE || (typeof location !== 'undefined' ? location.origin : '');
@@ -2165,7 +2496,9 @@
                 { at: agoIso(4), kind: 'grant', amount: 15, status: '취소' },
                 { at: agoIso(20), kind: 'grant', amount: 50, status: '완료' },
                 { at: agoIso(35), kind: 'deduct', amount: 12.5, status: '완료' },
-                { at: agoIso(80), kind: 'grant', amount: 100, status: '완료' }
+                { at: agoIso(80), kind: 'grant', amount: 100, status: '완료' },
+                { at: agoIso(96), kind: 'deposit', amount: 200, status: '완료', note: '가맹점 USDT 충전(입금)' },
+                { at: agoIso(100), kind: 'deposit', amount: 50, status: '진행중', note: '가맹점 USDT 충전(입금)' }
             ];
         }
 
@@ -2242,8 +2575,8 @@
             var out = [];
             rowsNewestFirst.forEach(function (r) {
                 var amt = pickPointHistoryAmountUsdt(r);
-                var grant = r.kind === 'grant';
-                var signed = grant ? amt : -amt;
+                var credit = r.kind === 'grant' || r.kind === 'deposit';
+                var signed = credit ? amt : -amt;
                 var before = normalizePointBalanceUsdt(after - signed);
                 var row = Object.assign({}, r);
                 row._phBefore = before;
@@ -2264,12 +2597,12 @@
             }
             var html = '';
             rows.forEach(function (r) {
-                var grant = r.kind === 'grant';
-                var kCls = grant ? 'td-ph-grant' : 'td-ph-deduct';
-                var kindLabel = grant ? '지급' : '차감';
+                var kind = r.kind;
+                var kCls = kind === 'deposit' ? 'td-ph-deposit' : (kind === 'grant' ? 'td-ph-grant' : 'td-ph-deduct');
+                var kindLabel = kind === 'deposit' ? '충전' : (kind === 'grant' ? '지급' : '차감');
                 var ch = r._phChange != null ? r._phChange : 0;
                 var chStr = (ch >= 0 ? '+' : '') + formatPointUsdt(Math.abs(ch)) + ' USDT';
-                var chCls = ch >= 0 ? 'td-ph-amt-grant' : 'td-ph-amt-deduct';
+                var chCls = ch < 0 ? 'td-ph-amt-deduct' : (kind === 'deposit' ? 'td-ph-amt-deposit' : 'td-ph-amt-grant');
                 var beforeStr = r._phBefore != null ? formatPointUsdt(r._phBefore) + ' USDT' : '—';
                 var afterStr = r._phAfter != null ? formatPointUsdt(r._phAfter) + ' USDT' : '—';
                 var st = pickPointHistoryStatus(r);
@@ -2360,7 +2693,167 @@
         }
 
         var baseKycUrl = (typeof location !== 'undefined' ? location.origin : '') + '/?start=1';
-        var qrApi = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=';
+        window.STORE_ADMIN_QR_URL = '';
+        window.storeAdminQrInstance = null;
+        var storeQrStylePreviewsDone = false;
+
+        function normalizeStoreQrHex(v) {
+            var s = String(v || '').trim().replace(/^#/, '');
+            if (/^[0-9A-Fa-f]{6}$/.test(s)) return '#' + s.toUpperCase();
+            if (/^[0-9A-Fa-f]{3}$/.test(s)) {
+                return ('#' + s[0] + s[0] + s[1] + s[1] + s[2] + s[2]).toUpperCase();
+            }
+            return '#000000';
+        }
+
+        function getSelectedStoreQrStyleKey() {
+            var sel = document.querySelector('.store-qr-style-card.is-selected');
+            return (sel && sel.getAttribute('data-qr-style')) || 'basic';
+        }
+
+        function buildStoreQrStylingOptions(fgHex, styleKey) {
+            var fg = fgHex;
+            var opts = {
+                width: 200,
+                height: 200,
+                type: 'canvas',
+                data: window.STORE_ADMIN_QR_URL || '',
+                margin: 4,
+                qrOptions: { errorCorrectionLevel: 'M' },
+                backgroundOptions: { color: '#ffffff' },
+                dotsOptions: { color: fg, type: 'square' },
+                cornersSquareOptions: { color: fg, type: 'square' },
+                cornersDotOptions: { color: fg, type: 'square' },
+            };
+            switch (styleKey) {
+                case 'round':
+                    opts.dotsOptions.type = 'rounded';
+                    opts.cornersSquareOptions.type = 'extra-rounded';
+                    opts.cornersDotOptions.type = 'dot';
+                    break;
+                case 'circle':
+                    opts.dotsOptions.type = 'dots';
+                    opts.cornersSquareOptions.type = 'dot';
+                    opts.cornersDotOptions.type = 'dot';
+                    break;
+                case 'soft':
+                    opts.dotsOptions.type = 'classy-rounded';
+                    opts.cornersSquareOptions.type = 'extra-rounded';
+                    opts.cornersDotOptions.type = 'dot';
+                    break;
+                default:
+                    break;
+            }
+            return opts;
+        }
+
+        function updateStoreQrHexUi(triggerRender) {
+            var inp = document.getElementById('storeQrHexInput');
+            var sw = document.getElementById('storeQrHexSwatch');
+            if (!inp) return;
+            var h = normalizeStoreQrHex(inp.value);
+            inp.value = h;
+            if (sw) sw.style.background = h;
+            document.querySelectorAll('.store-qr-swatch').forEach(function (b) {
+                var dh = normalizeStoreQrHex(b.getAttribute('data-hex') || '');
+                b.classList.toggle('is-selected', dh === h);
+            });
+            if (triggerRender) renderStoreAdminQr();
+        }
+
+        function initStoreQrStylePreviewsOnce() {
+            if (storeQrStylePreviewsDone || typeof window.QRCodeStyling === 'undefined') return;
+            storeQrStylePreviewsDone = true;
+            var sample = 'https://kyc.local/preview';
+            var pairs = [
+                ['basic', 'storeQrPrevBasic'],
+                ['round', 'storeQrPrevRound'],
+                ['circle', 'storeQrPrevCircle'],
+                ['soft', 'storeQrPrevSoft'],
+            ];
+            pairs.forEach(function (pair) {
+                var key = pair[0];
+                var id = pair[1];
+                var el = document.getElementById(id);
+                if (!el) return;
+                el.innerHTML = '';
+                var o = buildStoreQrStylingOptions('#1a1a1a', key);
+                o.width = 56;
+                o.height = 56;
+                o.margin = 0;
+                o.data = sample;
+                try {
+                    var q = new window.QRCodeStyling(o);
+                    q.append(el);
+                } catch (ePrev) {}
+            });
+        }
+
+        function renderStoreAdminQr() {
+            var host = document.getElementById('storeAdminQrHost');
+            var url = window.STORE_ADMIN_QR_URL;
+            if (!host || !url) return;
+            var fg = normalizeStoreQrHex(document.getElementById('storeQrHexInput') && document.getElementById('storeQrHexInput').value);
+            var styleKey = getSelectedStoreQrStyleKey();
+            host.innerHTML = '';
+            window.storeAdminQrInstance = null;
+            if (typeof window.QRCodeStyling !== 'undefined') {
+                try {
+                    var opts = buildStoreQrStylingOptions(fg, styleKey);
+                    opts.data = url;
+                    var qr = new window.QRCodeStyling(opts);
+                    window.storeAdminQrInstance = qr;
+                    qr.append(host);
+                } catch (eQr) {
+                    renderStoreAdminQrFallback(host, url, fg);
+                }
+            } else {
+                renderStoreAdminQrFallback(host, url, fg);
+            }
+        }
+
+        function renderStoreAdminQrFallback(host, url, fgHex) {
+            var hex = (fgHex || '#000000').replace(/^#/, '');
+            var u = new URL('https://api.qrserver.com/v1/create-qr-code/');
+            u.searchParams.set('size', '200x200');
+            u.searchParams.set('margin', '10');
+            u.searchParams.set('data', url);
+            u.searchParams.set('color', hex);
+            u.searchParams.set('bgcolor', 'FFFFFF');
+            var img = document.createElement('img');
+            img.alt = 'KYC QR 코드';
+            img.width = 160;
+            img.height = 160;
+            img.crossOrigin = 'anonymous';
+            img.src = u.toString();
+            host.appendChild(img);
+        }
+
+        async function copyStoreAdminQrImage() {
+            if (window.storeAdminQrInstance && typeof window.storeAdminQrInstance.getRawData === 'function') {
+                try {
+                    var blob = await window.storeAdminQrInstance.getRawData('png');
+                    if (!blob || !(navigator.clipboard && navigator.clipboard.write && window.ClipboardItem)) {
+                        throw new Error('clipboard unavailable');
+                    }
+                    var mime = blob.type || 'image/png';
+                    var itemData = {};
+                    itemData[mime] = blob;
+                    await navigator.clipboard.write([new ClipboardItem(itemData)]);
+                    alert('QR 이미지가 복사되었습니다.');
+                    return;
+                } catch (e1) {
+                    /* fall through */
+                }
+            }
+            var host = document.getElementById('storeAdminQrHost');
+            var fbImg = host ? host.querySelector('img') : null;
+            if (fbImg) {
+                copyImageFromImgElement(fbImg, 'QR 이미지가 복사되었습니다.');
+                return;
+            }
+            alert('QR 이미지가 없습니다.');
+        }
 
         function switchDashboardView(view) {
             var nextView = view || 'overview';
@@ -2389,6 +2882,15 @@
                 } catch (eDr2) {}
                 loadStorePointHistory();
             }
+            if (nextView === 'qr') {
+                try {
+                    initStoreQrStylePreviewsOnce();
+                } catch (eQrTab) {}
+                if (window.STORE_ADMIN_QR_URL) {
+                    updateStoreQrHexUi(false);
+                    renderStoreAdminQr();
+                }
+            }
         }
 
         function showDashboard(storeId, storeName, pointBalanceHint) {
@@ -2401,8 +2903,11 @@
             document.getElementById('dashboardWrap').classList.add('show');
             switchDashboardView('overview');
             var qrUrl = baseKycUrl + '&store=' + encodeURIComponent(storeId || '');
-            var imgEl = document.getElementById('storeAdminQrImg');
-            if (imgEl) imgEl.src = qrApi + encodeURIComponent(qrUrl);
+            window.STORE_ADMIN_QR_URL = qrUrl;
+            try {
+                updateStoreQrHexUi(false);
+                renderStoreAdminQr();
+            } catch (eShowQr) {}
             loadStorePointBalance(pointBalanceHint);
             loadMembers();
         }
@@ -2999,8 +3504,41 @@
         });
 
         document.getElementById('btnCopyStoreQr').addEventListener('click', function () {
-            var imgEl = document.getElementById('storeAdminQrImg');
-            copyImageFromImgElement(imgEl, 'QR 이미지가 복사되었습니다.');
+            copyStoreAdminQrImage();
+        });
+
+        document.querySelectorAll('.store-qr-style-card').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.store-qr-style-card').forEach(function (b) {
+                    b.classList.toggle('is-selected', b === btn);
+                    b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+                });
+                renderStoreAdminQr();
+            });
+        });
+        var storeQrHexInputEl = document.getElementById('storeQrHexInput');
+        if (storeQrHexInputEl) {
+            storeQrHexInputEl.addEventListener('change', function () {
+                updateStoreQrHexUi(true);
+            });
+            storeQrHexInputEl.addEventListener('blur', function () {
+                updateStoreQrHexUi(true);
+            });
+            storeQrHexInputEl.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    updateStoreQrHexUi(true);
+                }
+            });
+        }
+        updateStoreQrHexUi(false);
+        document.querySelectorAll('.store-qr-swatch').forEach(function (sw) {
+            sw.addEventListener('click', function () {
+                var h = sw.getAttribute('data-hex');
+                var inp = document.getElementById('storeQrHexInput');
+                if (inp && h) inp.value = h;
+                updateStoreQrHexUi(true);
+            });
         });
 
         var memberFilterApplyBtn = document.getElementById('btnMemberFilterApply');
