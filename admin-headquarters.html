@@ -129,6 +129,30 @@
         .member-section-lead { flex: 1 1 260px; min-width: 0; }
         .member-section-title { font-size: 18px; font-weight: 700; margin: 0 0 8px 0; color: #1a1a1a; letter-spacing: -0.02em; }
         .member-section-desc { margin: 0; max-width: 560px; line-height: 1.5; font-size: 13px; }
+        .member-section-head { margin: 0 0 14px 0; }
+        .member-section-title--glitch {
+            text-shadow:
+                -0.5px 0 0 rgba(255, 55, 100, 0.58),
+                0.5px 0 0 rgba(45, 220, 255, 0.52),
+                0 0 18px rgba(255, 255, 255, 0.05);
+        }
+        .admin-body .dashboard-section .member-section-head .member-section-title.member-section-title--glitch,
+        .admin-body .dashboard-section .hq-overview-title.member-section-title--glitch {
+            color: #fff;
+        }
+        .admin-body .dashboard-section .member-section-head .member-section-desc {
+            color: rgba(255, 255, 255, 0.72);
+        }
+        .hq-overview-head .hq-overview-title.hq-overview-title--glitch {
+            text-align: left;
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .hq-overview-head {
+            margin: 0 0 18px 0;
+        }
         .member-list-filters { align-items: flex-start; padding-top: 2px; }
         #memberListSearchInput {
             flex: 1 1 200px;
@@ -1361,8 +1385,12 @@
         #section-point-ledger .point-ledger-section {
             text-align: center;
         }
-        #section-point-ledger .settlement-title {
-            text-align: center;
+        #section-point-ledger .point-ledger-section > .member-section-head {
+            text-align: left;
+        }
+        #section-point-ledger .point-ledger-section > .member-section-head .member-section-desc {
+            margin-left: 0;
+            margin-right: auto;
         }
         #section-point-ledger .point-ledger-toolbar {
             justify-content: center;
@@ -2635,7 +2663,10 @@
     <main class="admin-body">
         <section id="section-overview" class="dashboard-section active hq-overview-wrap">
         <div class="hq-overview">
-            <h1 class="hq-overview-title">현황판</h1>
+            <div class="member-section-head hq-overview-head">
+                <h1 class="hq-overview-title hq-overview-title--glitch member-section-title--glitch">현황판</h1>
+                <p class="section-desc member-section-desc">전사 KYC·가맹점·포인트 핵심 지표를 한눈에 확인합니다.</p>
+            </div>
             <div class="hq-overview-cards">
                 <div class="hq-oc-card">
                     <p class="hq-oc-label">가맹점</p>
@@ -2737,7 +2768,10 @@
         </section>
 
         <section id="section-account-queue" class="dashboard-section">
-            <h2 class="section-title">1원 인증 관리</h2>
+            <div class="member-section-head">
+                <h2 class="section-title member-section-title member-section-title--glitch">1원 인증 관리</h2>
+                <p class="section-desc member-section-desc">신청·이체·코드 발송 및 회원 계좌 인증 처리 현황입니다.</p>
+            </div>
             <p class="section-desc aq-section-desc">회원이 1원 인증을 신청하면 서버가 <strong>인증 번호 4자리를 자동 생성</strong>합니다. 본사는 해당 번호로 1원 이체 시 적요에 동일 숫자를 넣을 수 있고, 회원은 화면에 표시된 번호를 확인한 뒤 입력하면 인증이 완료됩니다. (이전 방식: 코드 없는 입금 대기 건만 수동 입력 가능)</p>
             <p id="aqLoginHint" class="aq-login-hint" style="display:none;">본사 로그인 시 전체 이력·필터·취소 사유 등록을 사용할 수 있습니다. (미로그인 시 대기 건만 조회됩니다.)</p>
             <div class="aq-toolbar">
@@ -2810,6 +2844,10 @@
         </section>
 
         <section id="section-stores" class="dashboard-section">
+        <div class="member-section-head">
+            <h2 class="section-title member-section-title member-section-title--glitch">가맹점 관리</h2>
+            <p class="section-desc member-section-desc">가맹점 생성·상태·단가 설정 및 목록을 관리합니다.</p>
+        </div>
         <div class="store-section-bar">
             <div class="create-store-toolbar">
                 <button type="button" class="btn-toggle-register" id="btnOpenCreateStoreModal">가맹점 생성</button>
@@ -3059,10 +3097,9 @@
         </div>
 
         <section id="section-members" class="dashboard-section">
-        <div class="store-section-bar member-section-bar">
-            <div class="member-section-lead">
-                <h2 class="section-title member-section-title">회원 목록</h2>
-            </div>
+        <div class="member-section-head">
+            <h2 class="section-title member-section-title member-section-title--glitch">회원 목록</h2>
+            <p class="section-desc member-section-desc">문자·신분증·계좌 인증 현황입니다.</p>
         </div>
         <div class="member-toolbar-panel">
             <h3 class="member-toolbar-title">전체 회원 현황 (문자·신분증·1원 인증)</h3>
@@ -3179,7 +3216,10 @@
         </div>
         <section id="section-settlement" class="dashboard-section">
         <section id="settlementSection" class="settlement-section">
-            <h3 class="settlement-title">수수료 통계</h3>
+            <div class="member-section-head">
+                <h2 class="section-title member-section-title member-section-title--glitch">수수료 통계</h2>
+                <p class="section-desc member-section-desc">기간·가맹점별 문자·신분증·1원 인증 수수료를 집계합니다.</p>
+            </div>
             <div class="settlement-date-bar">
                 <span class="settlement-date-inline-label">기간</span>
                 <div class="drp-wrap" data-drp-from="settlementDateFrom" data-drp-to="settlementDateTo" data-drp-placeholder="연도-월-일 ~ 연도-월-일">
@@ -3293,7 +3333,10 @@
         </section>
         <section id="section-point-ledger" class="dashboard-section">
         <section class="settlement-section point-ledger-section">
-            <h3 class="settlement-title">포인트 내역</h3>
+            <div class="member-section-head">
+                <h2 class="section-title member-section-title member-section-title--glitch">포인트 내역</h2>
+                <p class="section-desc member-section-desc">가맹점별 포인트 충전·지급·차감 이력을 조회합니다.</p>
+            </div>
             <div class="settlement-date-bar point-ledger-toolbar">
                 <span class="settlement-date-inline-label">기간</span>
                 <div class="drp-wrap" data-drp-from="pointLedgerDateFrom" data-drp-to="pointLedgerDateTo" data-drp-placeholder="연도-월-일 ~ 연도-월-일">
@@ -3348,8 +3391,10 @@
         </section>
         <section id="section-wallet-mgmt" class="dashboard-section">
         <section class="settlement-section wallet-mgmt-section">
-            <h3 class="settlement-title">지갑관리</h3>
-            <p class="wallet-mgmt-desc">포인트 충전 신청이 들어온 가맹점에 TRC20 입금 지갑 주소를 발급합니다.</p>
+            <div class="member-section-head">
+                <h2 class="section-title member-section-title member-section-title--glitch">지갑관리</h2>
+                <p class="section-desc member-section-desc">포인트 충전 신청이 들어온 가맹점에 TRC20 입금 지갑 주소를 발급합니다.</p>
+            </div>
             <h4 class="wallet-mgmt-subtitle">대기 중인 요청</h4>
             <div id="walletMgmtList" class="wallet-mgmt-list" aria-live="polite"></div>
             <h4 class="wallet-mgmt-subtitle">발급 처리 내역</h4>
@@ -3388,7 +3433,10 @@
         </section>
         <section id="section-settings" class="dashboard-section">
         <div class="settings-panel">
-            <h3 class="settlement-title">USDT 설정</h3>
+            <div class="member-section-head">
+                <h2 class="section-title member-section-title member-section-title--glitch">USDT 설정</h2>
+                <p class="section-desc member-section-desc">가맹점 이용·충전 시 적용되는 USDT 기준을 설정합니다.</p>
+            </div>
             <div class="settings-usdt-row">
                 <label for="hqStoreGateMinUsdt">최소 보유 USDT (기준값)</label>
                 <input type="number" id="hqStoreGateMinUsdt" min="0" step="0.5" inputmode="decimal" placeholder="100" aria-label="가맹점 이용 최소 USDT">
@@ -3402,7 +3450,10 @@
             <p class="settings-hint" id="hqStoreGateSaveStatus" aria-live="polite"></p>
         </div>
         <div class="settings-panel settings-hq-admins-panel">
-            <h3 class="settlement-title">본사 관리자 계정</h3>
+            <div class="member-section-head">
+                <h2 class="section-title member-section-title member-section-title--glitch">본사 관리자 계정</h2>
+                <p class="section-desc member-section-desc">본사 대시보드 로그인 계정을 추가·관리합니다.</p>
+            </div>
             <div class="hq-admin-add-form">
                 <div class="field">
                     <label for="hqAdminAddId">아이디</label>
