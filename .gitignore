@@ -11,3 +11,7 @@
 
 # Dependencies
 node_modules
+
+# 로컬 백업·덤프 (실수로 커밋 방지)
+*.Zip
+*.zip
