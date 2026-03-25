@@ -3370,8 +3370,11 @@
                 return;
             }
             setPointRechargeSubmitPollingUi(true);
+            setPointRechargeFormTerminalLayout(false);
+            setPointRechargeFormPendingLayout(true);
             function doneOk(msg) {
                 setPointRechargeSubmitPollingUi(false);
+                setPointRechargeFormPendingLayout(false);
                 syncPointRechargeSubmitFromWalletStep();
                 alert(msg);
                 closePointRechargeModal();
@@ -3405,6 +3408,7 @@
                                 return;
                             }
                             setPointRechargeSubmitPollingUi(false);
+                            setPointRechargeFormPendingLayout(false);
                             syncPointRechargeSubmitFromWalletStep();
                             if (data && data.error) {
                                 showPointRechargeUsdtHint(data.error);
