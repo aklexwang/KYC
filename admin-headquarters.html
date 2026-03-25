@@ -3757,13 +3757,6 @@
                 if (err) { err.textContent = '아이디와 비밀번호를 입력하세요.'; err.classList.add('show'); }
                 return;
             }
-            if (id === 'admin' && pw === '111111') {
-                setHqSession('local-dev-token', '관리자', 'admin', 1, []);
-                hideHqLoginScreen();
-                updateHqHeaderUser();
-                bootHqDashboard();
-                return;
-            }
             if (err) err.classList.remove('show');
             if (btn) btn.disabled = true;
             fetch(api + '/api/hq-login', {
