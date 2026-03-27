@@ -1,4 +1,4 @@
-const { getKycData, setKycData, incrementUsage, getStorageErrorHelp } = require('./storage');
+const { getKycData, setKycData, incrementUsage, incrementDailyKycComplete, getStorageErrorHelp } = require('./storage');
 const { verifyHqSessionFromEvent } = require('./hq-session');
 
 const CORS = {
@@ -289,7 +289,10 @@ async function memberVerifyCode(event, body) {
       accountVerifyCompletedAt: completedAt,
     };
     await setKycData(event, data, null);
-    if (!wasComplete) await incrementUsage(event, storeId, 'account');
+    if (!wasComplete) {
+      await incrementUsage(event, storeId, 'account');
+      await incrementDailyKycComplete(event, storeId);
+    }
     return json(200, { ok: true, match: true });
   } catch (err) {
     console.error('memberVerifyCode', err);

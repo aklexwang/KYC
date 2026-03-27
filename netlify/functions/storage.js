@@ -223,6 +223,46 @@ async function setUsageCounts(event, counts) {
   await store.set('usage_counts', JSON.stringify(counts));
 }
 
+/** 한국 시간 기준 YYYY-MM-DD (수수료 일별 집계용) */
+function dateKeyKst() {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
+  const y = parts.find((p) => p.type === 'year').value;
+  const m = parts.find((p) => p.type === 'month').value;
+  const d = parts.find((p) => p.type === 'day').value;
+  return `${y}-${m}-${d}`;
+}
+
+async function getUsageDaily(event) {
+  if (USE_UPSTASH) {
+    const d = await upstashGet('kyc_usage_daily');
+    return d && typeof d === 'object' ? d : {};
+  }
+  const store = await blobsGetStore(event);
+  const raw = await store.get('usage_daily');
+  if (!raw) return {};
+  try {
+    const c = JSON.parse(raw);
+    return typeof c === 'object' && c !== null ? c : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+async function setUsageDaily(event, map) {
+  const obj = typeof map === 'object' && map !== null ? map : {};
+  if (USE_UPSTASH) {
+    await upstashSet('kyc_usage_daily', obj);
+    return;
+  }
+  const store = await blobsGetStore(event);
+  await store.set('usage_daily', JSON.stringify(obj));
+}
+
 async function incrementUsage(event, storeId, type) {
   if (!storeId || !['sms', 'idDoc', 'account'].includes(type)) return;
   const counts = await getUsageCounts(event);
@@ -230,6 +270,25 @@ async function incrementUsage(event, storeId, type) {
   if (!counts[sid]) counts[sid] = { sms: 0, idDoc: 0, account: 0 };
   counts[sid][type] = (counts[sid][type] || 0) + 1;
   await setUsageCounts(event, counts);
+
+  const daily = await getUsageDaily(event);
+  if (!daily[sid]) daily[sid] = {};
+  const dk = dateKeyKst();
+  if (!daily[sid][dk]) daily[sid][dk] = { sms: 0, idDoc: 0, account: 0, kycComplete: 0 };
+  daily[sid][dk][type] = (daily[sid][dk][type] || 0) + 1;
+  await setUsageDaily(event, daily);
+}
+
+/** 전체 KYC 완료(계좌 인증까지) 1건 — 통합 단가(USDT) 일별 합산용 */
+async function incrementDailyKycComplete(event, storeId) {
+  const sid = String(storeId || '').trim();
+  if (!sid) return;
+  const daily = await getUsageDaily(event);
+  if (!daily[sid]) daily[sid] = {};
+  const dk = dateKeyKst();
+  if (!daily[sid][dk]) daily[sid][dk] = { sms: 0, idDoc: 0, account: 0, kycComplete: 0 };
+  daily[sid][dk].kycComplete = (daily[sid][dk].kycComplete || 0) + 1;
+  await setUsageDaily(event, daily);
 }
 
 async function setKycData(event, data, names) {
@@ -399,7 +458,7 @@ async function deleteStore(event, storeId) {
   const keysToPurge = new Set([sid]);
   if (sid === '') keysToPurge.add('미지정');
 
-  const [kycData, passwords, storePrices, counts, suspended, pointsMapRaw, allowedIpsMapRaw] = await Promise.all([
+  const [kycData, passwords, storePrices, counts, suspended, pointsMapRaw, allowedIpsMapRaw, dailyMapRaw] = await Promise.all([
     getKycData(event),
     getStorePasswords(event),
     getStorePrices(event),
@@ -407,9 +466,11 @@ async function deleteStore(event, storeId) {
     getSuspendedStores(event),
     getStorePointsMap(event).catch(() => ({})),
     getStoreAllowedIpsMap(event).catch(() => ({})),
+    getUsageDaily(event).catch(() => ({})),
   ]);
   const pointsMap = typeof pointsMapRaw === 'object' && pointsMapRaw !== null ? { ...pointsMapRaw } : {};
   const allowedIpsMap = typeof allowedIpsMapRaw === 'object' && allowedIpsMapRaw !== null ? { ...allowedIpsMapRaw } : {};
+  const dailyMap = typeof dailyMapRaw === 'object' && dailyMapRaw !== null ? { ...dailyMapRaw } : {};
   const data = { ...kycData.data };
   const namesObj = { ...kycData.names };
   const pw = { ...passwords };
@@ -425,6 +486,7 @@ async function deleteStore(event, storeId) {
     delete susp[k];
     delete pointsMap[k];
     delete allowedIpsMap[k];
+    delete dailyMap[k];
   });
   await setKycData(event, data, namesObj);
   await setStorePasswords(event, pw);
@@ -432,11 +494,13 @@ async function deleteStore(event, storeId) {
     await upstashSet('kyc_store_prices', sp);
     await upstashSet('kyc_usage_counts', cnt);
     await upstashSet('kyc_suspended_stores', susp);
+    await upstashSet('kyc_usage_daily', dailyMap);
   } else {
     const store = await blobsGetStore(event);
     await store.set('store_prices', JSON.stringify(sp));
     await store.set('usage_counts', JSON.stringify(cnt));
     await store.set('suspended_stores', JSON.stringify(susp));
+    await store.set('usage_daily', JSON.stringify(dailyMap));
   }
   await setStorePointsMap(event, pointsMap);
   await setStoreAllowedIpsMap(event, allowedIpsMap);
@@ -615,7 +679,10 @@ module.exports = {
   setUsagePrices,
   getUsageCounts,
   setUsageCounts,
+  getUsageDaily,
+  setUsageDaily,
   incrementUsage,
+  incrementDailyKycComplete,
   getStorePrices,
   setStorePrice,
   getStorePasswords,
