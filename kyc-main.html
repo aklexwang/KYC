@@ -656,16 +656,43 @@
         .onwon-hero-sub { font-size: 15px; color: #6D84A1; margin: 0; line-height: 1.45; text-align: center; max-width: 340px; }
         .onwon-code-top-banner {
             flex-shrink: 0;
-            width: 100%;
-            padding: 12px 16px;
-            background: linear-gradient(135deg, #1863FD 0%, #0d5fd4 100%);
-            color: #fff;
-            text-align: center;
+            margin: 10px 14px 0;
+            border-radius: 14px;
+            border: 1px solid #d7e4f5;
+            background: #fff;
+            box-shadow: 0 6px 18px rgba(15, 42, 71, 0.08);
             box-sizing: border-box;
+            overflow: hidden;
         }
-        .onwon-code-top-banner-inner { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .onwon-code-top-banner-label { font-size: 14px; font-weight: 600; opacity: 0.95; }
-        .onwon-code-top-banner-digits { font-size: 22px; font-weight: 800; letter-spacing: 0.2em; }
+        .onwon-code-top-banner-inner {
+            display: grid;
+            grid-template-columns: 34px 1fr auto;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+        }
+        .onwon-code-top-banner-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: #e8f0ff;
+            color: #1863FD;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .onwon-code-top-banner-main { min-width: 0; }
+        .onwon-code-top-banner-title { font-size: 12px; font-weight: 700; color: #0F2A47; line-height: 1.2; }
+        .onwon-code-top-banner-message { font-size: 12px; color: #6D84A1; line-height: 1.2; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .onwon-code-top-banner-digits {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            color: #0F2A47;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        }
         .onwon-hero-title--waiting { margin: 0; font-size: clamp(18px, 4.8vw, 22px); color: #0F2A47; }
         .onwon-phone-illustration { display: flex; justify-content: center; margin: 0 0 20px; }
         .onwon-phone-frame {
@@ -1438,7 +1465,11 @@
             </nav>
             <div id="onwonCodeTopBanner" class="onwon-code-top-banner" hidden>
                 <div class="onwon-code-top-banner-inner">
-                    <span class="onwon-code-top-banner-label">인증번호</span>
+                    <div class="onwon-code-top-banner-icon" aria-hidden="true">앱</div>
+                    <div class="onwon-code-top-banner-main">
+                        <div id="onwonCodeTopBannerTitle" class="onwon-code-top-banner-title">은행 앱 알림</div>
+                        <div id="onwonCodeTopBannerMessage" class="onwon-code-top-banner-message">인증번호가 도착했습니다.</div>
+                    </div>
                     <span id="onwonCodeTopBannerDigits" class="onwon-code-top-banner-digits">—</span>
                 </div>
             </div>
@@ -2967,7 +2998,12 @@
                 if (d.depositCode4) {
                     var digitsEl = document.getElementById('onwonCodeTopBannerDigits');
                     var banner = document.getElementById('onwonCodeTopBanner');
+                    var titleEl = document.getElementById('onwonCodeTopBannerTitle');
+                    var msgEl = document.getElementById('onwonCodeTopBannerMessage');
+                    var bankLabel = (d.bankName && String(d.bankName).trim()) ? String(d.bankName).trim() : '은행';
                     if (digitsEl) digitsEl.textContent = d.depositCode4;
+                    if (titleEl) titleEl.textContent = bankLabel + ' 앱 알림';
+                    if (msgEl) msgEl.textContent = '입금자명 인증번호를 확인해 주세요.';
                     if (banner) banner.hidden = false;
                     applyAccountVerifyUiMode('deposit');
                     return;
