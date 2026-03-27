@@ -310,10 +310,10 @@
         .view-basicinfo .view-body { padding: 0 clamp(16px, 4vw, 20px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
         .step-indicator { display: flex; gap: 8px; padding: 16px 0 20px; }
         .step-item { flex: 1; text-align: center; background: #F2F2F7; border-radius: 12px; padding: 14px 8px 12px; }
-        .step-item.active { background: #FF9500; }
-        .step-num { width: 36px; height: 36px; margin: 0 auto 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; background: #F2F2F7; color: #5c5c5c; border: 2px solid #FF9500; }
-        .step-item.active .step-num { background: #fff; color: #FF9500; border-color: #fff; }
-        .step-item.active .step-num svg { width: 18px; height: 18px; }
+        .step-item.active { background: #1863FD; }
+        .step-num { width: 36px; height: 36px; margin: 0 auto 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; background: #F2F2F7; color: #5c5c5c; border: 2px solid #1863FD; }
+        .step-item.active .step-num { background: #fff; color: #1863FD; border-color: #fff; }
+        .step-item.active .step-num svg { width: 18px; height: 18px; stroke: #1863FD; }
         .step-label { font-size: clamp(10px, 2.8vw, 12px); font-weight: 600; color: #5c5c5c; }
         .step-item.active .step-label { color: #fff; }
         .basicinfo-title { font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 0 0 20px 0; }
@@ -436,10 +436,12 @@
             50% { background-position: 100% 50%; }
         }
 
-        /* 신분증 인증 화면 (step 2) */
+        /* 신분증 인증 화면 (step 2) — 단계 카드 색: 문자인증(기본정보)과 동일 */
+        .view-identity .step-item:not(.active) { background: #DCE7F5; }
+        .view-identity .step-item:not(.active):not(.step-done) .step-num { background: #EDF3FC; color: #2E4D71; border-color: #1863FD; }
         .view-identity .view-body { padding: 0 clamp(16px, 4vw, 20px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
         .view-identity .basicinfo-title { font-size: clamp(13px, 3.5vw, 17px); line-height: 1.35; }
-        .view-identity .step-item.step-done .step-num { background: #FF9500; color: #fff; border-color: #FF9500; }
+        .view-identity .step-item.step-done .step-num { background: #1863FD; color: #fff; border-color: #1863FD; }
         .view-identity .step-item.step-done .step-num svg { stroke: #fff; }
         .view-identity .step-item.step-done .step-label { color: #5c5c5c; }
         .identity-desc { font-size: 15px; color: #8E8E93; margin: 0 0 20px 0; line-height: 1.5; }
@@ -619,20 +621,88 @@
         .info-box h4 { font-size: 13px; color: #8E8E93; margin: 0 0 10px 0; font-weight: 600; }
         .info-box ul { margin: 0; padding-left: 16px; font-size: 13px; color: #5c5c5c; line-height: 1.6; }
         .info-box ul + h4 { margin-top: 16px; }
-        .view-steps .step-item.step-done .step-num { background: #FF9500; color: #fff; border-color: #FF9500; }
+        .view-steps .step-item.step-done .step-num { background: #1863FD; color: #fff; border-color: #1863FD; }
         .view-steps .step-item.step-done .step-num svg { stroke: #fff; }
         .view-steps .step-item.step-done .step-label { color: #5c5c5c; }
+        .view-steps .step-item:not(.active) { background: #DCE7F5; }
+        .view-steps .step-item:not(.active):not(.step-done) .step-num { background: #EDF3FC; color: #2E4D71; border-color: #1863FD; }
         .view-steps .field-row label { flex: 0 0 min(90px, 24vw); }
         .btn-onwon { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: auto; }
         .btn-onwon:active { opacity: 0.9; }
         /* 1원 인증 확인 화면 (사진 스타일) */
+        .view-account-verify .step-item:not(.active) { background: #DCE7F5; }
+        .view-account-verify .step-item:not(.active):not(.step-done) .step-num { background: #EDF3FC; color: #2E4D71; border-color: #1863FD; }
         .view-account-verify .view-body { padding: 0 clamp(16px, 4vw, 20px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
-        .view-account-verify .step-item.step-done .step-num { background: #FF9500; color: #fff; border-color: #FF9500; }
+        .view-account-verify .step-item.step-done .step-num { background: #1863FD; color: #fff; border-color: #1863FD; }
         .view-account-verify .step-item.step-done .step-num svg { stroke: #fff; }
         .view-account-verify .step-item.step-done .step-label { color: #5c5c5c; }
         .onwon-title1 { font-size: 17px; color: #1a1a1a; margin: 24px 0 6px 0; text-align: center; }
         .onwon-title2 { font-size: 16px; font-weight: 700; color: #1a1a1a; margin: 0 0 24px 0; text-align: center; }
         .onwon-title2 .highlight { color: #007AFF; }
+        /* 1원 인증: 사진3 형식 — 제목 + 폰 일러스트 */
+        .onwon-hero { text-align: center; margin: 20px 0 16px; display: flex; flex-direction: column; align-items: center; }
+        .onwon-hero-title { margin: 0 0 12px; letter-spacing: -0.02em; width: 100%; max-width: min(100%, 360px); font-weight: 700; color: #2c2c2c; line-height: 1.45; text-align: center; }
+        /* 반드시 2줄: 1줄째 문장 전체를 한 덩어리로(줄바꿈 방지), 좁은 화면은 글자만 살짝 축소 */
+        .onwon-hero-title .onwon-hero-line--first {
+            display: block;
+            white-space: nowrap;
+            font-size: clamp(10px, 3.1vw, 17px);
+            margin-bottom: 6px;
+        }
+        .onwon-hero-title .onwon-hero-line--second {
+            display: block;
+            font-size: clamp(15px, 4vw, 18px);
+        }
+        .onwon-hero-sub { font-size: 15px; color: #6D84A1; margin: 0; line-height: 1.45; text-align: center; max-width: 340px; }
+        .onwon-phone-illustration { display: flex; justify-content: center; margin: 0 0 20px; }
+        .onwon-phone-frame {
+            width: min(100%, 280px);
+            border-radius: 28px;
+            border: 3px solid #c8d4e6;
+            background: linear-gradient(180deg, #f0f4fa 0%, #e8eef6 100%);
+            padding: 14px 12px 18px;
+            box-shadow: 0 8px 24px rgba(15, 42, 71, 0.08);
+        }
+        .onwon-phone-screen-title { font-size: 13px; font-weight: 600; color: #0F2A47; text-align: center; margin-bottom: 12px; }
+        .onwon-tx-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px 14px;
+            border: 1px solid #e0e8f2;
+        }
+        .onwon-tx-left, .onwon-tx-right { display: flex; flex-direction: column; gap: 4px; }
+        .onwon-tx-right { align-items: flex-end; text-align: right; }
+        .onwon-tx-label { font-size: 11px; color: #6D84A1; }
+        .onwon-tx-code-wrap {
+            display: inline-block;
+            padding: 6px 10px;
+            border: 2px dashed #FF3B30;
+            border-radius: 6px;
+            margin-top: 2px;
+        }
+        .onwon-tx-code { font-size: 20px; font-weight: 700; color: #0F2A47; letter-spacing: 0.05em; }
+        .onwon-tx-amt { font-size: 16px; font-weight: 700; color: #0F2A47; }
+        .onwon-account-footer {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px 14px;
+            margin-top: 20px;
+            padding: 14px 16px;
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #C7D8EE;
+            box-shadow: 0 2px 10px rgba(24, 99, 253, 0.06);
+        }
+        .onwon-footer-logo { flex-shrink: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        .onwon-footer-logo svg { display: block; width: 40px; height: 40px; border-radius: 10px; }
+        .onwon-footer-account { font-size: 15px; font-weight: 700; color: #0F2A47; word-break: break-all; text-align: center; }
+        .onwon-footer-holder { font-size: 15px; font-weight: 700; color: #0F2A47; }
         .onwon-bank-section { margin-bottom: 20px; }
         .onwon-bank-section h3 { font-size: 15px; font-weight: 600; color: #1a1a1a; margin: 0 0 12px 0; }
         .onwon-bank-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: 15px; color: #5c5c5c; }
@@ -647,22 +717,38 @@
         .onwon-code-row { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
         .onwon-code-row label { font-size: 15px; font-weight: 600; color: #1a1a1a; flex: 0 0 70px; }
         .onwon-code-row input { flex: 1; padding: 14px 16px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 17px; font-family: inherit; }
+        .onwon-timer-row { display: flex; justify-content: center; align-items: center; width: 100%; margin: 8px 0 20px; }
         .onwon-timer { font-size: 15px; color: #8E8E93; flex-shrink: 0; }
         .btn-account-verify { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: auto; }
         .btn-account-verify:active { opacity: 0.9; }
-        .onwon-poll-wait { font-size: 14px; color: #8E8E93; text-align: center; margin: 8px 0 16px; line-height: 1.45; }
-        .onwon-poll-wait.is-ready { color: #1a1a1a; font-weight: 600; }
-
         /* ===== 5. 완료 화면 ===== */
-        .view-complete .view-body { padding: env(safe-area-inset-top) 24px 32px; display: flex; flex-direction: column; justify-content: center; align-items: center; flex: 1; text-align: center; }
-        .complete-badge { font-size: 13px; font-weight: 600; color: #007AFF; letter-spacing: 0.05em; margin: 0 0 16px 0; }
-        .view-complete .complete-kyc-icon { width: 88px; height: 88px; margin: 0 auto 24px; background: linear-gradient(152deg, #1A3A5B 0%, #152a45 40%, #0d2137 100%); border-radius: 22px; display: flex; align-items: center; justify-content: center; box-shadow: 0 16px 32px rgba(26,58,91,0.35); animation: kyc-icon-pulse 2.8s ease-in-out infinite; }
-        .view-complete .complete-kyc-icon svg { width: 48px; height: 48px; animation: kyc-icon-rotate 8s linear infinite; filter: drop-shadow(0 2px 6px rgba(0,122,255,0.3)); }
+        .view-complete .view-body {
+            padding: env(safe-area-inset-top) 24px calc(32px + env(safe-area-inset-bottom));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            text-align: center;
+            background: linear-gradient(165deg, #254d77 0%, #2f587f 42%, #1a3449 100%);
+        }
+        .complete-kyc-mark {
+            margin: 0 0 4px 0;
+            font-size: clamp(44px, 15vw, 72px);
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            color: #fff;
+            line-height: 1.1;
+            text-shadow: 0 2px 18px rgba(125, 211, 252, 0.35);
+        }
+        .complete-kyc-visual { margin: 4px 0 8px; display: flex; justify-content: center; width: 100%; }
+        .view-complete .complete-kyc-visual .kyc-icon-wrap { width: min(252px, 72vw); height: min(252px, 72vw); margin-bottom: 0; }
+        .view-complete .complete-kyc-visual .kyc-face-image { width: 84%; height: 84%; }
         .icon-wrap { width: 80px; height: 80px; margin: 0 auto 24px; background: #34C759; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .icon-wrap svg { width: 44px; height: 44px; }
-        .complete-title { font-size: 22px; font-weight: 700; margin: 0 0 8px 0; }
-        .complete-desc { font-size: 15px; color: #8E8E93; margin-bottom: 40px; line-height: 1.5; }
-        .btn-done { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; }
+        .complete-title { font-size: 22px; font-weight: 700; margin: 12px 0 8px 0; color: #fff; }
+        .complete-desc { font-size: 15px; color: rgba(255, 255, 255, 0.82); margin-bottom: 36px; line-height: 1.55; }
+        .btn-done { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1863FD; color: #fff; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28); }
         /* 이용정지 화면 */
         .view-suspended .view-body { padding: 24px 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; flex: 1; text-align: center; }
         .suspended-icon { width: 64px; height: 64px; margin: 0 auto 20px; background: #FF3B30; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
@@ -821,7 +907,6 @@
         .view-identity .view-body,
         .view-steps .view-body,
         .view-account-verify .view-body,
-        .view-complete .view-body,
         .view-suspended .view-body { background: #F1F6FF; }
         .view-identity .step-item.step-done .step-num,
         .view-steps .step-item.step-done .step-num,
@@ -831,10 +916,11 @@
         .view-account-verify .step-item.step-done .step-label { color: #2E4D71; }
         .view-identity .basicinfo-title,
         .view-steps .large-title,
-        .onwon-title1, .onwon-title2,
-        .suspended-title, .complete-title { color: #0F2A47; }
-        .identity-desc, .subtitle, .footer, .onwon-poll-wait,
-        .complete-desc, .suspended-desc, .onwon-code-suffix, .onwon-timer { color: #6D84A1; }
+        .onwon-title1, .onwon-title2, .onwon-hero-title, .onwon-hero-line--first, .onwon-hero-line--second,
+        .suspended-title { color: #0F2A47; }
+        .identity-desc, .subtitle, .footer,
+        .suspended-desc, .onwon-code-suffix, .onwon-timer { color: #6D84A1; }
+        .view-account-verify .onwon-timer { font-size: 30px; font-weight: 600; letter-spacing: 0.03em; }
         .identity-upload label, .onwon-bank-section h3,
         .onwon-code-row label, .field-row label { color: #0F2A47; }
         .identity-upload .upload-btn { background: #E6EEFA; color: #1B4D94; border-color: #B9CAE0; }
@@ -851,6 +937,19 @@
         .row:active { background: #EDF3FC; }
         .row.primary,
         .btn-complete, .btn-onwon, .btn-account-verify, .btn-done { background: #1863FD; }
+        .btn-onwon:disabled {
+            background: #AFC1D9 !important;
+            color: #fff;
+            cursor: not-allowed;
+            opacity: 1;
+        }
+        .btn-account-verify:disabled {
+            background: #AFC1D9 !important;
+            color: #fff;
+            cursor: not-allowed;
+            opacity: 1;
+            pointer-events: none;
+        }
         .row.primary:active { background: #0F56E0; }
         .field-row, .row:not(:last-child) { border-bottom-color: #CAD8E9; }
         .field-row input::placeholder, .onwon-code-box::placeholder { color: #9CB0C9; }
@@ -860,7 +959,7 @@
         .account-consent input:checked ~ .checkbox { background: #1863FD; border-color: #1863FD; }
         .account-consent span, .info-box ul, .onwon-bank-row { color: #2E4D71; }
         .info-box { border-color: #C7D8EE; background: #ECF3FF; }
-        .onwon-title2 .highlight, .onwon-deposit-row .amount, .complete-badge { color: #1863FD; }
+        .onwon-title2 .highlight, .onwon-deposit-row .amount { color: #1863FD; }
         .onwon-code-block { background: #ECF3FF; }
         .onwon-code-box { background: #D8E8FF; color: #0F2A47; }
         .onwon-code-box:focus { box-shadow: 0 0 0 2px #1863FD; }
@@ -893,7 +992,7 @@
             <div class="view-body">
                 <div class="scroll-area">
                     <h1 class="heading">고객확인을 시작합니다.</h1>
-                    <p class="subtext">신분증과 본인 명의의 계좌를 준비해 주세요.</p>
+                    <p class="subtext">인증을 위해 본인 명의의 휴대폰, 신분증, 은행 계좌를 준비해 주세요.</p>
                     <div class="card-illustration">
                         <div class="card-box">
                             <div class="card-avatar">
@@ -1305,11 +1404,11 @@
                         <h4>※ 계좌 인증 안내</h4>
                         <ul>
                             <li>계좌 인증번호 전송은 하루 최대 3회까지 가능합니다.</li>
-                            <li>플랫타익스체인지에 인증된 실명과 계좌에 등록된 이름이 일치하여야 합니다.</li>
+                            <li>인증된 실명과 계좌에 등록된 이름이 일치하여야 합니다.</li>
                         </ul>
                     </div>
                 </div>
-                <button type="button" class="btn-onwon" id="btnComplete">1원 인증</button>
+                <button type="button" class="btn-onwon" id="btnComplete" disabled>1원 인증</button>
             </div>
         </div>
 
@@ -1337,14 +1436,27 @@
                             <div class="step-label">계좌인증</div>
                         </div>
                     </div>
-                    <p class="onwon-title1">본사에서 입력하신 계좌로 1원을 보내면, 입금 내역에 표시되는 숫자 4자리를 확인할 수 있습니다.</p>
-                    <p class="onwon-title2">통장·알림에서 <span class="highlight">1원 뒤 4자리</span>를 아래 칸에 입력해 주세요.</p>
-                    <div id="onwonPollWait" class="onwon-poll-wait">본사에서 입금 처리 중입니다. 처리가 완료되면 통장·알림에서 1원 뒤 4자리를 확인한 뒤 아래에 입력해 주세요.</div>
-                    <div class="onwon-bank-section">
-                        <h3>은행 계좌 정보</h3>
-                        <div class="onwon-bank-row"><span>은행명</span><span class="value" id="displayBankName">-</span></div>
-                        <div class="onwon-bank-row"><span>계좌번호</span><span class="value" id="displayAccountNumber">-</span></div>
-                        <div class="onwon-bank-row"><span>예금주</span><span class="value" id="displayAccountHolder">-</span></div>
+                    <div class="onwon-hero">
+                        <h2 class="onwon-hero-title">
+                            <span class="onwon-hero-line--first">본인의 계좌인지 확인하기 위해 입력하신 계좌로</span>
+                            <span class="onwon-hero-line--second">1원을 입금했습니다.</span>
+                        </h2>
+                        <p class="onwon-hero-sub">입금내역에 표시된 숫자 4자리를 입력해주세요.</p>
+                    </div>
+                    <div class="onwon-phone-illustration" aria-hidden="true">
+                        <div class="onwon-phone-frame">
+                            <div class="onwon-phone-screen-title">거래내역</div>
+                            <div class="onwon-tx-card">
+                                <div class="onwon-tx-left">
+                                    <span class="onwon-tx-label">입금자명</span>
+                                    <span class="onwon-tx-code-wrap"><span class="onwon-tx-code">1234</span></span>
+                                </div>
+                                <div class="onwon-tx-right">
+                                    <span class="onwon-tx-label">입금</span>
+                                    <span class="onwon-tx-amt">1원</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="onwon-code-block">
                         <input type="text" id="onwonCode1" class="onwon-code-box" placeholder="" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="인증번호 1자리">
@@ -1353,35 +1465,32 @@
                         <input type="text" id="onwonCode4" class="onwon-code-box" placeholder="" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="인증번호 4자리">
                         <span class="onwon-code-suffix">_계좌개설용</span>
                     </div>
-                    <div class="onwon-deposit-row">
-                        <span>입금</span>
-                        <span class="amount">1원</span>
-                    </div>
-                    <div class="onwon-code-row" style="margin-top:16px;">
+                    <div class="onwon-timer-row">
                         <span class="onwon-timer" id="onwonTimer">03:00</span>
                     </div>
+                    <div class="onwon-account-footer">
+                        <div id="displayBankLogo" class="onwon-footer-logo"></div>
+                        <span id="displayAccountNumber" class="onwon-footer-account">-</span>
+                        <span id="displayAccountHolder" class="onwon-footer-holder">-</span>
+                    </div>
                 </div>
-                <button type="button" class="btn-account-verify" id="btnAccountVerify">계좌인증 완료</button>
+                <button type="button" class="btn-account-verify" id="btnAccountVerify" disabled>계좌인증 완료</button>
             </div>
         </div>
 
         <!-- 6. 완료 화면 -->
         <div id="view-complete" class="view view-complete">
             <div class="view-body">
-                <p class="complete-badge">AWS KYC 인증완료</p>
-                <div class="complete-kyc-icon">
-                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="glowComplete" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#5AC8FA"/><stop offset="50%" style="stop-color:#34C7F8"/><stop offset="100%" style="stop-color:#007AFF"/></linearGradient><linearGradient id="glowSoftComplete" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" style="stop-color:#007AFF;stop-opacity:0.25"/><stop offset="100%" style="stop-color:#5AC8FA;stop-opacity:0.6"/></linearGradient></defs>
-                        <circle cx="32" cy="32" r="26" stroke="url(#glowComplete)" stroke-width="1.4" opacity="0.4"/>
-                        <circle cx="32" cy="32" r="20" stroke="url(#glowComplete)" stroke-width="1.2" opacity="0.55"/>
-                        <circle cx="32" cy="32" r="14" stroke="url(#glowComplete)" stroke-width="1" opacity="0.75"/>
-                        <path d="M32 18v28M24 24a8 8 0 0116 0v16M18 32a14 14 0 0128 0" stroke="url(#glowComplete)" stroke-width="2.2" stroke-linecap="round" opacity="1"/>
-                        <circle cx="32" cy="32" r="5" fill="url(#glowSoftComplete)"/>
-                        <circle cx="32" cy="32" r="3.5" fill="#5AC8FA"/>
-                    </svg>
+                <p class="complete-kyc-mark">KYC</p>
+                <div class="complete-kyc-visual">
+                    <div class="kyc-icon-wrap" aria-hidden="true">
+                        <img class="kyc-face-image" src="assets/kyc-folder-icon.png" alt="" width="220" height="220">
+                        <div class="scan-line" aria-hidden="true"></div>
+                    </div>
                 </div>
                 <h1 class="complete-title">고객확인이 완료되었습니다</h1>
                 <p class="complete-desc">본인인증이 정상적으로 완료되었습니다.<br>서비스를 이용해 주세요.</p>
-                <button type="button" class="btn-done" id="btnDone">확인</button>
+                <button type="button" class="btn-done" id="btnDone">KYC 인증 완료</button>
             </div>
         </div>
 
@@ -1476,13 +1585,15 @@
                 viewIds.forEach(function (vid) {
                     views[vid].classList.toggle('view--active', vid === id);
                 });
-                wrap.classList.toggle('wrap--company', id === 'view-company' || id === 'view-store-confirm');
+                wrap.classList.toggle('wrap--company', id === 'view-company' || id === 'view-store-confirm' || id === 'view-complete');
             }
 
             function goTo(id) {
                 var active = viewIds.find(function (vid) { return views[vid].classList.contains('view--active'); });
                 if (active) historyStack.push(active);
                 showView(id);
+                if (id === 'view-steps') updateAccountOnwonButtonState();
+                if (id === 'view-account-verify') updateAccountVerifyCompleteButtonState();
             }
 
             function getKycStoreId() {
@@ -2707,6 +2818,18 @@
             var accountBank = document.getElementById('accountBank');
             var accountNumber = document.getElementById('accountNumber');
             var accountHolder = document.getElementById('accountHolder');
+            var btnComplete = document.getElementById('btnComplete');
+            function updateAccountOnwonButtonState() {
+                if (!btnComplete || !accountBank || !accountNumber || !accountHolder) return;
+                var consentCb = document.getElementById('accountConsentCb');
+                var ready = !!(accountBank.value &&
+                    (accountNumber.value || '').trim() &&
+                    (accountHolder.value || '').trim() &&
+                    consentCb && consentCb.checked);
+                btnComplete.disabled = !ready;
+            }
+            if (accountBank) accountBank.addEventListener('change', updateAccountOnwonButtonState);
+            if (accountNumber) accountNumber.addEventListener('input', updateAccountOnwonButtonState);
             if (accountHolder) {
                 function allowOnlyKorean(el) {
                     el.value = el.value.replace(/[^\uAC00-\uD7A3\s]/g, '');
@@ -2714,11 +2837,16 @@
                 accountHolder.addEventListener('input', function (e) {
                     if (e.isComposing) return;
                     allowOnlyKorean(this);
+                    updateAccountOnwonButtonState();
                 });
                 accountHolder.addEventListener('compositionend', function () {
                     allowOnlyKorean(this);
+                    updateAccountOnwonButtonState();
                 });
             }
+            var accountConsentCb = document.getElementById('accountConsentCb');
+            if (accountConsentCb) accountConsentCb.addEventListener('change', updateAccountOnwonButtonState);
+            updateAccountOnwonButtonState();
             var onwonTimerEl = document.getElementById('onwonTimer');
             function getOnwonCode() {
                 var a = document.getElementById('onwonCode1');
@@ -2727,18 +2855,37 @@
                 var d = document.getElementById('onwonCode4');
                 return ((a && a.value) || '') + ((b && b.value) || '') + ((c && c.value) || '') + ((d && d.value) || '');
             }
-            var onwonCodeInput = { get value() { return getOnwonCode(); }, set value(v) { var ids = ['onwonCode1','onwonCode2','onwonCode3','onwonCode4']; var s = (v && String(v)) || ''; for (var i = 0; i < 4; i++) { var el = document.getElementById(ids[i]); if (el) el.value = s.charAt(i) || ''; } } };
-            [1,2,3,4].forEach(function (i) {
+            function updateAccountVerifyCompleteButtonState() {
+                var btn = document.getElementById('btnAccountVerify');
+                if (!btn) return;
+                var digits = getOnwonCode().replace(/\D/g, '');
+                btn.disabled = digits.length !== 4;
+            }
+            var onwonCodeInput = {
+                get value() { return getOnwonCode(); },
+                set value(v) {
+                    var ids = ['onwonCode1', 'onwonCode2', 'onwonCode3', 'onwonCode4'];
+                    var s = (v && String(v)) || '';
+                    for (var i = 0; i < 4; i++) {
+                        var el = document.getElementById(ids[i]);
+                        if (el) el.value = s.charAt(i) || '';
+                    }
+                    updateAccountVerifyCompleteButtonState();
+                }
+            };
+            [1, 2, 3, 4].forEach(function (i) {
                 var el = document.getElementById('onwonCode' + i);
                 if (!el) return;
                 el.addEventListener('input', function () {
                     this.value = this.value.replace(/\D/g, '').slice(0, 1);
                     if (this.value && i < 4) document.getElementById('onwonCode' + (i + 1)).focus();
+                    updateAccountVerifyCompleteButtonState();
                 });
                 el.addEventListener('keydown', function (e) {
                     if (e.key === 'Backspace' && !this.value && i > 1) document.getElementById('onwonCode' + (i - 1)).focus();
                 });
             });
+            updateAccountVerifyCompleteButtonState();
             var onwonTimerInterval = null;
             var onwonCountdownSec = 180;
             var onwonFailCount = 0;
@@ -2754,12 +2901,6 @@
 
             /** 본사 입금 확인 후 서버에서 코드가 내려올 때 — 알림 말풍선(다크 카드)·테스트 모달은 표시하지 않음 */
             function onOneWonDepositReady() {
-                var waitEl = document.getElementById('onwonPollWait');
-                if (waitEl) {
-                    waitEl.style.display = '';
-                    waitEl.classList.add('is-ready');
-                    waitEl.textContent = '입금이 확인되었습니다. 통장·알림에서 1원 입금 뒤 4자리를 아래 칸에 입력해 주세요.';
-                }
                 try {
                     var c1 = document.getElementById('onwonCode1');
                     if (c1) c1.focus();
@@ -2773,16 +2914,10 @@
                 var nameEl = document.getElementById('basicName');
                 var memberName = (nameEl && nameEl.value) ? nameEl.value.trim() : '';
                 var storeId = getKycStoreId();
-                var waitEl = document.getElementById('onwonPollWait');
-                if (waitEl) {
-                    waitEl.style.display = '';
-                    waitEl.classList.remove('is-ready');
-                    waitEl.textContent = '본사에서 입금 처리 중입니다. 처리가 완료되면 통장·알림에서 1원 뒤 4자리를 확인한 뒤 아래에 입력해 주세요.';
-                }
 
                 if (!apiBase || !storeId || !memberName) {
                     accountDemoFallback = true;
-                    setTimeout(function () { onOneWonDepositReady(); }, 600);
+                    onOneWonDepositReady();
                     return;
                 }
                 function pollOnce() {
@@ -2821,6 +2956,24 @@
                 onwonTimerInterval = setInterval(tick, 1000);
             }
 
+            function renderBankLogoForVerify(bankValue) {
+                var el = document.getElementById('displayBankLogo');
+                if (!el) return;
+                var styles = {
+                    kb: { bg: '#FFCC00', fg: '#000000', t: 'KB' },
+                    shinhan: { bg: '#0046FF', fg: '#ffffff', t: 'SH' },
+                    woori: { bg: '#00479D', fg: '#ffffff', t: 'WR' },
+                    hana: { bg: '#00838F', fg: '#ffffff', t: 'HN' },
+                    nh: { bg: '#00A651', fg: '#ffffff', t: 'NH' },
+                    ibk: { bg: '#00468F', fg: '#ffffff', t: 'IBK' },
+                    kakao: { bg: '#FFE812', fg: '#000000', t: 'K' },
+                    kbank: { bg: '#5032F3', fg: '#ffffff', t: 'K+' }
+                };
+                var o = styles[bankValue] || { bg: '#1863FD', fg: '#ffffff', t: '—' };
+                var safe = String(o.t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+                el.innerHTML = '<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="선택 은행"><rect width="40" height="40" rx="10" fill="' + o.bg + '"/><text x="20" y="26" text-anchor="middle" fill="' + o.fg + '" font-size="11" font-weight="700" font-family="system-ui,-apple-system,BlinkMacSystemFont,sans-serif">' + safe + '</text></svg>';
+            }
+
             document.getElementById('btnComplete').addEventListener('click', function () {
                 if (!accountBank.value) {
                     alert('금융기관을 선택해 주세요.');
@@ -2840,9 +2993,9 @@
                 }
                 var bankText = accountBank.options[accountBank.selectedIndex] ? accountBank.options[accountBank.selectedIndex].text : '';
                 var holderText = accountHolder.value || '';
-                document.getElementById('displayBankName').textContent = bankText || '-';
                 document.getElementById('displayAccountNumber').textContent = accountNumber.value || '-';
                 document.getElementById('displayAccountHolder').textContent = holderText || '-';
+                renderBankLogoForVerify(accountBank.value);
                 onwonCodeInput.value = '';
                 onwonFailCount = 0;
                 sendKycState({ sms: 'complete', idDoc: 'complete', account: 'wait', requestAccountVerification: true });
