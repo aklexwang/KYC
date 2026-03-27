@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#163552">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>고객확인제도</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=DM+Sans:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html {
@@ -17,38 +16,39 @@
         }
         html, body { height: 100%; margin: 0; padding: 0; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
-            background: #E5E5EA;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            background: #fff;
             color: #1a1a1a;
             min-height: 100vh;
             min-height: 100dvh;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            padding: 0;
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: stretch;
             overflow-x: hidden;
+            touch-action: manipulation;
+            overscroll-behavior-y: contain;
         }
+        /* 모바일 풀스크린 앱(웹 미리보기용 데스크톱 프레임 제거) */
         .wrap {
             width: 100%;
-            max-width: 428px;
+            max-width: none;
             min-width: 0;
             height: 100vh;
             height: 100dvh;
             max-height: 100vh;
             max-height: 100dvh;
-            margin: 0 auto;
+            margin: 0;
             padding-top: env(safe-area-inset-top);
-            border: 1px solid #C6C6C8;
-            border-radius: 16px;
+            border: none;
+            border-radius: 0;
             background: #fff;
-            box-shadow: 0 2px 12px rgba(0,0,0,.06);
+            box-shadow: none;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-        }
-        @media (min-width: 429px) {
-            body { padding: 12px 16px 12px; }
-            .wrap { border-radius: 20px; max-height: calc(100vh - 24px); height: calc(100vh - 24px); height: calc(100dvh - 24px); max-height: calc(100dvh - 24px); }
         }
         @media (max-width: 360px) {
             .wrap { border-radius: 0; border-left: none; border-right: none; }
@@ -59,7 +59,7 @@
             .basicinfo-title { font-size: 18px; }
         }
         .wrap--company { padding-top: 0; }
-        .wrap--company { background: #E8ECF0; border-color: transparent; box-shadow: none; }
+        .wrap--company { background: #2F587F; border-color: transparent; box-shadow: none; }
         .view { display: none; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
         .view--active { display: flex; }
         .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none; }
@@ -75,52 +75,94 @@
         .view--company .nav-back svg { stroke: white; }
 
         /* ===== 1. 동의 화면 ===== */
-        .view-consent .view-body { padding: 0 clamp(16px, 4vw, 20px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
-        .heading { font-size: 22px; font-weight: 700; color: #1a1a1a; margin: 24px 0 8px 0; line-height: 1.3; }
-        .subtext { font-size: 15px; color: #4a4a4a; margin-bottom: 28px; line-height: 1.45; }
+        .view-consent .view-body { padding: 0 clamp(16px, 4vw, 20px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; background: #F1F6FF; }
+        .heading { font-size: 22px; font-weight: 700; color: #0F2A47; margin: 24px 0 8px 0; line-height: 1.3; }
+        .subtext { font-size: 15px; color: #2E4D71; margin-bottom: 28px; line-height: 1.45; }
         .card-illustration { width: 100%; max-width: 280px; margin: 0 auto 32px; position: relative; }
-        .card-box { background: #E8E8ED; border-radius: 12px; padding: 24px 20px; min-height: 140px; display: flex; align-items: flex-start; gap: 16px; }
-        .card-avatar { width: 48px; height: 48px; border-radius: 50%; background: #1A237E; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .card-box { background: #DCE7F5; border-radius: 12px; padding: 24px 20px; min-height: 140px; display: flex; align-items: flex-start; gap: 16px; }
+        .card-avatar { width: 48px; height: 48px; border-radius: 50%; background: #245790; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .card-avatar svg { width: 28px; height: 28px; }
         .card-lines { flex: 1; padding-top: 6px; }
-        .card-line { height: 8px; background: #C7C7CC; border-radius: 4px; margin-bottom: 10px; }
+        .card-line { height: 8px; background: #B8C9DF; border-radius: 4px; margin-bottom: 10px; }
         .card-line:nth-child(1) { width: 70%; }
         .card-line:nth-child(2) { width: 50%; }
         .card-line:nth-child(3) { width: 60%; }
-        .shield-badge { position: absolute; bottom: -8px; right: 12px; width: 56px; height: 56px; background: #FF9500; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(255,149,0,.4); }
+        .shield-badge { position: absolute; bottom: -8px; right: 12px; width: 56px; height: 56px; background: #1863FD; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(24,99,253,.42); }
         .shield-badge svg { width: 28px; height: 28px; }
         .agree-list { margin-bottom: 20px; }
-        .agree-item { display: flex; align-items: center; padding: 14px 0; border-bottom: 0.5px solid #E5E5EA; cursor: pointer; }
+        .agree-item { display: flex; align-items: center; padding: 14px 0; border-bottom: 0.5px solid #CAD8E9; cursor: pointer; }
         .agree-item:first-child { padding-top: 0; }
         .agree-item:last-child { border-bottom: none; }
         .agree-item:active { opacity: 0.7; }
-        .checkbox { width: 22px; height: 22px; border-radius: 4px; border: 2px solid #C7C7CC; margin-right: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-        .agree-item.checked .checkbox { background: #1A237E; border-color: #1A237E; }
+        .checkbox { width: 22px; height: 22px; border-radius: 4px; border: 2px solid #AFC2DB; margin-right: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .agree-item.checked .checkbox { background: #1863FD; border-color: #1863FD; }
         .agree-item .checkbox svg { display: none; }
         .agree-item.checked .checkbox svg { display: block; }
         .checkbox svg { width: 14px; height: 14px; }
-        .agree-label { font-size: 16px; color: #1a1a1a; }
+        .agree-label { font-size: 16px; color: #0F2A47; }
         .agree-item.agree-all .agree-label { font-weight: 600; }
         .required { color: #FF3B30; font-weight: 500; }
-        .disclaimer { font-size: 12px; color: #8E8E93; line-height: 1.5; margin-bottom: 12px; }
+        .disclaimer { font-size: 12px; color: #6D84A1; line-height: 1.5; margin-bottom: 12px; }
         .disclaimer:last-of-type { margin-bottom: 28px; }
-        .btn-start { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: auto; }
+        .btn-start { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1863FD; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: auto; }
         .btn-start:active { opacity: 0.9; }
-        .btn-start:disabled { background: #C7C7CC; cursor: not-allowed; }
+        .btn-start:disabled { background: #AFC1D9; cursor: not-allowed; }
 
         /* ===== 2. KYC 회사 화면 ===== */
         .view-company .view-body { padding: 0; display: flex; flex-direction: column; flex: 1; min-height: 0; }
-        .hero { flex-shrink: 0; position: relative; background: #163552; padding: clamp(32px, 10vw, 48px) clamp(16px, 5vw, 24px) clamp(24px, 8vw, 40px); overflow: hidden; }
-        .hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 32px; background: #E8ECF0; border-radius: 24px 24px 0 0; }
+        .hero { flex-shrink: 0; position: relative; background: #254D77; padding: clamp(32px, 10vw, 48px) clamp(16px, 5vw, 24px) clamp(24px, 8vw, 40px); overflow: hidden; }
+        .hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 32px; background: #2F587F; border-radius: 24px 24px 0 0; }
         .hero-inner { position: relative; z-index: 1; }
-        .hero-title { font-size: 28px; font-weight: 800; letter-spacing: 0.08em; color: #fff; text-align: center; margin: 0 0 6px 0; text-transform: uppercase; font-family: 'Inter', sans-serif; }
+        .hero-title { font-size: 28px; font-weight: 800; letter-spacing: 0.08em; color: #fff; text-align: center; margin: 0 0 6px 0; text-transform: uppercase; font-family: inherit; }
         .hero-tagline { font-size: 13px; font-weight: 400; line-height: 1.45; color: rgba(255,255,255,0.9); text-align: center; margin: 0; letter-spacing: 0.02em; }
-        .circle { position: absolute; border-radius: 50%; }
-        .circle-1 { width: 80px; height: 80px; background: rgba(90,200,250,0.25); top: 16px; left: 10%; }
-        .circle-2 { width: 48px; height: 48px; border: 2px solid rgba(255,255,255,0.4); top: 40px; right: 15%; }
-        .circle-3 { width: 32px; height: 32px; background: rgba(255,255,255,0.15); top: 24px; right: 8%; }
+        .circle { position: absolute; border-radius: 50%; z-index: 0; }
+        .circle-3 { width: 32px; height: 32px; background: rgba(255,255,255,0.15); top: 36px; left: 14%; right: auto; }
         .circle-4 { width: 56px; height: 56px; border: 2px solid rgba(90,200,250,0.5); bottom: 24px; left: 8%; }
         .circle-5 { width: 24px; height: 24px; background: rgba(255,255,255,0.2); bottom: 40px; right: 12%; }
+        .hero-deco-topleft {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: min(248px, 64vw);
+            height: 132px;
+            pointer-events: none;
+            z-index: 0;
+            overflow: visible;
+        }
+        .hero-deco-tl-sphere {
+            position: absolute;
+            left: -8px;
+            top: 4px;
+            width: 188px;
+            height: 128px;
+            opacity: 0.94;
+        }
+        .hero-deco-topright {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: min(210px, 56vw);
+            height: 118px;
+            pointer-events: none;
+            z-index: 0;
+            overflow: visible;
+        }
+        .hero-deco-tr-float {
+            position: absolute;
+            top: -6px;
+            right: -4px;
+            width: 92px;
+            height: 92px;
+            opacity: 0.95;
+        }
+        .hero-deco-tr-net {
+            position: absolute;
+            top: 10px;
+            right: 6px;
+            width: 168px;
+            height: 132px;
+            opacity: 0.92;
+        }
         /* Get Started는 항상 화면 하단 고정, 그 위 영역은 카드만 표시 */
         .view-company .scroll-area { flex: 1 1 auto; min-height: 0; display: flex; justify-content: center; align-items: center; padding: 8px clamp(12px, 4vw, 20px); overflow-y: auto; -webkit-overflow-scrolling: touch; }
         /* 가맹점 확인 화면 (QR 스캔 시) */
@@ -155,20 +197,36 @@
         }
         .kyc-icon-wrap {
             width: 252px; height: 252px; margin: 0 auto 18px;
-            background: linear-gradient(152deg, #1A3A5B 0%, #152a45 40%, #0d2137 100%);
-            border-radius: 28px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 20px 40px rgba(26,58,91,0.4), 0 0 0 1px rgba(255,255,255,0.06) inset;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: radial-gradient(circle at 50% 35%, rgba(66,212,244,0.16) 0%, rgba(9,28,54,0.52) 55%, rgba(5,20,40,0.72) 100%);
+            box-shadow:
+                0 0 0 1px rgba(66,212,244,0.35),
+                0 0 18px rgba(66,212,244,0.36),
+                0 0 42px rgba(66,212,244,0.24),
+                0 16px 34px rgba(4,14,28,0.55);
             animation: kyc-icon-pulse 2.8s ease-in-out infinite;
             overflow: hidden;
             position: relative;
             flex-shrink: 0;
+            clip-path: circle(50% at 50% 50%);
+            isolation: isolate;
+            contain: paint;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
-        .kyc-icon-wrap svg,
-        .kyc-icon-wrap > img {
-            width: 100%; height: 100%; object-fit: cover;
-            filter: drop-shadow(0 2px 8px rgba(0,122,255,0.25));
+        .kyc-face-image {
+            width: 84%;
+            height: 84%;
+            object-fit: cover;
+            border-radius: 50%;
+            padding: 0;
+            background: transparent;
+            box-shadow: none;
+            filter: drop-shadow(0 0 10px rgba(66,212,244,0.35));
             position: relative;
-            z-index: 0;
+            z-index: 2;
         }
         .kyc-icon-wrap::before {
             content: '';
@@ -176,58 +234,31 @@
             inset: 0;
             background:
                 radial-gradient(circle at 50% 52%, rgba(0,0,0,0) 0 22%, rgba(22,53,82,0.12) 30%, rgba(22,53,82,0.78) 62%, rgba(22,53,82,0.9) 100%);
-            mix-blend-mode: multiply;
-            opacity: 1;
+            opacity: 0;
             pointer-events: none;
             z-index: 1;
         }
-        .kyc-gif-text-mask {
-            position: absolute;
-            left: 30%;
-            right: 30%;
-            bottom: 36px;
-            height: 36px;
-            background: rgba(0, 22, 31, 0.95);
-            border-radius: 3px;
-            z-index: 2;
-            pointer-events: none;
-        }
-        .kyc-gif-name-replace {
-            position: absolute;
-            left: 50%;
-            bottom: 42px;
-            transform: translateX(-50%);
-            z-index: 3;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            color: #35eaff;
-            text-shadow: 0 0 8px rgba(53,234,255,0.55);
-            pointer-events: none;
-            white-space: nowrap;
-        }
-        .kyc-icon-wrap svg {
-            animation: kyc-icon-rotate 8s linear infinite;
-        }
         .kyc-icon-wrap .scan-line {
             position: absolute;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg,
-                transparent 0%,
-                rgba(90,200,250,0.3) 20%,
-                rgba(90,200,250,0.95) 50%,
-                rgba(90,200,250,0.3) 80%,
-                transparent 100%);
-            box-shadow: 0 0 12px 2px rgba(90,200,250,0.6);
-            animation: kyc-scan-line 2.2s ease-in-out infinite;
+            left: 12%;
+            right: 12%;
+            height: 10px;
+            background: linear-gradient(180deg,
+                rgba(66,212,244,0) 0%,
+                rgba(66,212,244,0.28) 25%,
+                rgba(66,212,244,0.95) 50%,
+                rgba(66,212,244,0.28) 75%,
+                rgba(66,212,244,0) 100%);
+            border-radius: 999px;
+            box-shadow: 0 0 12px rgba(66,212,244,0.85), 0 0 22px rgba(66,212,244,0.4);
+            animation: kyc-scan-line 2.4s ease-in-out infinite;
             pointer-events: none;
-            z-index: 2;
+            z-index: 3;
         }
         @keyframes kyc-scan-line {
-            0% { top: 0; opacity: 1; }
-            100% { top: 100%; opacity: 1; }
+            0% { top: 14%; opacity: 0.85; }
+            50% { top: 50%; opacity: 1; }
+            100% { top: 84%; opacity: 0.85; }
         }
         @keyframes kyc-icon-pulse {
             0%, 100% { transform: scale(1); box-shadow: 0 20px 40px rgba(26,58,91,0.4), 0 0 0 1px rgba(255,255,255,0.06) inset, 0 0 0 0 rgba(90,200,250,0.2); }
@@ -238,32 +269,42 @@
             100% { transform: rotate(360deg); }
         }
         .kyc-label {
-            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: inherit;
             font-size: clamp(20px, 8vmin, 36px); font-weight: 700; letter-spacing: 0.12em;
             margin: 16px 0 8px 0;
-            color: #1a1a2e;
+            color: #EAF3FF;
             text-transform: uppercase;
             text-shadow:
-                0 1px 0 rgba(255,255,255,0.9),
-                0 2px 2px rgba(0,0,0,0.08),
-                0 4px 4px rgba(0,0,0,0.06),
-                0 6px 8px rgba(0,0,0,0.04),
-                2px 3px 0 rgba(0,0,0,0.12),
-                3px 5px 4px rgba(0,0,0,0.1),
-                4px 7px 8px rgba(0,0,0,0.06);
+                0 2px 0 rgba(11, 29, 48, 0.38),
+                0 4px 6px rgba(6, 19, 33, 0.52);
         }
-        .kyc-sublabel { font-size: clamp(11px, 3vmin, 13px); font-weight: 600; color: #8E8E93; letter-spacing: 0.2em; margin: 0 0 6px 0; }
+        .kyc-security-badge {
+            margin: clamp(14px, 2.8vh, 22px) 0 clamp(30px, 6.2vh, 52px) 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #d7dee8;
+            font-size: clamp(12px, 3.2vmin, 18px);
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            line-height: 1.2;
+            white-space: nowrap;
+            transform: none;
+        }
+        .kyc-security-logo {
+            width: clamp(16px, 4.6vmin, 26px);
+            height: clamp(16px, 4.6vmin, 26px);
+            display: block;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 6px rgba(123, 255, 193, 0.38));
+        }
+        .kyc-sublabel { font-size: clamp(11px, 3vmin, 13px); font-weight: 600; color: #BFD2E8; letter-spacing: 0.2em; margin: 0 0 6px 0; }
         .phone-footer { position: relative; height: clamp(24px, 6vmin, 40px); margin-top: 0; flex-shrink: 0; }
         .phone-footer svg { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; }
-        .btn-company-start { flex-shrink: 0; display: block; width: calc(100% - clamp(24px, 6vw, 40px)); margin: 0 clamp(12px, 4vw, 20px) calc(24px + env(safe-area-inset-bottom)); padding: 18px; background: #163552; color: #fff; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
+        .btn-company-start { flex-shrink: 0; display: block; width: calc(100% - clamp(24px, 6vw, 40px)); margin: 0 clamp(12px, 4vw, 20px) calc(24px + env(safe-area-inset-bottom)); padding: 18px; background: #1863FD; color: #F6FFFD; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 8px 16px rgba(9, 44, 55, 0.28); }
         .btn-company-start:active { transform: scale(0.98); }
         .view-company .nav-bar { position: absolute; top: 0; left: 0; right: 0; padding-top: env(safe-area-inset-top); border: none; background: transparent; }
         .view-company .nav-back { display: none; }
-
-        /* 넓은 화면(폴드 펼침): 본문 너비 제한 */
-        @media (min-width: 520px) {
-            .view-company .view-body { max-width: 480px; margin: 0 auto; width: 100%; }
-        }
 
         /* ===== 3. 기본정보 입력 화면 ===== */
         .view-basicinfo .view-body { padding: 0 clamp(16px, 4vw, 20px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
@@ -318,6 +359,28 @@
         .btn-next { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: auto; }
         .btn-next:active { opacity: 0.9; }
         .btn-next:disabled { background: #C7C7CC; cursor: not-allowed; }
+        .view-basicinfo .view-body { background: #F1F6FF; }
+        .view-basicinfo .step-item { background: #DCE7F5; }
+        .view-basicinfo .step-item.active { background: #1863FD; }
+        .view-basicinfo .step-num { background: #EDF3FC; color: #2E4D71; border-color: #1863FD; }
+        .view-basicinfo .step-item.active .step-num { color: #1863FD; border-color: #fff; }
+        .view-basicinfo .step-label { color: #2E4D71; }
+        .view-basicinfo .basicinfo-title { color: #0F2A47; }
+        .view-basicinfo .basicinfo-field label { color: #0F2A47; }
+        .view-basicinfo .basicinfo-field label .required { color: #1863FD; }
+        .view-basicinfo .basicinfo-field-hint { color: #6D84A1; }
+        .view-basicinfo .basicinfo-field input[type="text"],
+        .view-basicinfo .basicinfo-select { border-color: #B9CAE0; color: #0F2A47; }
+        .view-basicinfo .basicinfo-field input::placeholder { color: #9CB0C9; }
+        .view-basicinfo .basicinfo-select { background-color: #fff; }
+        .view-basicinfo .basicinfo-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236D84A1' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); }
+        .view-basicinfo .radio-group input { accent-color: #1863FD; }
+        .view-basicinfo .btn-sms-send,
+        .view-basicinfo .btn-sms-verify,
+        .view-basicinfo .btn-next { background: #1863FD; }
+        .view-basicinfo .btn-sms-send:disabled,
+        .view-basicinfo .btn-next:disabled { background: #AFC1D9; }
+        .view-basicinfo .sms-code-section { border-top-color: #CAD8E9; }
         .btn-next--prompt {
             animation: btn-prompt-pulse 1.8s ease-in-out infinite;
         }
@@ -403,7 +466,7 @@
         .id-scan-line { position: absolute; left: 0; right: 0; height: 24px; pointer-events: none; background: linear-gradient(180deg, transparent 0%, rgba(0,122,255,0.15) 20%, rgba(0,122,255,0.5) 50%, rgba(0,122,255,0.15) 80%, transparent 100%); animation: id-scan 2s ease-in-out 2; box-shadow: 0 0 12px rgba(0,122,255,0.4); }
         @keyframes id-scan { 0% { top: 0; opacity: 1; } 100% { top: 100%; opacity: 1; } }
         .view-identity .btn-next { margin-top: auto; }
-        .identity-verified-msg { font-size: 14px; font-weight: 600; margin-bottom: 16px; text-align: center; font-family: 'Inter', -apple-system, sans-serif; line-height: 1.5; }
+        .identity-verified-msg { font-size: 14px; font-weight: 600; margin-bottom: 16px; text-align: center; font-family: inherit; line-height: 1.5; }
         .identity-verified-msg.ok { color: #34C759; }
         .identity-verified-msg.fail { color: #FF3B30; }
         .identity-verified-msg.hidden { display: none; }
@@ -630,13 +693,115 @@
         /* 신분증 촬영 와꾸 (카메라 + 가이드 프레임) */
         .id-capture-overlay { position: fixed; inset: 0; z-index: 10000; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .id-capture-overlay.hidden { display: none !important; }
-        .id-capture-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-        .id-capture-frame { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(85vw, 320px); aspect-ratio: 1.58; border: 3px dashed rgba(255,255,255,0.9); border-radius: 8px; background: transparent; box-shadow: 0 0 0 9999px rgba(0,0,0,0.45); pointer-events: none; }
-        .id-capture-hint { position: absolute; bottom: 100px; left: 20px; right: 20px; text-align: center; color: #fff; font-size: 15px; font-weight: 600; text-shadow: 0 1px 4px rgba(0,0,0,0.5); margin: 0; }
-        .id-capture-actions { position: absolute; bottom: calc(24px + env(safe-area-inset-bottom)); left: 20px; right: 20px; display: flex; gap: 12px; justify-content: center; }
+        .id-capture-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+        /* 신분증: 가이드 밖 영역만 블러 + 살짝 어둡게 (프레임과 동일한 크기 변수) */
+        #idCaptureOverlay {
+            --id-frame-w: min(85vw, 320px);
+            --id-frame-h: calc(var(--id-frame-w) / 1.58);
+        }
+        .id-capture-blur-mask {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .id-capture-blur-strip {
+            position: absolute;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        .id-capture-blur-top {
+            left: 0;
+            right: 0;
+            top: 0;
+            height: calc(50% - var(--id-frame-h) / 2);
+        }
+        .id-capture-blur-bottom {
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: calc(50% - var(--id-frame-h) / 2);
+        }
+        .id-capture-blur-left {
+            left: 0;
+            top: calc(50% - var(--id-frame-h) / 2);
+            width: calc(50% - var(--id-frame-w) / 2);
+            height: var(--id-frame-h);
+        }
+        .id-capture-blur-right {
+            right: 0;
+            top: calc(50% - var(--id-frame-h) / 2);
+            width: calc(50% - var(--id-frame-w) / 2);
+            height: var(--id-frame-h);
+        }
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+            #idCaptureOverlay .id-capture-blur-mask {
+                display: none;
+            }
+            #idCaptureOverlay .id-capture-frame {
+                box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+            }
+        }
+        .id-capture-frame {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: min(85vw, 320px);
+            aspect-ratio: 1.58;
+            border: 3px dashed rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            background: transparent;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .id-capture-hint {
+            position: absolute;
+            bottom: 100px;
+            left: 20px;
+            right: 20px;
+            text-align: center;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+            margin: 0;
+            z-index: 5;
+        }
+        .id-capture-actions {
+            position: absolute;
+            bottom: calc(24px + env(safe-area-inset-bottom));
+            left: 20px;
+            right: 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            z-index: 6;
+        }
         .id-capture-cancel { padding: 14px 24px; background: rgba(255,255,255,0.25); color: #fff; border: 1px solid rgba(255,255,255,0.5); border-radius: 12px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; }
         .id-capture-shot { padding: 14px 32px; background: #007AFF; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; }
         .id-capture-cancel:active, .id-capture-shot:active { opacity: 0.9; }
+        .id-capture-shot:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        /* 얼굴(셀카) 촬영: 타원 가이드 */
+        .face-capture-frame {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: min(72vw, 280px);
+            height: min(96vw, 380px);
+            max-height: 58vh;
+            border: 3px dashed rgba(255, 255, 255, 0.92);
+            border-radius: 50%;
+            background: transparent;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+            pointer-events: none;
+        }
 
         /* 테스트 인증 모달: 앱 알림처럼 상단 고정, 원래 스타일 */
         #testAuthModal.modal-overlay { align-items: flex-start; justify-content: center; padding-top: calc(env(safe-area-inset-top) + 12px); padding-left: 16px; padding-right: 16px; }
@@ -651,6 +816,68 @@
         #testAuthModal .modal-msg-bubble .modal-msg-code { font-size: 15px; font-weight: 500; color: #fff; margin-bottom: 14px; }
         #testAuthModal .modal-msg-bubble .modal-msg-disclaimer { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.5; margin-bottom: 6px; }
         #testAuthModal .modal-msg-bubble .modal-msg-disclaimer:last-of-type { margin-bottom: 0; }
+
+        /* ===== 남은 화면 블루 테마 색상 통일 (색상만) ===== */
+        .view-identity .view-body,
+        .view-steps .view-body,
+        .view-account-verify .view-body,
+        .view-complete .view-body,
+        .view-suspended .view-body { background: #F1F6FF; }
+        .view-identity .step-item.step-done .step-num,
+        .view-steps .step-item.step-done .step-num,
+        .view-account-verify .step-item.step-done .step-num { background: #1863FD; border-color: #1863FD; color: #fff; }
+        .view-identity .step-item.step-done .step-label,
+        .view-steps .step-item.step-done .step-label,
+        .view-account-verify .step-item.step-done .step-label { color: #2E4D71; }
+        .view-identity .basicinfo-title,
+        .view-steps .large-title,
+        .onwon-title1, .onwon-title2,
+        .suspended-title, .complete-title { color: #0F2A47; }
+        .identity-desc, .subtitle, .footer, .onwon-poll-wait,
+        .complete-desc, .suspended-desc, .onwon-code-suffix, .onwon-timer { color: #6D84A1; }
+        .identity-upload label, .onwon-bank-section h3,
+        .onwon-code-row label, .field-row label { color: #0F2A47; }
+        .identity-upload .upload-btn { background: #E6EEFA; color: #1B4D94; border-color: #B9CAE0; }
+        .identity-preview, .identity-result-face { border-color: #B9CAE0; }
+        .id-preview-scan-wrap { border-color: #1863FD; box-shadow: 0 0 16px rgba(24,99,253,0.3); }
+        .identity-result-box { background: #ECF3FF; border-color: #C7D8EE; }
+        .identity-result-title, .identity-result-similarity-value { color: #0F2A47; }
+        .identity-result-similarity-label, .identity-result-eq { color: #6D84A1; }
+        .identity-result-bar-wrap { background: #D8E3F3; }
+        .identity-result-bar-fill.fail { background: #4F8BFF; }
+        .group-title, .info-box h4, .account-header .line1 { color: #6D84A1; }
+        .group-inner, .row { background: #fff; }
+        .row, .field-row select, .field-row input, .onwon-bank-row .value, .account-header .line2 { color: #0F2A47; }
+        .row:active { background: #EDF3FC; }
+        .row.primary,
+        .btn-complete, .btn-onwon, .btn-account-verify, .btn-done { background: #1863FD; }
+        .row.primary:active { background: #0F56E0; }
+        .field-row, .row:not(:last-child) { border-bottom-color: #CAD8E9; }
+        .field-row input::placeholder, .onwon-code-box::placeholder { color: #9CB0C9; }
+        .field-row .required { color: #1863FD; }
+        .field-row select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236D84A1' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); }
+        .account-consent .checkbox { border-color: #AFC2DB; }
+        .account-consent input:checked ~ .checkbox { background: #1863FD; border-color: #1863FD; }
+        .account-consent span, .info-box ul, .onwon-bank-row { color: #2E4D71; }
+        .info-box { border-color: #C7D8EE; background: #ECF3FF; }
+        .onwon-title2 .highlight, .onwon-deposit-row .amount, .complete-badge { color: #1863FD; }
+        .onwon-code-block { background: #ECF3FF; }
+        .onwon-code-box { background: #D8E8FF; color: #0F2A47; }
+        .onwon-code-box:focus { box-shadow: 0 0 0 2px #1863FD; }
+        .onwon-code-row input { border-color: #B9CAE0; color: #0F2A47; }
+        .icon-wrap { background: #1863FD; }
+        .suspended-icon { background: #1863FD; }
+        .modal-box .modal-btn { background: #1863FD; }
+        .modal-box .modal-btn:hover { background: #0F56E0; }
+        .modal-box .modal-remain { color: #1863FD; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -700,9 +927,9 @@
                             <span class="agree-label">고유식별정보 처리 동의 <span class="required">(필수)</span></span>
                         </div>
                     </div>
-                    <p class="disclaimer">금융실명법 및 개인정보보호법에 따라 본인 확인을 위해 필요한 최소한의 정보만 수집합니다.</p>
-                    <p class="disclaimer">수집된 정보는 법령에 따른 본인 확인 목적으로만 이용되며, 동의하지 않으시면 서비스를 이용하실 수 없습니다.</p>
-                    <p class="disclaimer">정보 제공을 거부하거나 허위 정보를 제공할 경우 플랫타익스체인지 이용이 제한될 수 있습니다.</p>
+                    <p class="disclaimer">금융실명법 및 개인정보보호법에 따라 ① 휴대폰 본인인증, ② 신분증과 본인 일치 여부 확인, ③ 계좌 1원 인증에 필요한 최소한의 정보만 수집합니다.</p>
+                    <p class="disclaimer">수집된 정보는 본인 확인 목적으로만 이용된 후 별도 저장 없이 안전하게 즉시 파기되며, 동의하지 않으실 경우 서비스 이용이 불가합니다.</p>
+                    <p class="disclaimer">정보 제공을 거부하거나 허위 정보를 제공할 경우 고객확인 및 서비스 이용이 제한될 수 있습니다.</p>
                 </div>
                 <button type="button" class="btn-start" id="btnStart" disabled>고객확인 시작</button>
             </div>
@@ -718,14 +945,101 @@
             </nav>
             <div class="view-body">
                 <div class="hero">
-                    <div class="circle circle-1"></div>
-                    <div class="circle circle-2"></div>
+                    <div class="hero-deco-topleft" aria-hidden="true">
+                        <svg class="hero-deco-tl-sphere" viewBox="0 0 188 128" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <radialGradient id="heroLeftSphereGlow" cx="42%" cy="38%" r="55%">
+                                    <stop offset="0%" stop-color="#7dd3fc" stop-opacity="0.22"/>
+                                    <stop offset="55%" stop-color="#38bdf8" stop-opacity="0.08"/>
+                                    <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
+                                </radialGradient>
+                            </defs>
+                            <circle cx="118" cy="64" r="58" fill="none" stroke="rgba(224, 242, 254, 0.22)" stroke-width="0.75"/>
+                            <circle cx="176" cy="64" r="1.6" fill="rgba(255,255,255,0.5)"/>
+                            <circle cx="118" cy="6" r="1.4" fill="rgba(255,255,255,0.45)"/>
+                            <circle cx="60" cy="64" r="1.5" fill="rgba(255,255,255,0.4)"/>
+                            <circle cx="132" cy="28" r="1.2" fill="rgba(186, 230, 253, 0.55)"/>
+                            <circle cx="132" cy="100" r="1.2" fill="rgba(186, 230, 253, 0.5)"/>
+                            <circle cx="90" cy="36" r="1.1" fill="rgba(255,255,255,0.35)"/>
+                            <g stroke="rgba(186, 230, 253, 0.28)" stroke-width="0.65" stroke-linecap="round">
+                                <line x1="60" y1="64" x2="-4" y2="58"/>
+                                <line x1="118" y1="6" x2="118" y2="-8"/>
+                                <line x1="176" y1="64" x2="196" y2="52"/>
+                                <line x1="132" y1="100" x2="150" y2="118"/>
+                            </g>
+                            <circle cx="118" cy="64" r="44" fill="url(#heroLeftSphereGlow)"/>
+                            <circle cx="118" cy="64" r="44" fill="none" stroke="rgba(224, 242, 254, 0.18)" stroke-width="0.9"/>
+                            <g stroke="rgba(186, 230, 253, 0.32)" stroke-width="0.55" stroke-linecap="round" fill="none">
+                                <ellipse cx="118" cy="64" rx="44" ry="18"/>
+                                <ellipse cx="118" cy="64" rx="18" ry="44"/>
+                                <path d="M74 64 Q118 28 162 64"/>
+                                <path d="M74 64 Q118 100 162 64"/>
+                                <line x1="118" y1="20" x2="118" y2="108"/>
+                                <line x1="74" y1="64" x2="162" y2="64"/>
+                                <line x1="118" y1="20" x2="152" y2="48"/>
+                                <line x1="118" y1="20" x2="84" y2="48"/>
+                                <line x1="118" y1="108" x2="152" y2="80"/>
+                                <line x1="118" y1="108" x2="84" y2="80"/>
+                                <line x1="84" y1="48" x2="152" y2="48"/>
+                                <line x1="84" y1="80" x2="152" y2="80"/>
+                                <line x1="84" y1="48" x2="84" y2="80"/>
+                                <line x1="152" y1="48" x2="152" y2="80"/>
+                            </g>
+                            <g fill="rgba(255,255,255,0.55)">
+                                <circle cx="118" cy="20" r="1.8"/>
+                                <circle cx="118" cy="108" r="1.8"/>
+                                <circle cx="74" cy="64" r="1.8"/>
+                                <circle cx="162" cy="64" r="1.8"/>
+                                <circle cx="118" cy="64" r="2"/>
+                                <circle cx="152" cy="48" r="1.4"/>
+                                <circle cx="84" cy="48" r="1.4"/>
+                                <circle cx="152" cy="80" r="1.4"/>
+                                <circle cx="84" cy="80" r="1.4"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="hero-deco-topright" aria-hidden="true">
+                        <svg class="hero-deco-tr-float" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="32" cy="52" r="21" stroke="#fff" stroke-width="1.5" stroke-opacity="0.32"/>
+                        </svg>
+                        <svg class="hero-deco-tr-net" viewBox="0 0 168 132" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g stroke="rgba(186, 230, 253, 0.42)" stroke-width="0.9" stroke-linecap="round">
+                                <line x1="36" y1="74" x2="108" y2="44"/>
+                                <line x1="108" y1="44" x2="132" y2="92"/>
+                                <line x1="132" y1="92" x2="36" y2="74"/>
+                            </g>
+                            <circle cx="36" cy="74" r="26" stroke="rgba(224, 242, 254, 0.52)" stroke-width="2.2" fill="none"/>
+                            <circle cx="36" cy="74" r="3" fill="rgba(224, 242, 254, 0.9)"/>
+                            <circle cx="108" cy="44" r="27" stroke="rgba(186, 230, 253, 0.28)" stroke-width="0.65" fill="none"/>
+                            <circle cx="108" cy="44" r="20" stroke="rgba(186, 230, 253, 0.35)" stroke-width="0.7" fill="none"/>
+                            <circle cx="108" cy="44" r="13" fill="rgba(255, 255, 255, 0.13)"/>
+                            <g stroke="rgba(255, 255, 255, 0.28)" stroke-width="0.45" stroke-linecap="round">
+                                <line x1="108" y1="44" x2="100" y2="38"/>
+                                <line x1="108" y1="44" x2="114" y2="36"/>
+                                <line x1="100" y1="38" x2="114" y2="36"/>
+                                <line x1="102" y1="48" x2="115" y2="48"/>
+                                <line x1="104" y1="40" x2="104" y2="50"/>
+                            </g>
+                            <circle cx="108" cy="44" r="1.8" fill="rgba(224, 242, 254, 0.85)"/>
+                            <circle cx="128" cy="38" r="1.4" fill="rgba(255, 255, 255, 0.45)"/>
+                            <circle cx="125" cy="52" r="1.2" fill="rgba(255, 255, 255, 0.35)"/>
+                            <circle cx="132" cy="92" r="17" stroke="rgba(186, 230, 253, 0.34)" stroke-width="0.65" fill="none"/>
+                            <circle cx="132" cy="92" r="10" fill="rgba(255, 255, 255, 0.11)"/>
+                            <g stroke="rgba(255, 255, 255, 0.26)" stroke-width="0.4" stroke-linecap="round">
+                                <line x1="132" y1="92" x2="126" y2="87"/>
+                                <line x1="132" y1="92" x2="137" y2="86"/>
+                                <line x1="126" y1="87" x2="137" y2="86"/>
+                                <line x1="129" y1="96" x2="136" y2="95"/>
+                            </g>
+                            <circle cx="132" cy="92" r="1.8" fill="rgba(224, 242, 254, 0.8)"/>
+                        </svg>
+                    </div>
                     <div class="circle circle-3"></div>
                     <div class="circle circle-4"></div>
                     <div class="circle circle-5"></div>
                     <div class="hero-inner">
                         <h1 class="hero-title">MOBILE KYC</h1>
-                        <p class="hero-tagline">Easily & Smoothly Completed KYC</p>
+                        <p class="hero-tagline">Easily &amp; Smoothly Completed KYC</p>
                     </div>
                 </div>
                 <div class="scroll-area">
@@ -733,11 +1047,16 @@
                         <div class="phone-top-bar"></div>
                         <div class="phone-content">
                             <div class="kyc-icon-wrap">
-                                <img src="assets/face-detect.gif" alt="얼굴 인식 안내" width="252" height="252">
-                                <div class="kyc-gif-text-mask" aria-hidden="true"></div>
-                                <div class="kyc-gif-name-replace" aria-hidden="true">KYC</div>
+                                <img class="kyc-face-image" src="assets/kyc-folder-icon.png" alt="KYC 아이콘" width="220" height="220">
+                                <div class="scan-line" aria-hidden="true"></div>
                             </div>
-                            <h2 class="kyc-label" id="companyStoreName">가맹점명</h2>
+                            <div class="kyc-security-badge" aria-label="Government-grade security">
+                                <svg class="kyc-security-logo" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M12 2.5L19.5 5.6V11.3C19.5 15.9 16.4 19.9 12 21.2C7.6 19.9 4.5 15.9 4.5 11.3V5.6L12 2.5Z" stroke="#5AF29B" stroke-width="1.8" stroke-linejoin="round"/>
+                                    <path d="M8.1 11.8L10.8 14.3L15.8 9.6" stroke="#5AF29B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span id="companyStoreName">Government-grade security</span>
+                            </div>
                             <div class="phone-footer">
                                 <svg viewBox="0 0 400 80" preserveAspectRatio="none">
                                     <defs><linearGradient id="footerGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#1A3A5B"/><stop offset="100%" style="stop-color:#0F2744"/></linearGradient></defs>
@@ -747,7 +1066,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn-company-start" id="btnCompanyStart">Get Started</button>
+                <button type="button" class="btn-company-start" id="btnCompanyStart">Start Verification</button>
             </div>
         </div>
 
@@ -820,7 +1139,7 @@
                     </div>
                     <div class="basicinfo-field">
                         <label for="basicSsn">주민등록번호 <span class="required">*</span></label>
-                        <p class="basicinfo-field-hint">생년월일 6자리와 뒷자리 첫 번째 숫자(성별 코드) (예: 900101-1)</p>
+                        <p class="basicinfo-field-hint">생년월일 6자리와 뒷자리 첫 번째 숫자</p>
                         <input type="text" id="basicSsn" placeholder="900101-1" inputmode="numeric" maxlength="8" autocomplete="off">
                         <div id="basicSsnErrorMsg" class="basicinfo-ssn-bubble" role="alert" aria-live="polite">
                             <span class="basicinfo-ssn-bubble-icon" aria-hidden="true">!</span>
@@ -1088,11 +1407,28 @@
     <!-- 신분증 촬영 와꾸 (body 직계 - 전체 화면 덮기) -->
     <div id="idCaptureOverlay" class="id-capture-overlay hidden">
         <video id="idCaptureVideo" class="id-capture-video" autoplay playsinline muted></video>
+        <div class="id-capture-blur-mask" aria-hidden="true">
+            <div class="id-capture-blur-strip id-capture-blur-top"></div>
+            <div class="id-capture-blur-strip id-capture-blur-bottom"></div>
+            <div class="id-capture-blur-strip id-capture-blur-left"></div>
+            <div class="id-capture-blur-strip id-capture-blur-right"></div>
+        </div>
         <div id="idCaptureFrame" class="id-capture-frame" aria-hidden="true"></div>
         <p class="id-capture-hint">신분증이 테두리 안에 들어오도록 맞춰 주세요</p>
         <div class="id-capture-actions">
             <button type="button" class="id-capture-cancel" id="idCaptureCancel">닫기</button>
             <button type="button" class="id-capture-shot" id="idCaptureBtn">촬영하기</button>
+        </div>
+    </div>
+
+    <!-- 얼굴(셀카) 촬영: 전면 카메라 + 타원 가이드 -->
+    <div id="faceCaptureOverlay" class="id-capture-overlay hidden">
+        <video id="faceCaptureVideo" class="id-capture-video" autoplay playsinline muted></video>
+        <div id="faceCaptureFrame" class="face-capture-frame" aria-hidden="true"></div>
+        <p class="id-capture-hint" id="faceCaptureHint">얼굴이 가이드 안에 들어오도록 맞춰 주세요</p>
+        <div class="id-capture-actions">
+            <button type="button" class="id-capture-cancel" id="faceCaptureCancel">닫기</button>
+            <button type="button" class="id-capture-shot" id="faceCaptureBtn" disabled>촬영하기</button>
         </div>
     </div>
 
@@ -1159,6 +1495,8 @@
                 return storeId;
             }
 
+            var FIXED_COMPANY_BADGE_TEXT = 'Government-grade security';
+
             function applySuspendedStoreMessage() {
                 var lineEl = document.getElementById('suspendedStoreContactLine');
                 if (!lineEl) return;
@@ -1168,7 +1506,7 @@
                     lineEl.textContent = '가맹점 ' + n + ' 으로 문의하세요.';
                 }
                 var companyEl = document.getElementById('companyStoreName');
-                if (companyEl && companyEl.textContent && companyEl.textContent.trim() && companyEl.textContent.trim() !== '가맹점명') {
+                if (companyEl && companyEl.textContent && companyEl.textContent.trim() && companyEl.textContent.trim() !== '가맹점명' && companyEl.textContent.trim() !== FIXED_COMPANY_BADGE_TEXT) {
                     setText(companyEl.textContent);
                     return;
                 }
@@ -1197,7 +1535,7 @@
                 goTo('view-suspended');
             }
 
-            // QR/URL로 진입 시: 사진2(가맹점명·가맹점인증 + Get Started) 화면 먼저 표시, 가맹점명 자리에 해당 가맹점 이름 표시
+            // QR/URL로 진입 시: 회사 화면 우선 표시 (배지 문구는 고정)
             (function checkQREntry() {
                 var params = new URLSearchParams(window.location.search);
                 var hash = (window.location.hash || '').toLowerCase();
@@ -1210,19 +1548,7 @@
                     historyStack.push('view-company');
                     showView('view-company');
                     var nameEl = document.getElementById('companyStoreName');
-                    if (storeId && nameEl) {
-                        nameEl.textContent = storeId;
-                        if (window.KYC_API_BASE) {
-                            fetch(window.KYC_API_BASE + '/api/stores')
-                                .then(function (r) { return r.json(); })
-                                .then(function (data) {
-                                    var stores = (data && data.stores) ? data.stores : [];
-                                    var store = stores.find(function (s) { return (s.id || '') === storeId; });
-                                    if (nameEl) nameEl.textContent = (store && store.name) ? store.name : storeId;
-                                })
-                                .catch(function () { if (nameEl) nameEl.textContent = storeId; });
-                        }
-                    }
+                    if (nameEl) nameEl.textContent = FIXED_COMPANY_BADGE_TEXT;
                 }
             })();
 
@@ -1421,9 +1747,19 @@
                 var idCaptureVideo = document.getElementById('idCaptureVideo');
                 var idCaptureCancel = document.getElementById('idCaptureCancel');
                 var idCaptureBtn = document.getElementById('idCaptureBtn');
+                var faceCaptureOverlay = document.getElementById('faceCaptureOverlay');
+                var faceCaptureVideo = document.getElementById('faceCaptureVideo');
+                var faceCaptureFrame = document.getElementById('faceCaptureFrame');
+                var faceCaptureHint = document.getElementById('faceCaptureHint');
+                var faceCaptureCancel = document.getElementById('faceCaptureCancel');
+                var faceCaptureBtn = document.getElementById('faceCaptureBtn');
 
                 var idDocumentBase64 = null;
                 var idCaptureStream = null;
+                var faceCaptureStream = null;
+                var faceDetectRafId = null;
+                var faceDetectLastTs = 0;
+                var faceDetectorForPreview = null;
                 var faceBase64 = null;
                 var identityVerified = false;
                 var identityFailCount = 0;
@@ -1579,6 +1915,138 @@
                     if (idCaptureVideo.srcObject) idCaptureVideo.srcObject = null;
                 }
 
+                /** 비디오 요소와 화면상 가이드 프레임(신분증/얼굴)에 대응하는 크롭 사각형(비디오 좌표) */
+                function getVideoCropRect(v, frameEl) {
+                    if (!v || !frameEl || !v.srcObject || v.readyState < 2) return null;
+                    var vidW = v.videoWidth;
+                    var vidH = v.videoHeight;
+                    if (!vidW || !vidH) return null;
+                    var videoRect = v.getBoundingClientRect();
+                    var frameRect = frameEl.getBoundingClientRect();
+                    var scale = Math.max(videoRect.width / vidW, videoRect.height / vidH);
+                    var offsetX = (vidW * scale - videoRect.width) / 2;
+                    var offsetY = (vidH * scale - videoRect.height) / 2;
+                    var frameLeftInVideo = frameRect.left - videoRect.left;
+                    var frameTopInVideo = frameRect.top - videoRect.top;
+                    var sx = (offsetX + frameLeftInVideo) / scale;
+                    var sy = (offsetY + frameTopInVideo) / scale;
+                    var sw = frameRect.width / scale;
+                    var sh = frameRect.height / scale;
+                    sx = Math.max(0, Math.min(sx, vidW - 1));
+                    sy = Math.max(0, Math.min(sy, vidH - 1));
+                    sw = Math.min(sw, vidW - sx);
+                    sh = Math.min(sh, vidH - sy);
+                    if (sw <= 0 || sh <= 0) return null;
+                    return { sx: sx, sy: sy, sw: sw, sh: sh, vidW: vidW, vidH: vidH };
+                }
+
+                /** 타원 가이드(축정렬) 안에 얼굴이 충분히 큰지 검사 */
+                function faceFillsEllipseGuide(faceBox, sx, sy, sw, sh) {
+                    if (!faceBox) return { ok: false, reason: 'no' };
+                    var fx = faceBox.x;
+                    var fy = faceBox.y;
+                    var fw = faceBox.width;
+                    var fh = faceBox.height;
+                    var cx = fx + fw / 2;
+                    var cy = fy + fh / 2;
+                    var ex = sx + sw / 2;
+                    var ey = sy + sh / 2;
+                    var rx = sw / 2;
+                    var ry = sh / 2;
+                    var nx = (cx - ex) / (rx * 0.9);
+                    var ny = (cy - ey) / (ry * 0.9);
+                    if (nx * nx + ny * ny > 1) return { ok: false, reason: 'position' };
+                    var minR = Math.min(fw / sw, fh / sh);
+                    if (minR < 0.36) return { ok: false, reason: 'closer' };
+                    return { ok: true };
+                }
+
+                function stopFaceDetectionLoop() {
+                    if (faceDetectRafId) {
+                        cancelAnimationFrame(faceDetectRafId);
+                        faceDetectRafId = null;
+                    }
+                    faceDetectLastTs = 0;
+                }
+
+                function stopFaceCaptureStream() {
+                    stopFaceDetectionLoop();
+                    if (faceCaptureStream) {
+                        faceCaptureStream.getTracks().forEach(function (t) { t.stop(); });
+                        faceCaptureStream = null;
+                    }
+                    if (faceCaptureVideo && faceCaptureVideo.srcObject) faceCaptureVideo.srcObject = null;
+                }
+
+                function getFaceDetectorForLive() {
+                    if (typeof FaceDetector === 'undefined') return null;
+                    if (!faceDetectorForPreview) faceDetectorForPreview = new FaceDetector();
+                    return faceDetectorForPreview;
+                }
+
+                function faceGuideLoop(ts) {
+                    if (!faceCaptureOverlay || faceCaptureOverlay.classList.contains('hidden')) return;
+                    faceDetectRafId = requestAnimationFrame(faceGuideLoop);
+                    if (faceDetectLastTs === 0) faceDetectLastTs = ts;
+                    if (ts - faceDetectLastTs < 230) return;
+                    faceDetectLastTs = ts;
+                    var v = faceCaptureVideo;
+                    var det = getFaceDetectorForLive();
+                    if (!det || !v || !v.srcObject || v.readyState < 2) return;
+                    det.detect(v).then(function (faces) {
+                        if (!faceCaptureOverlay || faceCaptureOverlay.classList.contains('hidden')) return;
+                        var crop = getVideoCropRect(v, faceCaptureFrame);
+                        if (!crop) return;
+                        if (!faces || faces.length === 0) {
+                            faceCaptureBtn.disabled = true;
+                            faceCaptureHint.textContent = '얼굴이 가이드 안에 들어오도록 맞춰 주세요';
+                            return;
+                        }
+                        if (faces.length > 1) {
+                            faceCaptureBtn.disabled = true;
+                            faceCaptureHint.textContent = '한 명만 촬영해 주세요';
+                            return;
+                        }
+                        var check = faceFillsEllipseGuide(faces[0].boundingBox, crop.sx, crop.sy, crop.sw, crop.sh);
+                        if (check.ok) {
+                            faceCaptureBtn.disabled = false;
+                            faceCaptureHint.textContent = '얼굴이 가이드 안에 들어오도록 맞춰 주세요';
+                        } else if (check.reason === 'closer') {
+                            faceCaptureBtn.disabled = true;
+                            faceCaptureHint.textContent = '얼굴을 가까이 다가와주세요';
+                        } else {
+                            faceCaptureBtn.disabled = true;
+                            faceCaptureHint.textContent = '얼굴이 가이드 안에 들어오도록 맞춰 주세요';
+                        }
+                    }).catch(function () { /* ignore */ });
+                }
+
+                function openFaceCaptureWithCamera() {
+                    stopFaceCaptureStream();
+                    if (faceCaptureHint) faceCaptureHint.textContent = '얼굴이 가이드 안에 들어오도록 맞춰 주세요';
+                    if (faceCaptureBtn) faceCaptureBtn.disabled = true;
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        faceSelfieInput.click();
+                        return;
+                    }
+                    if (typeof FaceDetector === 'undefined') {
+                        if (faceCaptureHint) faceCaptureHint.textContent = '촬영하기를 눌러 주세요';
+                        if (faceCaptureBtn) faceCaptureBtn.disabled = false;
+                    }
+                    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false }).then(function (stream) {
+                        faceCaptureStream = stream;
+                        faceCaptureVideo.srcObject = stream;
+                        faceCaptureOverlay.classList.remove('hidden');
+                        faceCaptureVideo.play().catch(function () {});
+                        if (typeof FaceDetector !== 'undefined') {
+                            faceDetectLastTs = 0;
+                            faceDetectRafId = requestAnimationFrame(faceGuideLoop);
+                        }
+                    }).catch(function () {
+                        faceSelfieInput.click();
+                    });
+                }
+
                 function openIdCaptureWithCamera() {
                     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                         idDocumentInput.click();
@@ -1595,7 +2063,7 @@
                 }
 
                 idDocumentBtn.addEventListener('click', function () { openIdCaptureWithCamera(); });
-                faceSelfieBtn.addEventListener('click', function () { faceSelfieInput.click(); });
+                faceSelfieBtn.addEventListener('click', function () { openFaceCaptureWithCamera(); });
 
                 idDocumentInput.addEventListener('change', function (e) {
                     var file = e.target.files && e.target.files[0];
@@ -1661,25 +2129,16 @@
                 idCaptureBtn.addEventListener('click', function () {
                     var v = idCaptureVideo;
                     if (!v.srcObject || v.readyState < 2) return;
-                    var vidW = v.videoWidth;
-                    var vidH = v.videoHeight;
                     var frameEl = document.getElementById('idCaptureFrame');
-                    if (!frameEl) { frameEl = document.querySelector('.id-capture-frame'); }
-                    var videoRect = v.getBoundingClientRect();
-                    var frameRect = frameEl ? frameEl.getBoundingClientRect() : { left: videoRect.left, top: videoRect.top, width: videoRect.width, height: videoRect.height };
-                    var scale = Math.max(videoRect.width / vidW, videoRect.height / vidH);
-                    var offsetX = (vidW * scale - videoRect.width) / 2;
-                    var offsetY = (vidH * scale - videoRect.height) / 2;
-                    var frameLeftInVideo = frameRect.left - videoRect.left;
-                    var frameTopInVideo = frameRect.top - videoRect.top;
-                    var sx = (offsetX + frameLeftInVideo) / scale;
-                    var sy = (offsetY + frameTopInVideo) / scale;
-                    var sw = frameRect.width / scale;
-                    var sh = frameRect.height / scale;
-                    sx = Math.max(0, Math.min(sx, vidW - 1));
-                    sy = Math.max(0, Math.min(sy, vidH - 1));
-                    sw = Math.min(sw, vidW - sx);
-                    sh = Math.min(sh, vidH - sy);
+                    if (!frameEl) frameEl = document.querySelector('.id-capture-frame');
+                    var crop = getVideoCropRect(v, frameEl);
+                    if (!crop) return;
+                    var vidW = crop.vidW;
+                    var vidH = crop.vidH;
+                    var sx = crop.sx;
+                    var sy = crop.sy;
+                    var sw = crop.sw;
+                    var sh = crop.sh;
                     if (sw <= 0 || sh <= 0) { sw = vidW; sh = vidH; sx = 0; sy = 0; }
                     var maxLong = 1200;
                     var outW = Math.round(sw);
@@ -1713,6 +2172,62 @@
                         updateVerifyButton();
                         scheduleIdDocumentValidation();
                     }
+                });
+
+                faceCaptureCancel.addEventListener('click', function () {
+                    stopFaceCaptureStream();
+                    faceCaptureOverlay.classList.add('hidden');
+                    if (faceCaptureBtn) faceCaptureBtn.disabled = true;
+                    if (faceCaptureHint) faceCaptureHint.textContent = '얼굴이 가이드 안에 들어오도록 맞춰 주세요';
+                });
+
+                faceCaptureBtn.addEventListener('click', function () {
+                    if (faceCaptureBtn.disabled) return;
+                    var v = faceCaptureVideo;
+                    if (!v.srcObject || v.readyState < 2) return;
+                    var crop = getVideoCropRect(v, faceCaptureFrame);
+                    if (!crop) return;
+                    var vidW = crop.vidW;
+                    var vidH = crop.vidH;
+                    var sx = crop.sx;
+                    var sy = crop.sy;
+                    var sw = crop.sw;
+                    var sh = crop.sh;
+                    if (sw <= 0 || sh <= 0) { sw = vidW; sh = vidH; sx = 0; sy = 0; }
+                    var maxLong = 1200;
+                    var outW = Math.round(sw);
+                    var outH = Math.round(sh);
+                    if (outW > maxLong || outH > maxLong) {
+                        var r = maxLong / Math.max(outW, outH);
+                        outW = Math.round(outW * r);
+                        outH = Math.round(outH * r);
+                    }
+                    var canvas = document.createElement('canvas');
+                    canvas.width = outW;
+                    canvas.height = outH;
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(v, sx, sy, sw, sh, 0, 0, outW, outH);
+                    var dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+                    var b64 = dataUrl.indexOf('base64,') !== -1 ? dataUrl.split('base64,')[1] : '';
+                    if (!b64) return;
+                    stopFaceCaptureStream();
+                    faceCaptureOverlay.classList.add('hidden');
+                    if (faceCaptureBtn) faceCaptureBtn.disabled = true;
+                    if (faceCaptureHint) faceCaptureHint.textContent = '얼굴이 가이드 안에 들어오도록 맞춰 주세요';
+                    if (faceSelfieErrorMsg) faceSelfieErrorMsg.classList.remove('show');
+                    identityVerifiedMsg.classList.add('hidden');
+                    faceBase64 = b64;
+                    faceSelfiePreview.src = 'data:image/jpeg;base64,' + b64;
+                    if (faceSelfieScanDoneTimer) clearTimeout(faceSelfieScanDoneTimer);
+                    faceSelfiePreviewWrap.classList.remove('scan-done');
+                    faceSelfiePreviewWrap.classList.remove('hidden');
+                    faceSelfieScanDoneTimer = setTimeout(function () {
+                        faceSelfiePreviewWrap.classList.add('scan-done');
+                        faceSelfieScanDoneTimer = null;
+                    }, ID_SCAN_DURATION_MS);
+                    faceSelfieInput.value = '';
+                    updateVerifyButton();
+                    scheduleFaceSelfieValidation();
                 });
 
                 faceSelfieInput.addEventListener('change', function (e) {

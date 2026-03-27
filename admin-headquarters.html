@@ -1197,7 +1197,7 @@
             max-height: calc(100vh - 48px);
             width: auto;
             height: auto;
-            object-fit: contain;
+            object-fit: cover;
             border-radius: 8px;
             box-shadow: 0 8px 40px rgba(0,0,0,0.5);
         }
@@ -2352,7 +2352,7 @@
             width: 40px;
             height: 40px;
             border-radius: 12px;
-            object-fit: contain;
+            object-fit: cover;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
             margin-bottom: 18px;
         }
@@ -3977,10 +3977,10 @@
         }
 
         function tryHqSessionAndBoot() {
+            bindHqLoginUiOnce();
             var api = window.ADMIN_API_BASE || '';
             var tok = getHqSessionToken();
             if (!tok) {
-                bindHqLoginUiOnce();
                 return;
             }
             fetch(api + '/api/hq-login', {
@@ -3999,13 +3999,11 @@
                     } else {
                         clearHqSession();
                         showHqLoginScreen();
-                        bindHqLoginUiOnce();
                     }
                 })
                 .catch(function () {
                     clearHqSession();
                     showHqLoginScreen();
-                    bindHqLoginUiOnce();
                 });
         }
 

@@ -217,7 +217,7 @@
             width: 40px;
             height: 40px;
             border-radius: 12px;
-            object-fit: contain;
+            object-fit: cover;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
         }
         .login-card h2 {
@@ -853,6 +853,80 @@
         }
         .summary-card--all .summary-card-spark path { stroke: #a855f7; }
         .summary-card--done .summary-card-spark path { stroke: #06b6d4; }
+        .overview-widget-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+            gap: 14px;
+            margin-top: 10px;
+        }
+        .overview-widget-card {
+            border-radius: 16px;
+            padding: 16px;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.01) 100%),
+                rgba(8, 12, 22, 0.9);
+            border: 1px solid rgba(255,255,255,0.14);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.3);
+        }
+        .overview-widget-title {
+            margin: 0 0 12px 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: #f8fbff;
+            letter-spacing: -0.01em;
+        }
+        .overview-chart-widget {
+            border-color: rgba(45, 212, 191, 0.55);
+            box-shadow: 0 0 15px rgba(45, 212, 191, 0.2), 0 12px 28px rgba(0,0,0,0.3);
+        }
+        .overview-chart-canvas-placeholder {
+            height: 320px;
+            border-radius: 12px;
+            border: 1px dashed rgba(45, 212, 191, 0.45);
+            background: linear-gradient(180deg, rgba(15, 118, 110, 0.08) 0%, rgba(15, 23, 42, 0.25) 100%);
+        }
+        .overview-feed-widget {
+            border-color: rgba(168, 85, 247, 0.55);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.2), 0 12px 28px rgba(0,0,0,0.3);
+        }
+        .overview-activity-feed {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+        .overview-activity-item {
+            display: grid;
+            grid-template-columns: 12px minmax(0, 1fr);
+            gap: 10px;
+            align-items: start;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .overview-activity-item:last-child { border-bottom: none; }
+        .overview-activity-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            margin-top: 4px;
+            box-shadow: 0 0 10px currentColor;
+        }
+        .overview-activity-dot--ok { color: #34d399; background: #34d399; }
+        .overview-activity-dot--fail { color: #fb7185; background: #fb7185; }
+        .overview-activity-dot--warn { color: #fbbf24; background: #fbbf24; }
+        .overview-activity-dot--info { color: #60a5fa; background: #60a5fa; }
+        .overview-activity-meta {
+            margin: 0 0 3px 0;
+            font-size: 11px;
+            color: rgba(203, 213, 225, 0.72);
+        }
+        .overview-activity-text {
+            margin: 0;
+            font-size: 13px;
+            color: #f8fbff;
+            line-height: 1.45;
+        }
         .member-section-title {
             font-size: 18px;
             font-weight: 700;
@@ -1235,6 +1309,7 @@
                     "progress fail"
                     "wait wait";
             }
+            .overview-widget-grid { grid-template-columns: 1fr; }
             .summary-card--all .num,
             .summary-card--done .num { font-size: 42px; }
             .summary-card--all,
@@ -1264,6 +1339,7 @@
             }
             .summary-card { padding: 14px 12px 12px; min-height: 118px; }
             .summary-card .num { font-size: 38px !important; }
+            .overview-chart-canvas-placeholder { height: 240px; }
         }
         /* 포인트 충전 모달 */
         .modal-recharge-overlay {
@@ -1637,9 +1713,9 @@
             <nav class="sidebar-menu">
                 <div class="menu-item active" data-view="overview">현황판</div>
                 <div class="menu-item" data-view="members">회원 목록</div>
-                <div class="menu-item" data-view="qr">QR 관리</div>
                 <div class="menu-item" data-view="settlement">수수료 통계</div>
                 <div class="menu-item" data-view="pointHistory">포인트 내역</div>
+                <div class="menu-item" data-view="qr">QR 관리</div>
             </nav>
         </aside>
         <div class="dashboard-main" id="dashboardMain">
@@ -1687,6 +1763,16 @@
                         <div class="num" id="waitCount">0</div>
                         <div class="label">대기</div>
                     </div>
+                </div>
+                <div class="overview-widget-grid">
+                    <section class="overview-widget-card overview-chart-widget rounded-2xl border border-teal-400 shadow-[0_0_15px_rgba(45,212,191,0.2)]" aria-label="수수료 및 포인트 추이">
+                        <h3 class="overview-widget-title text-white text-sm font-bold">수수료 및 포인트 추이 (최근 7일)</h3>
+                        <div id="overviewTrendChartContainer" class="overview-chart-canvas-placeholder h-80"></div>
+                    </section>
+                    <section class="overview-widget-card overview-feed-widget rounded-2xl border border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.2)]" aria-label="실시간 활동 피드">
+                        <h3 class="overview-widget-title text-white text-sm font-bold">실시간 활동 피드</h3>
+                        <ul class="overview-activity-feed" id="overviewActivityFeed"></ul>
+                    </section>
                 </div>
                 </section>
                 <section id="section-qr" class="dashboard-section">
@@ -1957,6 +2043,7 @@
 
     <script src="https://unpkg.com/qr-code-styling@1.8.4/lib/qr-code-styling.js"></script>
     <script src="scripts/date-range-picker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script>
         window.ADMIN_API_BASE = window.ADMIN_API_BASE || (typeof location !== 'undefined' ? location.origin : '');
         /** USDT→KRW 환율 (원화 표시용). 서버에서 덮어쓰거나 로그인 응답의 usdtKrwRate 등으로 갱신 가능 */
@@ -1971,6 +2058,126 @@
         var MIN_USDT_FOR_USE = 100;
         var MIN_USDT_FOR_RECHARGE = 0.5;
         var lastKnownStoreUsdt = null;
+
+        var overviewTrendChartInstance = null;
+
+        function ensureOverviewTrendChart() {
+            var host = document.getElementById('overviewTrendChartContainer');
+            if (!host) return;
+            if (overviewTrendChartInstance) return;
+            if (typeof window.Chart === 'undefined') {
+                host.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;color:rgba(148,163,184,.9);font-size:13px;">Chart.js 로딩 실패</div>';
+                return;
+            }
+            host.innerHTML = '';
+            var canvas = document.createElement('canvas');
+            canvas.setAttribute('aria-label', '최근 7일 수수료 및 포인트 추이 차트');
+            host.appendChild(canvas);
+
+            var labels = ['D-6', 'D-5', 'D-4', 'D-3', 'D-2', 'D-1', 'Today'];
+            var feeData = [28, 33, 31, 39, 42, 38, 46];
+            var pointData = [22, 26, 24, 29, 31, 28, 35];
+            var volumeData = [120, 140, 132, 168, 180, 162, 194];
+
+            overviewTrendChartInstance = new window.Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            type: 'bar',
+                            label: '활동량',
+                            data: volumeData,
+                            yAxisID: 'yBar',
+                            backgroundColor: 'rgba(56, 189, 248, 0.24)',
+                            borderColor: 'rgba(56, 189, 248, 0.45)',
+                            borderWidth: 1,
+                            borderRadius: 6,
+                            barPercentage: 0.62,
+                            categoryPercentage: 0.78,
+                            order: 3
+                        },
+                        {
+                            type: 'line',
+                            label: '수수료(USDT)',
+                            data: feeData,
+                            yAxisID: 'yLine',
+                            borderColor: '#2dd4bf',
+                            backgroundColor: 'rgba(45, 212, 191, 0.2)',
+                            tension: 0.35,
+                            pointRadius: 3,
+                            pointHoverRadius: 4,
+                            pointBackgroundColor: '#2dd4bf',
+                            pointBorderColor: '#0b1020',
+                            pointBorderWidth: 1,
+                            borderWidth: 2.2,
+                            fill: false,
+                            order: 1
+                        },
+                        {
+                            type: 'line',
+                            label: '포인트(USDT)',
+                            data: pointData,
+                            yAxisID: 'yLine',
+                            borderColor: '#a78bfa',
+                            backgroundColor: 'rgba(167, 139, 250, 0.2)',
+                            tension: 0.35,
+                            pointRadius: 3,
+                            pointHoverRadius: 4,
+                            pointBackgroundColor: '#a78bfa',
+                            pointBorderColor: '#0b1020',
+                            pointBorderWidth: 1,
+                            borderWidth: 2.2,
+                            fill: false,
+                            order: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: 'rgba(226,232,240,0.92)',
+                                boxWidth: 14,
+                                boxHeight: 8,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(10,15,30,0.94)',
+                            titleColor: '#e2e8f0',
+                            bodyColor: '#e2e8f0',
+                            borderColor: 'rgba(148,163,184,0.35)',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: 'rgba(203,213,225,0.85)' },
+                            grid: { color: 'rgba(148,163,184,0.12)' }
+                        },
+                        yLine: {
+                            position: 'left',
+                            beginAtZero: true,
+                            ticks: { color: 'rgba(226,232,240,0.9)' },
+                            grid: { color: 'rgba(148,163,184,0.12)' }
+                        },
+                        yBar: {
+                            position: 'right',
+                            beginAtZero: true,
+                            ticks: { display: false },
+                            grid: { drawOnChartArea: false }
+                        }
+                    }
+                }
+            });
+        }
+
 
         function loadStoreGateConfig(done) {
             var apiBase = window.ADMIN_API_BASE || '';
@@ -2038,7 +2245,7 @@
             try {
                 var d = new Date(iso);
                 if (isNaN(d.getTime())) return '—';
-                return d.toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+                return d.toLocaleString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
             } catch (e) { return '—'; }
         }
 
@@ -2066,6 +2273,65 @@
             { name: '정수진', joinedAt: demoMemberJoinedIso(5, 20, 33), sms: 'complete', idDoc: 'wait', account: 'wait' },
             { name: '최동훈', joinedAt: demoMemberJoinedIso(1, 11, 7), sms: 'complete', idDoc: 'complete', account: 'complete' }
         ];
+
+
+        function formatOverviewFeedTimeAgo(iso) {
+            if (!iso) return 'just now';
+            var d = new Date(iso);
+            if (isNaN(d.getTime())) return 'just now';
+            var diffMin = Math.max(0, Math.floor((Date.now() - d.getTime()) / 60000));
+            if (diffMin < 1) return 'just now';
+            if (diffMin < 60) return diffMin + ' min ago';
+            var diffHour = Math.floor(diffMin / 60);
+            if (diffHour < 24) return diffHour + ' h ago';
+            var diffDay = Math.floor(diffHour / 24);
+            return diffDay + ' d ago';
+        }
+
+        function buildOverviewFeedEvent(member) {
+            var name = String(member && member.name ? member.name : '회원');
+            var iso = pickMemberJoinedIso(member);
+            var hasFail = member && (member.sms === 'fail' || member.idDoc === 'fail' || member.account === 'fail');
+            var hasWait = member && (member.sms === 'wait' || member.idDoc === 'wait' || member.account === 'wait');
+            var allDone = isKycComplete(member);
+            if (allDone) {
+                return { tone: 'ok', text: name + ' KYC 승인 완료', at: iso };
+            }
+            if (hasFail) {
+                return { tone: 'fail', text: name + ' 인증 실패 처리', at: iso };
+            }
+            if (hasWait) {
+                return { tone: 'warn', text: name + ' 인증 대기 상태', at: iso };
+            }
+            return { tone: 'info', text: name + ' 인증 진행 중', at: iso };
+        }
+
+        function renderOverviewActivityFeed(members) {
+            var feed = document.getElementById('overviewActivityFeed');
+            if (!feed) return;
+            var list = Array.isArray(members) ? members.slice() : [];
+            list.sort(function (a, b) {
+                var ta = new Date(pickMemberJoinedIso(a)).getTime();
+                var tb = new Date(pickMemberJoinedIso(b)).getTime();
+                ta = isNaN(ta) ? 0 : ta;
+                tb = isNaN(tb) ? 0 : tb;
+                return tb - ta;
+            });
+            var events = list.slice(0, 5).map(buildOverviewFeedEvent);
+            if (events.length === 0) {
+                feed.innerHTML = '<li class="overview-activity-item"><span class="overview-activity-dot overview-activity-dot--info" aria-hidden="true"></span><div><p class="overview-activity-meta">now</p><p class="overview-activity-text">해당 가맹점 활동 데이터가 없습니다.</p></div></li>';
+                return;
+            }
+            feed.innerHTML = events.map(function (ev) {
+                return '<li class="overview-activity-item">'
+                    + '<span class="overview-activity-dot overview-activity-dot--' + ev.tone + '" aria-hidden="true"></span>'
+                    + '<div>'
+                    + '<p class="overview-activity-meta">' + formatOverviewFeedTimeAgo(ev.at) + '</p>'
+                    + '<p class="overview-activity-text">' + escapeHtml(ev.text) + '</p>'
+                    + '</div>'
+                    + '</li>';
+            }).join('');
+        }
 
         function renderTable(members) {
             var tbody = document.getElementById('memberList');
@@ -2101,6 +2367,7 @@
             document.getElementById('progressCount').textContent = progress;
             document.getElementById('failCount').textContent = fail;
             document.getElementById('waitCount').textContent = wait;
+            renderOverviewActivityFeed(list);
             applyMemberFilters();
         }
 
@@ -2868,6 +3135,9 @@
             document.getElementById('section-qr').classList.toggle('active', nextView === 'qr');
             document.getElementById('section-settlement').classList.toggle('active', nextView === 'settlement');
             document.getElementById('section-point-history').classList.toggle('active', nextView === 'pointHistory');
+            if (nextView === 'overview') {
+                ensureOverviewTrendChart();
+            }
             if (nextView === 'settlement') {
                 initStoreSettlementDateRange();
                 try {
