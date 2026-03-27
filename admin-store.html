@@ -345,11 +345,31 @@
         }
         .store-qr-card .qr-title { font-size: 16px; font-weight: 700; margin: 0 0 12px 0; color: #1a1a1a; }
         .store-qr-card .qr-img-wrap {
-            padding: 12px;
-            background: #fff;
-            border: 1px solid #E5E5EA;
-            border-radius: 12px;
             flex-shrink: 0;
+            box-sizing: border-box;
+            background: #fff;
+            transition: padding 0.15s ease, border 0.15s ease, border-radius 0.15s ease;
+        }
+        /* OPTION 3: 테두리 미리보기(복사 시에도 동일 스타일로 합성) */
+        #storeQrCard[data-qr-border="none"] .qr-img-wrap {
+            padding: 0;
+            border: none;
+            border-radius: 0;
+        }
+        #storeQrCard[data-qr-border="thin"] .qr-img-wrap {
+            padding: 8px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+        }
+        #storeQrCard[data-qr-border="rounded"] .qr-img-wrap {
+            padding: 12px;
+            border: 2px solid #90a4ae;
+            border-radius: 16px;
+        }
+        #storeQrCard[data-qr-border="thick"] .qr-img-wrap {
+            padding: 12px;
+            border: 4px solid #37474f;
+            border-radius: 10px;
         }
         .store-qr-card .qr-img-wrap img { display: block; width: 160px; height: 160px; }
         .store-admin-qr-host { width: 160px; height: 160px; }
@@ -574,6 +594,35 @@
         .store-qr-swatch.store-qr-swatch--dark:hover:not(.is-selected) {
             border-color: rgba(255, 255, 255, 0.72);
             filter: none;
+        }
+        .store-qr-border-hint {
+            font-size: 12px;
+            line-height: 1.45;
+            color: #6e6e73;
+            margin: 0;
+        }
+        .store-qr-border-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .store-qr-border-chip {
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid #e5e5ea;
+            background: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            color: #3a3a3c;
+            cursor: pointer;
+            font-family: inherit;
+            transition: border-color 0.15s ease, background 0.15s ease;
+        }
+        .store-qr-border-chip:hover { border-color: #c7c7cc; }
+        .store-qr-border-chip.is-selected {
+            border-color: #1a1a1a;
+            background: #1a1a1a;
+            color: #fff;
         }
         /* ===== 대시보드 UI (가맹점 어드민 v2) ===== */
         .dashboard-shell { display: flex; min-height: 100vh; }
@@ -1031,6 +1080,42 @@
         }
         .store-qr-card .qr-title { color: #fff; }
         .store-qr-card .qr-img-wrap { background: #141f33; border-color: rgba(255,255,255,0.1); }
+        #storeQrCard[data-qr-border="none"] .qr-img-wrap {
+            padding: 0;
+            border: none;
+            border-radius: 0;
+            background: #141f33;
+        }
+        #storeQrCard[data-qr-border="thin"] .qr-img-wrap {
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 6px;
+            background: #0a0f18;
+        }
+        #storeQrCard[data-qr-border="rounded"] .qr-img-wrap {
+            padding: 12px;
+            border: 2px solid rgba(144, 164, 174, 0.85);
+            border-radius: 16px;
+            background: #0a0f18;
+        }
+        #storeQrCard[data-qr-border="thick"] .qr-img-wrap {
+            padding: 12px;
+            border: 4px solid rgba(255, 255, 255, 0.55);
+            border-radius: 10px;
+            background: #0a0f18;
+        }
+        .store-qr-border-hint { color: rgba(255, 255, 255, 0.55); }
+        .store-qr-border-chip {
+            background: #141f33;
+            border-color: rgba(255, 255, 255, 0.14);
+            color: rgba(255, 255, 255, 0.88);
+        }
+        .store-qr-border-chip:hover { border-color: rgba(255, 255, 255, 0.28); }
+        .store-qr-border-chip.is-selected {
+            border-color: #fff;
+            background: #fff;
+            color: #0d1425;
+        }
         .store-qr-card .qr-url { color: #93c5fd; }
         .store-qr-card .btn-copy-qr { background: #2563eb; }
         .store-qr-opt-title { color: #fff; }
@@ -1829,10 +1914,23 @@
                             </div>
                         </div>
                     </div>
+                    <div class="store-qr-opt-block">
+                        <div class="store-qr-opt-head">
+                            <span class="store-qr-opt-badge">OPTION 3</span>
+                            <h3 class="store-qr-opt-title">테두리 스타일</h3>
+                        </div>
+                        <p class="store-qr-border-hint">복사한 이미지에 흰 배경만 있을 때 구분이 어렵다면 테두리·여백을 넣어 보세요.</p>
+                        <div class="store-qr-border-row" role="list">
+                            <button type="button" class="store-qr-border-chip" data-qr-border="none" role="listitem" aria-pressed="false">없음</button>
+                            <button type="button" class="store-qr-border-chip is-selected" data-qr-border="thin" role="listitem" aria-pressed="true">얇은 테두리</button>
+                            <button type="button" class="store-qr-border-chip" data-qr-border="rounded" role="listitem" aria-pressed="false">둥근 테두리</button>
+                            <button type="button" class="store-qr-border-chip" data-qr-border="thick" role="listitem" aria-pressed="false">두꺼운 테두리</button>
+                        </div>
+                    </div>
                 </div>
                 </div>
                 <div class="store-qr-layout__col store-qr-layout__col--preview">
-                <div class="store-qr-card" id="storeQrCard">
+                <div class="store-qr-card" id="storeQrCard" data-qr-border="thin">
                     <div class="qr-img-wrap">
                         <div id="storeAdminQrHost" class="store-admin-qr-host" aria-hidden="false"></div>
                     </div>
@@ -2978,6 +3076,107 @@
             return (sel && sel.getAttribute('data-qr-style')) || 'basic';
         }
 
+        var STORE_QR_BORDER_STORAGE_KEY = 'kyc_store_admin_qr_border';
+
+        function getSelectedStoreQrBorderKey() {
+            var sel = document.querySelector('.store-qr-border-chip.is-selected');
+            var k = (sel && sel.getAttribute('data-qr-border')) || 'thin';
+            return ['none', 'thin', 'rounded', 'thick'].indexOf(k) >= 0 ? k : 'thin';
+        }
+
+        function applyStoreQrBorderUi(key) {
+            var card = document.getElementById('storeQrCard');
+            if (!card) return;
+            var k = key || 'thin';
+            if (['none', 'thin', 'rounded', 'thick'].indexOf(k) < 0) k = 'thin';
+            card.setAttribute('data-qr-border', k);
+            document.querySelectorAll('.store-qr-border-chip').forEach(function (b) {
+                var isSel = (b.getAttribute('data-qr-border') || '') === k;
+                b.classList.toggle('is-selected', isSel);
+                b.setAttribute('aria-pressed', isSel ? 'true' : 'false');
+            });
+            try {
+                localStorage.setItem(STORE_QR_BORDER_STORAGE_KEY, k);
+            } catch (e) {}
+        }
+
+        function initStoreQrBorderFromStorage() {
+            var k = 'thin';
+            try {
+                var s = localStorage.getItem(STORE_QR_BORDER_STORAGE_KEY);
+                if (s && ['none', 'thin', 'rounded', 'thick'].indexOf(s) >= 0) k = s;
+            } catch (e) {}
+            applyStoreQrBorderUi(k);
+        }
+
+        function canvasStrokeRoundRect(ctx, x, y, w, h, r) {
+            r = Math.min(Math.max(0, r), w / 2, h / 2);
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
+        function compositeQrPngWithBorderBlob(blob, borderKey) {
+            if (!blob || borderKey === 'none' || !borderKey) return Promise.resolve(blob);
+            var profiles = {
+                thin: { padR: 0.06, bwR: 0.01, color: '#d0d0d0', rR: 0.03 },
+                rounded: { padR: 0.08, bwR: 0.016, color: '#90a4ae', rR: 0.1 },
+                thick: { padR: 0.08, bwR: 0.028, color: '#37474f', rR: 0.05 },
+            };
+            var p = profiles[borderKey];
+            if (!p) return Promise.resolve(blob);
+            return new Promise(function (resolve) {
+                var url = URL.createObjectURL(blob);
+                var img = new Image();
+                img.onload = function () {
+                    URL.revokeObjectURL(url);
+                    try {
+                        var w = img.naturalWidth || img.width;
+                        var h = img.naturalHeight || img.height;
+                        var innerPad = Math.round(Math.min(w, h) * p.padR);
+                        var bw = Math.max(1, Math.round(Math.min(w, h) * p.bwR));
+                        var rr = Math.round(Math.min(w, h) * p.rR);
+                        var cw = w + 2 * innerPad + 2 * bw;
+                        var ch = h + 2 * innerPad + 2 * bw;
+                        var canvas = document.createElement('canvas');
+                        canvas.width = cw;
+                        canvas.height = ch;
+                        var ctx = canvas.getContext('2d');
+                        if (!ctx) {
+                            resolve(blob);
+                            return;
+                        }
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, cw, ch);
+                        ctx.drawImage(img, innerPad + bw, innerPad + bw, w, h);
+                        ctx.strokeStyle = p.color;
+                        ctx.lineWidth = bw;
+                        ctx.lineJoin = 'round';
+                        canvasStrokeRoundRect(ctx, bw / 2, bw / 2, cw - bw, ch - bw, rr);
+                        ctx.stroke();
+                        canvas.toBlob(function (out) {
+                            resolve(out || blob);
+                        }, 'image/png');
+                    } catch (e) {
+                        resolve(blob);
+                    }
+                };
+                img.onerror = function () {
+                    URL.revokeObjectURL(url);
+                    resolve(blob);
+                };
+                img.src = url;
+            });
+        }
+
         function buildStoreQrStylingOptions(fgHex, styleKey) {
             var fg = fgHex;
             var opts = {
@@ -3097,9 +3296,13 @@
         }
 
         async function copyStoreAdminQrImage() {
+            var borderKey = getSelectedStoreQrBorderKey();
             if (window.storeAdminQrInstance && typeof window.storeAdminQrInstance.getRawData === 'function') {
                 try {
                     var blob = await window.storeAdminQrInstance.getRawData('png');
+                    if (borderKey && borderKey !== 'none') {
+                        blob = await compositeQrPngWithBorderBlob(blob, borderKey);
+                    }
                     if (!blob || !(navigator.clipboard && navigator.clipboard.write && window.ClipboardItem)) {
                         throw new Error('clipboard unavailable');
                     }
@@ -3196,6 +3399,10 @@
                 var res = await fetch(src, { mode: 'cors', cache: 'no-store' });
                 if (!res.ok) throw new Error('image fetch failed');
                 var blob = await res.blob();
+                var borderKey = getSelectedStoreQrBorderKey();
+                if (borderKey && borderKey !== 'none') {
+                    blob = await compositeQrPngWithBorderBlob(blob, borderKey);
+                }
                 var mime = blob.type || 'image/png';
                 var itemData = {};
                 itemData[mime] = blob;
@@ -3790,6 +3997,13 @@
                 renderStoreAdminQr();
             });
         });
+        document.querySelectorAll('.store-qr-border-chip').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var k = btn.getAttribute('data-qr-border') || 'thin';
+                applyStoreQrBorderUi(k);
+            });
+        });
+        initStoreQrBorderFromStorage();
         var storeQrHexInputEl = document.getElementById('storeQrHexInput');
         if (storeQrHexInputEl) {
             storeQrHexInputEl.addEventListener('change', function () {
