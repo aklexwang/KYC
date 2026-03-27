@@ -45,10 +45,15 @@ async function memberPoll(event, storeId, memberName) {
     /** 본사가 이체「완료」를 눌러 입금 알림을 허용한 뒤에만 회원에게 4자리·은행명 공개 */
     const showCode =
       (st === 'code_sent' || st === 'pending') && m.depositCode4 && hqDone;
+    /** 서버에 4자리는 있으나 본사 이체 확인 전 — 회원 화면은 'KYC 확인중' */
+    const hqAwaitingTransferConfirm = !!(
+      (st === 'code_sent' || st === 'pending') && m.depositCode4 && !hqDone
+    );
     return json(200, {
       ok: true,
       accountVerifyStatus: st,
       depositCode4: showCode ? String(m.depositCode4) : null,
+      hqAwaitingTransferConfirm,
       bankName: m.bankName || '',
       cancelReason: st === 'cancelled' ? String(m.accountVerifyCancelReason || '') : '',
     });

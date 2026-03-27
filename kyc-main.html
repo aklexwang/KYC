@@ -654,6 +654,19 @@
             font-size: clamp(15px, 4vw, 18px);
         }
         .onwon-hero-sub { font-size: 15px; color: #6D84A1; margin: 0; line-height: 1.45; text-align: center; max-width: 340px; }
+        .onwon-code-top-banner {
+            flex-shrink: 0;
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #1863FD 0%, #0d5fd4 100%);
+            color: #fff;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .onwon-code-top-banner-inner { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .onwon-code-top-banner-label { font-size: 14px; font-weight: 600; opacity: 0.95; }
+        .onwon-code-top-banner-digits { font-size: 22px; font-weight: 800; letter-spacing: 0.2em; }
+        .onwon-hero-title--waiting { margin: 0; font-size: clamp(18px, 4.8vw, 22px); color: #0F2A47; }
         .onwon-phone-illustration { display: flex; justify-content: center; margin: 0 0 20px; }
         .onwon-phone-frame {
             width: min(100%, 280px);
@@ -711,6 +724,7 @@
         .onwon-code-box { width: clamp(44px, 14vw, 52px); height: 56px; background: #FFE082; border: none; border-radius: 8px; font-size: clamp(20px, 5.5vw, 24px); font-weight: 700; color: #1a1a1a; text-align: center; font-family: inherit; }
         .onwon-code-box::placeholder { color: #1a1a1a; opacity: 0.5; }
         .onwon-code-box:focus { outline: none; box-shadow: 0 0 0 2px #007AFF; }
+        .onwon-code-box:disabled { opacity: 0.45; cursor: not-allowed; }
         .onwon-code-suffix { font-size: 14px; color: #5c5c5c; margin-left: 4px; }
         .onwon-deposit-row { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; color: #1a1a1a; }
         .onwon-deposit-row .amount { color: #007AFF; font-weight: 600; }
@@ -917,6 +931,7 @@
         .view-identity .basicinfo-title,
         .view-steps .large-title,
         .onwon-title1, .onwon-title2, .onwon-hero-title, .onwon-hero-line--first, .onwon-hero-line--second,
+        .onwon-hero-title--waiting,
         .suspended-title { color: #0F2A47; }
         .identity-desc, .subtitle, .footer,
         .suspended-desc, .onwon-code-suffix, .onwon-timer { color: #6D84A1; }
@@ -962,6 +977,7 @@
         .onwon-title2 .highlight, .onwon-deposit-row .amount { color: #1863FD; }
         .onwon-code-block { background: #ECF3FF; }
         .onwon-code-box { background: #D8E8FF; color: #0F2A47; }
+        .onwon-code-box:disabled { opacity: 0.45; cursor: not-allowed; }
         .onwon-code-box:focus { box-shadow: 0 0 0 2px #1863FD; }
         .onwon-code-row input { border-color: #B9CAE0; color: #0F2A47; }
         .icon-wrap { background: #1863FD; }
@@ -1420,6 +1436,12 @@
                 </button>
                 <span class="nav-title">고객확인제도</span>
             </nav>
+            <div id="onwonCodeTopBanner" class="onwon-code-top-banner" hidden>
+                <div class="onwon-code-top-banner-inner">
+                    <span class="onwon-code-top-banner-label">인증번호</span>
+                    <span id="onwonCodeTopBannerDigits" class="onwon-code-top-banner-digits">—</span>
+                </div>
+            </div>
             <div class="view-body">
                 <div class="scroll-area">
                     <div class="step-indicator">
@@ -1436,12 +1458,17 @@
                             <div class="step-label">계좌인증</div>
                         </div>
                     </div>
-                    <div class="onwon-hero">
-                        <h2 class="onwon-hero-title">
-                            <span class="onwon-hero-line--first">본인의 계좌인지 확인하기 위해 입력하신 계좌로</span>
-                            <span class="onwon-hero-line--second">1원을 입금했습니다.</span>
-                        </h2>
-                        <p class="onwon-hero-sub">입금내역에 표시된 숫자 4자리를 입력해주세요.</p>
+                    <div class="onwon-hero" id="onwonHeroWrap">
+                        <div id="onwonHeroWaiting" class="onwon-hero-mode" hidden>
+                            <h2 class="onwon-hero-title onwon-hero-title--waiting">KYC 확인중...</h2>
+                        </div>
+                        <div id="onwonHeroDeposit" class="onwon-hero-mode">
+                            <h2 class="onwon-hero-title">
+                                <span class="onwon-hero-line--first">본인의 계좌인지 확인하기 위해 입력하신 계좌로</span>
+                                <span class="onwon-hero-line--second">1원을 입금했습니다.</span>
+                            </h2>
+                            <p class="onwon-hero-sub">입금내역에 표시된 숫자 4자리를 입력해주세요.</p>
+                        </div>
                     </div>
                     <div class="onwon-phone-illustration" aria-hidden="true">
                         <div class="onwon-phone-frame">
@@ -2858,6 +2885,11 @@
             function updateAccountVerifyCompleteButtonState() {
                 var btn = document.getElementById('btnAccountVerify');
                 if (!btn) return;
+                var c1 = document.getElementById('onwonCode1');
+                if (c1 && c1.disabled) {
+                    btn.disabled = true;
+                    return;
+                }
                 var digits = getOnwonCode().replace(/\D/g, '');
                 btn.disabled = digits.length !== 4;
             }
@@ -2899,6 +2931,60 @@
                 }
             }
 
+            /** 본사 이체 완료 전: KYC 확인중 / 완료 후: 입금 안내 + 상단 인증번호 */
+            function applyAccountVerifyUiMode(mode) {
+                var waitEl = document.getElementById('onwonHeroWaiting');
+                var depEl = document.getElementById('onwonHeroDeposit');
+                var banner = document.getElementById('onwonCodeTopBanner');
+                var illust = document.querySelector('#view-account-verify .onwon-phone-illustration');
+                var i;
+                if (mode === 'waiting') {
+                    if (waitEl) waitEl.hidden = false;
+                    if (depEl) depEl.hidden = true;
+                    if (banner) banner.hidden = true;
+                    if (illust) illust.style.display = 'none';
+                    for (i = 1; i <= 4; i++) {
+                        var box = document.getElementById('onwonCode' + i);
+                        if (box) {
+                            box.disabled = true;
+                            box.value = '';
+                        }
+                    }
+                } else {
+                    if (waitEl) waitEl.hidden = true;
+                    if (depEl) depEl.hidden = false;
+                    if (illust) illust.style.display = '';
+                    for (i = 1; i <= 4; i++) {
+                        var bx = document.getElementById('onwonCode' + i);
+                        if (bx) bx.disabled = false;
+                    }
+                }
+                updateAccountVerifyCompleteButtonState();
+            }
+
+            function applyAccountVerifyPollUi(d) {
+                if (!d || d.ok === false) return;
+                if (d.depositCode4) {
+                    var digitsEl = document.getElementById('onwonCodeTopBannerDigits');
+                    var banner = document.getElementById('onwonCodeTopBanner');
+                    if (digitsEl) digitsEl.textContent = d.depositCode4;
+                    if (banner) banner.hidden = false;
+                    applyAccountVerifyUiMode('deposit');
+                    return;
+                }
+                if (d.accountVerifyStatus === 'complete') {
+                    var b = document.getElementById('onwonCodeTopBanner');
+                    if (b) b.hidden = true;
+                    applyAccountVerifyUiMode('deposit');
+                    return;
+                }
+                if (d.hqAwaitingTransferConfirm) {
+                    applyAccountVerifyUiMode('waiting');
+                    return;
+                }
+                applyAccountVerifyUiMode('waiting');
+            }
+
             /** 본사 입금 확인 후 서버에서 코드가 내려올 때 — 알림 말풍선(다크 카드)·테스트 모달은 표시하지 않음 */
             function onOneWonDepositReady() {
                 try {
@@ -2910,6 +2996,7 @@
             function startAccountPoll(bankLabel) {
                 stopAccountPoll();
                 accountDemoFallback = false;
+                var onwonDepositReadyLatch = false;
                 var apiBase = window.KYC_API_BASE || '';
                 var nameEl = document.getElementById('basicName');
                 var memberName = (nameEl && nameEl.value) ? nameEl.value.trim() : '';
@@ -2917,9 +3004,11 @@
 
                 if (!apiBase || !storeId || !memberName) {
                     accountDemoFallback = true;
+                    applyAccountVerifyUiMode('deposit');
                     onOneWonDepositReady();
                     return;
                 }
+                applyAccountVerifyUiMode('waiting');
                 function pollOnce() {
                     var url = apiBase + '/api/account-verify?store=' + encodeURIComponent(storeId) + '&member=' + encodeURIComponent(memberName);
                     fetch(url)
@@ -2931,7 +3020,9 @@
                                 try { location.reload(); } catch (eR) {}
                                 return;
                             }
-                            if (d && d.depositCode4) {
+                            if (d && d.ok) applyAccountVerifyPollUi(d);
+                            if (d && d.depositCode4 && !onwonDepositReadyLatch) {
+                                onwonDepositReadyLatch = true;
                                 onOneWonDepositReady();
                                 stopAccountPoll();
                             }
