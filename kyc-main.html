@@ -2916,7 +2916,9 @@
                     identityVerifiedMsg.classList.remove('ok');
                     identityVerifiedMsg.classList.add('fail');
                     var extra = hint ? ' (' + String(hint) + ')' : '';
-                    identityVerifiedMsg.innerHTML = '신분증 검증에 통과하지 못했습니다.' + extra;
+                    identityVerifiedMsg.innerHTML =
+                        '신분증 검증에 통과하지 못했습니다.' + extra +
+                        '<br><span style="font-size:13px;font-weight:500;opacity:.9">(이 화면은 얼굴 촬영 단계이지만, 위 내용은 <strong>신분증 앞면 사진</strong> 기준입니다.)</span>';
                     btnIdentityVerify.textContent = '다시 인증하기';
                     identityFailCount++;
                     if (identityFailCount >= 3) {

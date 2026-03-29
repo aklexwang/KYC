@@ -7,11 +7,11 @@
  */
 
 const DIDIT_ID_URL = 'https://verification.didit.me/v3/id-verification/';
-/** Didit 전 단계 검증. 신분증은 단색 배경이라 250KB 미만 JPEG도 흔함 — 기본 80KB, env로 조정 가능 */
+/** Didit 전 단계 검증. 신분증 앞면은 단색·고압축 JPEG로 80KB 미만도 흔해 거절이 잦음 — 기본 28KB, env DIDIT_MIN_ID_IMAGE_BYTES로 조정 */
 const MIN_IMAGE_BYTES = (() => {
   const n = parseInt(process.env.DIDIT_MIN_ID_IMAGE_BYTES || '', 10);
   if (Number.isFinite(n) && n >= 10240 && n <= 512000) return n;
-  return 80 * 1024;
+  return 28 * 1024;
 })();
 
 const CORS = {
