@@ -1469,7 +1469,7 @@
                             <p class="sms-code-hint">문자로 온 6자리를 입력하세요. Chrome(안드로이드)에서는 문자에 이 사이트 주소가 포함되면 하단 제안으로 자동 입력될 수 있습니다.</p>
                             <div class="sms-otp-verify-line">
                                 <div class="sms-otp-boxes" role="group" aria-label="인증번호 6자리">
-                                    <input type="text" class="sms-otp-digit" id="smsOtp1" inputmode="numeric" maxlength="6" name="one-time-code" autocomplete="one-time-code" autocorrect="off" spellcheck="false" aria-label="인증번호 (자동 입력 시 여기에 채워집니다)">
+                                    <input type="text" class="sms-otp-digit" id="smsOtp1" inputmode="numeric" maxlength="6" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 1번째 (붙여넣기 6자리 가능)">
                                     <input type="text" class="sms-otp-digit" id="smsOtp2" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 2번째">
                                     <input type="text" class="sms-otp-digit" id="smsOtp3" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 3번째">
                                     <input type="text" class="sms-otp-digit" id="smsOtp4" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 4번째">
@@ -3161,7 +3161,7 @@
                 });
             })();
 
-            // 문자 인증 (SMS) UI — Web OTP: 첫 칸 autocomplete=one-time-code + credentials.get
+            // 문자 인증 (SMS) UI
             (function () {
                 var basicCarrier = document.getElementById('basicCarrier');
                 var basicName = document.getElementById('basicName');
@@ -3187,14 +3187,6 @@
                 var lastSentPhone = '';
                 var smsVerifiedDone = false;
                 var smsFailCount = 0;
-                var smsOtpAbort = null;
-
-                function abortSmsOtpListen() {
-                    if (smsOtpAbort) {
-                        try { smsOtpAbort.abort(); } catch (eAbort) {}
-                        smsOtpAbort = null;
-                    }
-                }
 
                 function smsOtpJoin() {
                     return smsCodeInputs.map(function (el) {
@@ -3216,31 +3208,6 @@
                 function smsOtpSetDisabled(dis) {
                     smsCodeInputs.forEach(function (el) {
                         if (el) el.disabled = !!dis;
-                    });
-                }
-
-                function startSmsOtpListen() {
-                    abortSmsOtpListen();
-                    if (!window.isSecureContext) return;
-                    if (!navigator.credentials || typeof navigator.credentials.get !== 'function') return;
-                    var ac = new AbortController();
-                    smsOtpAbort = ac;
-                    var to = setTimeout(function () {
-                        try { ac.abort(); } catch (eAbort2) {}
-                    }, 180000);
-                    navigator.credentials.get({
-                        otp: { transport: ['sms'] },
-                        signal: ac.signal
-                    }).then(function (cred) {
-                        clearTimeout(to);
-                        if (cred && cred.code) {
-                            smsOtpFillFromString(cred.code);
-                            if (smsCodeInputs[5]) smsCodeInputs[5].focus();
-                        }
-                    }).catch(function () {
-                        clearTimeout(to);
-                    }).finally(function () {
-                        if (smsOtpAbort === ac) smsOtpAbort = null;
                     });
                 }
 
@@ -3293,7 +3260,6 @@
                 }
 
                 function showCodeSection() {
-                    abortSmsOtpListen();
                     smsCodeSection.classList.remove('hidden');
                     smsVerified.classList.add('hidden');
                     smsOtpClear();
@@ -3309,7 +3275,6 @@
                         if (countdownSec <= 0) {
                             clearInterval(timerInterval);
                             timerInterval = null;
-                            abortSmsOtpListen();
                             smsTimer.classList.add('expired');
                             smsTimer.textContent = '인증번호가 만료되었습니다. 다시 받아 주세요.';
                         }
@@ -3319,7 +3284,6 @@
                             if (smsCodeInputs[0]) {
                                 try { smsCodeInputs[0].focus(); } catch (eFocus) {}
                             }
-                            startSmsOtpListen();
                         });
                     });
                 }
@@ -3334,7 +3298,6 @@
 
                 function setVerified() {
                     smsVerifiedDone = true;
-                    abortSmsOtpListen();
                     if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
                     smsCodeSection.classList.add('hidden');
                     smsVerified.classList.remove('hidden');

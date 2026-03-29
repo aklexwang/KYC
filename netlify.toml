@@ -165,9 +165,3 @@
   to = "/.netlify/functions/didit-liveness-face"
   status = 200
   force = true
-
-# Chrome Web OTP(문자 코드 자동 입력) — 일부 환경에서 헤더가 없으면 동작이 막힐 수 있음
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Permissions-Policy = "otp-credentials=(self)"
