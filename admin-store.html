@@ -3712,6 +3712,25 @@
             if (dok) dok.hidden = true;
         }
 
+        /** 취소·닫기 시 지갑 표시·클라이언트 상태를 비움(다음에 모달을 열면 서버 조회로 다시 채움) */
+        function resetPointRechargeModalFieldsAndWalletState() {
+            lastWalletIssuanceAddress = '';
+            window.STORE_RECHARGE_WALLET = '';
+            try {
+                sessionStorage.removeItem(getWalletUnlockStorageKey());
+            } catch (eRm) {}
+            var walletEl = document.getElementById('pointRechargeWalletAddr');
+            var input = document.getElementById('pointRechargeUsdtInput');
+            if (walletEl) {
+                walletEl.textContent = '';
+                walletEl.setAttribute('aria-hidden', 'true');
+            }
+            if (input) input.value = '';
+            applyStoreWalletIssuanceUI({ status: 'idle' });
+            hidePointRechargeUsdtHint();
+            syncPointRechargeMinHints();
+        }
+
         function showPointRechargeStatusMessage(msg, showOkButton) {
             var formPh = document.getElementById('pointRechargeFormPhase');
             var statPh = document.getElementById('pointRechargeStatusPhase');
@@ -3803,23 +3822,13 @@
         function openPointRechargeModal() {
             var modal = document.getElementById('pointRechargeModal');
             var input = document.getElementById('pointRechargeUsdtInput');
-            var walletEl = document.getElementById('pointRechargeWalletAddr');
             if (!modal || !input) return;
             stopPointRechargePoll();
             stopWalletIssuancePoll();
-            lastWalletIssuanceAddress = '';
-            window.STORE_RECHARGE_WALLET = '';
+            resetPointRechargeModalFieldsAndWalletState();
             showPointRechargeFormPhase();
-            input.value = '';
-            if (walletEl) {
-                walletEl.textContent = '';
-                walletEl.setAttribute('aria-hidden', 'true');
-            }
-            applyStoreWalletIssuanceUI({ status: 'idle' });
             modal.classList.add('show');
             modal.setAttribute('aria-hidden', 'false');
-            hidePointRechargeUsdtHint();
-            syncPointRechargeMinHints();
             input.focus();
             fetchStoreWalletIssuanceOnce().then(function (d) {
                 if (d && d.ok && d.status === 'pending') startWalletIssuancePoll();
@@ -3831,7 +3840,7 @@
             if (!modal) return;
             stopPointRechargePoll();
             stopWalletIssuancePoll();
-            hidePointRechargeUsdtHint();
+            resetPointRechargeModalFieldsAndWalletState();
             showPointRechargeFormPhase();
             modal.classList.remove('show');
             modal.setAttribute('aria-hidden', 'true');
