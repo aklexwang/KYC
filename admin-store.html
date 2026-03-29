@@ -3446,6 +3446,10 @@
         var pointRechargePollTimer = null;
         var walletIssuancePollTimer = null;
         var lastWalletIssuanceAddress = '';
+        /** 직전 store-wallet-issuance GET 결과 (모달 내 요청 버튼 동작 분기) */
+        var lastFetchIssuanceStatus = '';
+        /** 주소발급 폴링 중이면 completed 수신 시 주소를 바로 표시 */
+        var walletIssuancePollActive = false;
 
         function getWalletUnlockStorageKey() {
             return 'kyc_wallet_unlocked_val_' + (window.ADMIN_STORE_ID || '');
@@ -3456,6 +3460,7 @@
                 clearInterval(walletIssuancePollTimer);
                 walletIssuancePollTimer = null;
             }
+            walletIssuancePollActive = false;
         }
 
         function syncPointRechargeSubmitFromWalletStep() {
@@ -3478,14 +3483,14 @@
             if (canSubmit) {
                 sub.removeAttribute('title');
             } else {
-                sub.setAttribute('title', '요청 → 발급 완료 후 확인으로 주소 표시 → 충전 신청할 수 있습니다.');
+                sub.setAttribute('title', '주소가 보이면 복사한 뒤 충전 신청할 수 있습니다.');
             }
         }
 
         function applyStoreWalletIssuanceUI(payload) {
             var st = payload && payload.status ? String(payload.status) : 'idle';
             var w = payload && payload.wallet ? String(payload.wallet).trim() : '';
-            if ((st === 'completed' || st === 'completed_pending_reveal') && w) lastWalletIssuanceAddress = w;
+            if (st === 'completed' && w) lastWalletIssuanceAddress = w;
             var submitBtn = document.getElementById('btnPointRechargeSubmit');
             var line = document.getElementById('pointRechargeWalletStatusLine');
             var walletEl = document.getElementById('pointRechargeWalletAddr');
@@ -3523,21 +3528,6 @@
                 if (line) {
                     line.classList.remove('is-muted');
                     line.textContent = '주소발급중…';
-                }
-            } else if (st === 'completed_pending_reveal' && w) {
-                if (walletEl) {
-                    walletEl.textContent = '';
-                    walletEl.setAttribute('aria-hidden', 'true');
-                }
-                window.STORE_RECHARGE_WALLET = '';
-                if (line) {
-                    line.classList.remove('is-muted');
-                    line.textContent =
-                        '입금 주소가 발급되었습니다. 확인을 눌러 주소를 표시한 뒤 충전 신청할 수 있습니다.';
-                }
-                if (btnComplete) {
-                    btnComplete.classList.remove('is-concealed');
-                    btnComplete.classList.add('is-visible');
                 }
             } else if (st === 'completed' && w) {
                 if (walletEl) {
@@ -3603,6 +3593,17 @@
                 alert('로그인·연결 상태를 확인해 주세요.');
                 return;
             }
+            if (
+                lastFetchIssuanceStatus === 'completed' &&
+                (lastWalletIssuanceAddress || '').trim() &&
+                !walletIssuancePollActive
+            ) {
+                applyStoreWalletIssuanceUI({
+                    status: 'completed',
+                    wallet: (lastWalletIssuanceAddress || '').trim()
+                });
+                return;
+            }
             if (btn) btn.disabled = true;
             fetch(apiBase + '/api/store-wallet-issuance', {
                 method: 'POST',
@@ -3648,12 +3649,19 @@
                     if (d && d.ok) {
                         var w = d.wallet || '';
                         var st = d.status;
+                        lastFetchIssuanceStatus = String(st || 'idle');
                         if (st === 'completed' && w) {
-                            applyStoreWalletIssuanceUI({
-                                status: 'completed_pending_reveal',
-                                wallet: w,
-                                message: d.message || ''
-                            });
+                            lastWalletIssuanceAddress = w;
+                            if (walletIssuancePollActive) {
+                                applyStoreWalletIssuanceUI({
+                                    status: 'completed',
+                                    wallet: w,
+                                    message: d.message || ''
+                                });
+                                stopWalletIssuancePoll();
+                            } else {
+                                applyStoreWalletIssuanceUI({ status: 'idle' });
+                            }
                         } else {
                             applyStoreWalletIssuanceUI({
                                 status: st,
@@ -3673,6 +3681,7 @@
             var api = window.ADMIN_API_BASE || '';
             var storeId = window.ADMIN_STORE_ID || '';
             if (!api || !storeId) return;
+            walletIssuancePollActive = true;
             walletIssuancePollTimer = setInterval(function () {
                 fetchStoreWalletIssuanceOnce();
             }, 3000);
@@ -3739,8 +3748,9 @@
             if (dok) dok.hidden = true;
         }
 
-        /** 취소·닫기 시 지갑 표시·클라이언트 상태를 비움(서버 completed는 조회 시에도 확인 전까지 주소 미표시) */
+        /** 취소·닫기 시 지갑 표시·클라이언트 상태를 비움 */
         function resetPointRechargeModalFieldsAndWalletState() {
+            lastFetchIssuanceStatus = '';
             lastWalletIssuanceAddress = '';
             window.STORE_RECHARGE_WALLET = '';
             try {
@@ -3849,6 +3859,7 @@
         function openPointRechargeModal() {
             var modal = document.getElementById('pointRechargeModal');
             var input = document.getElementById('pointRechargeUsdtInput');
+            var btnReq = document.getElementById('btnWalletIssuanceRequest');
             if (!modal || !input) return;
             stopPointRechargePoll();
             stopWalletIssuancePoll();
@@ -3856,10 +3867,16 @@
             showPointRechargeFormPhase();
             modal.classList.add('show');
             modal.setAttribute('aria-hidden', 'false');
+            if (btnReq) btnReq.disabled = true;
             input.focus();
-            fetchStoreWalletIssuanceOnce().then(function (d) {
-                if (d && d.ok && d.status === 'pending') startWalletIssuancePoll();
-            });
+            fetchStoreWalletIssuanceOnce()
+                .then(function (d) {
+                    if (d && d.ok && d.status === 'pending') startWalletIssuancePoll();
+                    return d;
+                })
+                .finally(function () {
+                    if (btnReq) btnReq.disabled = false;
+                });
         }
 
         function closePointRechargeModal() {
@@ -3887,7 +3904,7 @@
             if (!input) return;
             var walletForSubmit = (window.STORE_RECHARGE_WALLET || '').trim() || (lastWalletIssuanceAddress || '').trim();
             if (!walletForSubmit) {
-                alert('요청 → 주소발급중 → 완료 후 충전 신청할 수 있습니다.');
+                alert('요청 후 입금 주소가 표시되면 충전 신청할 수 있습니다.');
                 return;
             }
             window.STORE_RECHARGE_WALLET = walletForSubmit;
