@@ -4175,7 +4175,11 @@
             var secAq = document.getElementById('section-account-queue');
             if (secAq) secAq.classList.toggle('active', nextView === 'accountQueue');
             if (nextView === 'pointLedger') {
-                renderGlobalPointLedger();
+                if (window.ADMIN_API_BASE) {
+                    loadStores(true);
+                } else {
+                    renderGlobalPointLedger();
+                }
                 try {
                     if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
                 } catch (eN) {}

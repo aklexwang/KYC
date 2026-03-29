@@ -88,7 +88,11 @@ exports.handler = async (event, context) => {
     });
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+      },
       // 화면(admin-headquarters.html)이 data.prices를 사용합니다(전역 사용 단가).
       body: JSON.stringify({ stores, prices: globalPrices }),
     };

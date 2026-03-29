@@ -3736,33 +3736,63 @@
             }
             if (dokBtn) dokBtn.hidden = true;
             setPointRechargeSubmitPollingUi(true);
+            var pollMissCount = 0;
             function pollOnce() {
                 var url = api + '/api/store-point-recharge-resolve?storeId=' + encodeURIComponent(storeId) + '&historyId=' + encodeURIComponent(historyId);
                 fetch(url)
-                    .then(function (r) { return r.json().catch(function () { return {}; }); })
-                    .then(function (data) {
-                        if (!data || !data.ok) return;
-                        var st = data.status != null ? String(data.status).trim() : '';
-                        if (st === '진행중' || st === '처리중') return;
-                        stopPointRechargePoll();
-                        setPointRechargeSubmitPollingUi(false);
-                        if (depEl) {
-                            depEl.hidden = false;
-                            depEl.classList.remove('is-muted');
+                    .then(function (r) {
+                        return r.json().catch(function () { return {}; }).then(function (data) {
+                            return { httpStatus: r.status, data: data };
+                        });
+                    })
+                    .then(function (res) {
+                        var data = res.data;
+                        if (data && data.ok) {
+                            pollMissCount = 0;
+                            var st = data.status != null ? String(data.status).trim() : '';
+                            if (st === '진행중' || st === '처리중') return;
+                            stopPointRechargePoll();
+                            setPointRechargeSubmitPollingUi(false);
+                            if (depEl) {
+                                depEl.hidden = false;
+                                depEl.classList.remove('is-muted');
+                            }
+                            if (st === '완료') {
+                                if (depEl) depEl.textContent = '충전이 반영되었습니다.';
+                                loadStorePointBalance();
+                                setPointRechargeFormTerminalLayout(true);
+                            } else if (st === '취소') {
+                                if (depEl) depEl.textContent = '취소되었습니다. 텔레그램으로 문의하세요.';
+                                setPointRechargeFormTerminalLayout(false);
+                            } else {
+                                if (depEl) depEl.textContent = '처리가 완료되었습니다.';
+                                setPointRechargeFormTerminalLayout(false);
+                            }
+                            if (dokBtn) dokBtn.hidden = true;
+                            setPointRechargeSubmitAsResultConfirm();
+                            return;
                         }
-                        if (st === '완료') {
-                            if (depEl) depEl.textContent = '충전이 반영되었습니다.';
-                            loadStorePointBalance();
-                            setPointRechargeFormTerminalLayout(true);
-                        } else if (st === '취소') {
-                            if (depEl) depEl.textContent = '취소되었습니다. 텔레그램으로 문의하세요.';
-                            setPointRechargeFormTerminalLayout(false);
+                        if (res.httpStatus === 404 || (data && data.error === 'not_found')) {
+                            pollMissCount += 1;
                         } else {
-                            if (depEl) depEl.textContent = '처리가 완료되었습니다.';
-                            setPointRechargeFormTerminalLayout(false);
+                            pollMissCount = 0;
                         }
-                        if (dokBtn) dokBtn.hidden = true;
-                        setPointRechargeSubmitAsResultConfirm();
+                        if (pollMissCount >= 10) {
+                            stopPointRechargePoll();
+                            setPointRechargeSubmitPollingUi(false);
+                            setPointRechargeFormPendingLayout(false);
+                            syncPointRechargeSubmitFromWalletStep();
+                            if (depEl) {
+                                depEl.hidden = false;
+                                depEl.classList.remove('is-muted');
+                                depEl.textContent =
+                                    '서버에서 이 신청 건을 찾지 못했습니다. 본사 포인트 내역을 확인하거나 다시 신청해 주세요.';
+                            }
+                            alert(
+                                '충전 신청이 서버에 확인되지 않습니다.\n\n' +
+                                    '본사 포인트 내역에도 없으면 저장소 설정을 확인하거나 다시 신청해 주세요.'
+                            );
+                        }
                     })
                     .catch(function () {});
             }

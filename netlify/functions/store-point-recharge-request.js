@@ -125,6 +125,21 @@ exports.handler = async (event) => {
       pointHistory: hist,
     };
     await setStorePointsMap(event, map);
+    const after = await getStorePointsMap(event);
+    const curAfter = after[storeId] || {};
+    const histAfter = Array.isArray(curAfter.pointHistory) ? curAfter.pointHistory : [];
+    const persisted = histAfter.some((e) => e && String(e.historyId || '') === String(historyId));
+    if (!persisted) {
+      console.error('store-point-recharge-request persist verify failed', { storeId, historyId });
+      return {
+        statusCode: 500,
+        headers: { ...CORS, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          error: 'persist_failed',
+          message: '충전 신청을 저장한 뒤 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.',
+        }),
+      };
+    }
 
     return {
       statusCode: 200,
