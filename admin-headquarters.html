@@ -1344,7 +1344,7 @@
         }
         .btn-settlement-query:hover { opacity: 0.92; }
         .table--settlement { min-width: 1280px; }
-        /* 정산표: 구간별 연한 배경 (가맹명 / 문자인증 / 신분증 인증 / 계좌(1원) 인증 / 합계) */
+        /* 정산표: 구간별 연한 배경 (가맹명 / 문자인증 / 신분증 인증 / 1원인증 / 합계) */
         .table--settlement thead tr:first-child th:nth-child(1) { background: rgba(255, 255, 255, 0.07) !important; }
         .table--settlement thead tr:first-child th:nth-child(2) { background: rgba(96, 165, 250, 0.22) !important; }
         .table--settlement thead tr:first-child th:nth-child(3) { background: rgba(52, 211, 153, 0.2) !important; }
@@ -2667,7 +2667,7 @@
             <div class="menu-item active" data-view="overview">현황판</div>
             <div class="menu-item" data-view="stores">가맹점 관리</div>
             <div class="menu-item" data-view="members">회원 목록</div>
-            <div class="menu-item" data-view="accountQueue">1원 인증 관리 <span class="sidebar-badge" id="accountQueueBadge" style="display:none;">0</span></div>
+            <div class="menu-item" data-view="accountQueue">1원인증 관리 <span class="sidebar-badge" id="accountQueueBadge" style="display:none;">0</span></div>
             <div class="menu-item" data-view="settlement">수수료 통계</div>
             <div class="menu-item" data-view="pointLedger">포인트 내역<span class="sidebar-badge sidebar-badge--point-pending" id="pointLedgerPendingBadge" aria-live="polite">0</span></div>
             <div class="menu-item" data-view="walletMgmt">지갑관리<span class="sidebar-badge sidebar-badge--point-pending" id="walletMgmtPendingBadge" aria-live="polite">0</span></div>
@@ -2739,7 +2739,7 @@
                     <div class="hq-ov-pills">
                         <span class="hq-ov-pill">문자 <span id="ovPillSms">0</span> 건</span>
                         <span class="hq-ov-pill">신분증 <span id="ovPillId">0</span> 건</span>
-                        <span class="hq-ov-pill">1원 인증 <span id="ovPillWon">0</span> 건</span>
+                        <span class="hq-ov-pill">1원인증 <span id="ovPillWon">0</span> 건</span>
                     </div>
                 </div>
                 <div class="hq-overview-panel">
@@ -2785,7 +2785,7 @@
                 <div class="hq-overview-shortcuts-btns">
                     <button type="button" class="hq-sc-btn" data-hq-shortcut="stores">가맹점 관리</button>
                     <button type="button" class="hq-sc-btn" data-hq-shortcut="members">회원 목록</button>
-                    <button type="button" class="hq-sc-btn" data-hq-shortcut="accountQueue">1원 인증</button>
+                    <button type="button" class="hq-sc-btn" data-hq-shortcut="accountQueue">1원인증</button>
                     <button type="button" class="hq-sc-btn" data-hq-shortcut="settlement">수수료 통계</button>
                     <button type="button" class="hq-sc-btn" data-hq-shortcut="pointLedger">포인트 내역</button>
                     <button type="button" class="hq-sc-btn" data-hq-shortcut="walletMgmt">지갑관리</button>
@@ -2798,10 +2798,10 @@
 
         <section id="section-account-queue" class="dashboard-section">
             <div class="member-section-head">
-                <h2 class="section-title member-section-title member-section-title--glitch">1원 인증 관리</h2>
-                <p class="section-desc member-section-desc">신청·이체·코드 발송 및 회원 계좌 인증 처리 현황입니다.</p>
+                <h2 class="section-title member-section-title member-section-title--glitch">1원인증 관리</h2>
+                <p class="section-desc member-section-desc">신청·이체·코드 발송 및 회원 1원인증 처리 현황입니다.</p>
             </div>
-            <p class="section-desc aq-section-desc">회원이 1원 인증을 신청하면 서버가 <strong>인증 번호 4자리를 자동 생성</strong>합니다. 본사는 해당 번호로 1원 이체 시 적요에 동일 숫자를 넣을 수 있고, 회원은 화면에 표시된 번호를 확인한 뒤 입력하면 인증이 완료됩니다. (이전 방식: 코드 없는 입금 대기 건만 수동 입력 가능)</p>
+            <p class="section-desc aq-section-desc">회원이 1원인증을 신청하면 서버가 <strong>인증 번호 4자리를 자동 생성</strong>합니다. 본사는 해당 번호로 1원 이체 시 적요에 동일 숫자를 넣을 수 있고, 회원은 화면에 표시된 번호를 확인한 뒤 입력하면 인증이 완료됩니다. (이전 방식: 코드 없는 입금 대기 건만 수동 입력 가능)</p>
             <p id="aqLoginHint" class="aq-login-hint" style="display:none;">본사 로그인 시 전체 이력·필터·취소 사유 등록을 사용할 수 있습니다. (미로그인 시 대기 건만 조회됩니다.)</p>
             <div class="aq-toolbar">
                 <div class="aq-toolbar-row">
@@ -2858,7 +2858,7 @@
                                 <th>가맹점</th>
                                 <th>회원</th>
                                 <th>은행</th>
-                                <th>계좌</th>
+                                <th>1원인증</th>
                                 <th>인증 번호</th>
                                 <th>이체 상태</th>
                                 <th>회원 상태</th>
@@ -2924,10 +2924,10 @@
                     </div>
                 </div>
                 <div class="field">
-                    <label for="modalPriceAccount">계좌(1원) 인증 단가 (USDT)</label>
+                    <label for="modalPriceAccount">1원인증 단가 (USDT)</label>
                     <div class="modal-price-row">
                         <input type="number" id="modalPriceAccount" min="0" step="0.5" inputmode="decimal">
-                        <div class="modal-price-toggle" data-toggle-row="account" role="group" aria-label="계좌 인증 단가">
+                        <div class="modal-price-toggle" data-toggle-row="account" role="group" aria-label="1원인증 단가">
                             <button type="button" class="modal-toggle-btn is-active" data-value="on">사용</button>
                             <button type="button" class="modal-toggle-btn" data-value="off">미사용</button>
                         </div>
@@ -3116,10 +3116,10 @@
                         </div>
                     </div>
                     <div class="field">
-                        <label for="inputStorePriceAccount">계좌(1원) 인증 단가 (USDT)</label>
+                        <label for="inputStorePriceAccount">1원인증 단가 (USDT)</label>
                         <div class="modal-price-row">
                             <input type="number" id="inputStorePriceAccount" min="0" step="0.5" inputmode="decimal" placeholder="1.5">
-                            <div class="modal-price-toggle" data-toggle-row="account" role="group" aria-label="계좌 인증 단가">
+                            <div class="modal-price-toggle" data-toggle-row="account" role="group" aria-label="1원인증 단가">
                                 <button type="button" class="modal-toggle-btn is-active" data-value="on">사용</button>
                                 <button type="button" class="modal-toggle-btn" data-value="off">미사용</button>
                             </div>
@@ -3146,10 +3146,10 @@
         <section id="section-members" class="dashboard-section">
         <div class="member-section-head">
             <h2 class="section-title member-section-title member-section-title--glitch">회원 목록</h2>
-            <p class="section-desc member-section-desc">문자·신분증·계좌 인증 현황입니다.</p>
+            <p class="section-desc member-section-desc">문자·신분증·1원인증 현황입니다.</p>
         </div>
         <div class="member-toolbar-panel">
-            <h3 class="member-toolbar-title">전체 회원 현황 (문자·신분증·1원 인증)</h3>
+            <h3 class="member-toolbar-title">전체 회원 현황 (문자·신분증·1원인증)</h3>
             <div class="member-toolbar-filters">
                 <div class="member-filter-group member-filter-group--daterange">
                     <span class="member-filter-label-text">가입일</span>
@@ -3188,8 +3188,8 @@
                     </select>
                 </div>
                 <div class="member-filter-group">
-                    <label for="memberFilterAccount">1원 인증</label>
-                    <select id="memberFilterAccount" aria-label="1원 인증 필터">
+                    <label for="memberFilterAccount">1원인증</label>
+                    <select id="memberFilterAccount" aria-label="1원인증 필터">
                         <option value="all" selected>전체</option>
                         <option value="complete">완료</option>
                         <option value="wait">대기</option>
@@ -3220,7 +3220,7 @@
                             <th>가입일시</th>
                             <th>문자인증</th>
                             <th>신분증 인증</th>
-                            <th>계좌 인증</th>
+                            <th>1원인증</th>
                             <th>KYC 결과</th>
                         </tr>
                     </thead>
@@ -3265,7 +3265,7 @@
         <section id="settlementSection" class="settlement-section">
             <div class="member-section-head">
                 <h2 class="section-title member-section-title member-section-title--glitch">수수료 통계</h2>
-                <p class="section-desc member-section-desc">기간·가맹점별 문자·신분증·1원 인증 수수료를 집계합니다.</p>
+                <p class="section-desc member-section-desc">기간·가맹점별 문자·신분증·1원인증 수수료를 집계합니다.</p>
             </div>
             <div class="settlement-date-bar">
                 <span class="settlement-date-inline-label">기간</span>
@@ -3289,7 +3289,7 @@
                                 <th rowspan="2" class="settlement-th-store">가맹명</th>
                                 <th colspan="3" class="settlement-group-head">문자인증</th>
                                 <th colspan="3" class="settlement-group-head">신분증 인증</th>
-                                <th colspan="3" class="settlement-group-head">계좌(1원) 인증</th>
+                                <th colspan="3" class="settlement-group-head">1원인증</th>
                                 <th rowspan="2" class="settlement-th-total">수수료 합계 (USDT)</th>
                             </tr>
                             <tr>
@@ -3628,7 +3628,7 @@
             { key: 'overview', label: '현황판' },
             { key: 'stores', label: '가맹점 관리' },
             { key: 'members', label: '회원 목록' },
-            { key: 'accountQueue', label: '1원 인증 관리' },
+            { key: 'accountQueue', label: '1원인증 관리' },
             { key: 'settlement', label: '수수료 통계' },
             { key: 'pointLedger', label: '포인트 내역' },
             { key: 'walletMgmt', label: '지갑관리' },
@@ -4810,7 +4810,7 @@
                     var items = (data && data.items) ? data.items : [];
                     accountQueueRawItems = items;
                     if (!items.length) {
-                        document.getElementById('accountQueueBody').innerHTML = '<tr><td colspan="9" class="no-data">1원 인증 요청 내역이 없습니다.</td></tr>';
+                        document.getElementById('accountQueueBody').innerHTML = '<tr><td colspan="9" class="no-data">1원인증 요청 내역이 없습니다.</td></tr>';
                     } else {
                         renderFilteredAccountQueue();
                     }
@@ -4831,7 +4831,7 @@
                     if (!accountQueueSkipNotify && activeAq > lastAccountQueuePending) {
                         try {
                             if (window.Notification && Notification.permission === 'granted') {
-                                new Notification('계좌 인증 요청', { body: '새 요청이 있습니다.' });
+                                new Notification('1원인증 요청', { body: '새 요청이 있습니다.' });
                             }
                         } catch (e) {}
                         try {
@@ -5930,7 +5930,7 @@
                 '<div class="store-usage-panel-lead">당일<br>사용량</div>' +
                 usageCol('store-usage-panel-col--sms', '문자', u.sms.count, u.sms.amount, false, storePriceServiceEnabled(pr, 'sms'), pr.sms) +
                 usageCol('store-usage-panel-col--id', '신분증', u.idDoc.count, u.idDoc.amount, false, storePriceServiceEnabled(pr, 'idDoc'), pr.idDoc) +
-                usageCol('store-usage-panel-col--won', '계좌(1원)', u.account.count, u.account.amount, false, storePriceServiceEnabled(pr, 'account'), pr.account) +
+                usageCol('store-usage-panel-col--won', '1원인증', u.account.count, u.account.amount, false, storePriceServiceEnabled(pr, 'account'), pr.account) +
                 usageCol('store-usage-panel-col--total', '수수료 합계', 0, 0, true) +
                 membersCol(memberCount, kycDone) +
                 '</div></div>';
@@ -6712,7 +6712,7 @@
             return !!(onBtn && onBtn.classList.contains('is-active'));
         }
 
-        /** 통합(사용) ↔ 문자·신분증·계좌(1원)(사용) 동시 불가. 통합 우선 시 나머지 미사용, 개별 하나라도 사용이면 통합 미사용. */
+        /** 통합(사용) ↔ 문자·신분증·1원인증(사용) 동시 불가. 통합 우선 시 나머지 미사용, 개별 하나라도 사용이면 통합 미사용. */
         function applyStorePricesModalToggleInvariants() {
             var intEn = getModalPriceToggleRow('integrated');
             var smsEn = getModalPriceToggleRow('sms');

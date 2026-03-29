@@ -769,7 +769,7 @@
         .btn-complete { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: 8px; }
         .btn-complete:active { opacity: 0.9; }
         .footer { flex-shrink: 0; font-size: 13px; color: #8E8E93; text-align: center; padding: 16px; }
-        /* 계좌인증 전용 */
+        /* 1원인증 전용 */
         .account-header { margin-bottom: 24px; }
         .account-header .line1 { font-size: 17px; color: #8E8E93; margin: 0 0 4px 0; }
         .account-header .line2 { font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 0; }
@@ -794,7 +794,7 @@
         .view-steps .field-row label { flex: 0 0 min(90px, 24vw); }
         .btn-onwon { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: auto; }
         .btn-onwon:active { opacity: 0.9; }
-        /* 1원 인증 확인 화면 (사진 스타일) */
+        /* 1원인증 확인 화면 (사진 스타일) */
         .view-account-verify .step-item:not(.active) { background: #DCE7F5; }
         .view-account-verify .step-item:not(.active):not(.step-done) .step-num { background: #EDF3FC; color: #2E4D71; border-color: #1863FD; }
         .view-account-verify .view-body { padding: 0 clamp(16px, 4vw, 20px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
@@ -804,7 +804,7 @@
         .onwon-title1 { font-size: 17px; color: #1a1a1a; margin: 24px 0 6px 0; text-align: center; }
         .onwon-title2 { font-size: 16px; font-weight: 700; color: #1a1a1a; margin: 0 0 24px 0; text-align: center; }
         .onwon-title2 .highlight { color: #007AFF; }
-        /* 1원 인증: 사진3 형식 — 제목 + 폰 일러스트 */
+        /* 1원인증: 사진3 형식 — 제목 + 폰 일러스트 */
         .onwon-hero { text-align: center; margin: 20px 0 16px; display: flex; flex-direction: column; align-items: center; }
         .onwon-hero-title { margin: 0 0 12px; letter-spacing: -0.02em; width: 100%; max-width: min(100%, 360px); font-weight: 700; color: #2c2c2c; line-height: 1.45; text-align: center; }
         /* 반드시 2줄: 1줄째 문장 전체를 한 덩어리로(줄바꿈 방지), 좁은 화면은 글자만 살짝 축소 */
@@ -1240,7 +1240,7 @@
                             <span class="agree-label">고유식별정보 처리 동의 <span class="required">(필수)</span></span>
                         </div>
                     </div>
-                    <p class="disclaimer">금융실명법 및 개인정보보호법에 따라 ① 휴대폰 본인인증, ② 신분증과 본인 일치 여부 확인, ③ 계좌 1원 인증에 필요한 최소한의 정보만 수집합니다.</p>
+                    <p class="disclaimer">금융실명법 및 개인정보보호법에 따라 ① 휴대폰 본인인증, ② 신분증과 본인 일치 여부 확인, ③ 1원인증에 필요한 최소한의 정보만 수집합니다.</p>
                     <p class="disclaimer">수집된 정보는 본인 확인 목적으로만 이용된 후 별도 저장 없이 안전하게 즉시 파기되며, 동의하지 않으실 경우 서비스 이용이 불가합니다.</p>
                     <p class="disclaimer">정보 제공을 거부하거나 허위 정보를 제공할 경우 고객확인 및 서비스 이용이 제한될 수 있습니다.</p>
                 </div>
@@ -1430,7 +1430,7 @@
                         </div>
                         <div class="step-item">
                             <div class="step-num">3</div>
-                            <div class="step-label">계좌인증</div>
+                            <div class="step-label">1원인증</div>
                         </div>
                     </div>
                     <h2 class="basicinfo-title">기본정보를 입력해 주세요.</h2>
@@ -1510,7 +1510,7 @@
                         </div>
                         <div class="step-item">
                             <div class="step-num">3</div>
-                            <div class="step-label">계좌인증</div>
+                            <div class="step-label">1원인증</div>
                         </div>
                     </div>
                     <h2 class="id-doc-type-title">어떤 신분증을 사용하시나요?</h2>
@@ -1565,7 +1565,7 @@
                         </div>
                         <div class="step-item">
                             <div class="step-num">3</div>
-                            <div class="step-label">계좌인증</div>
+                            <div class="step-label">1원인증</div>
                         </div>
                     </div>
                     <div class="identity-flow-head">
@@ -1646,7 +1646,7 @@
             </div>
         </div>
 
-        <!-- 5. 인증 단계 화면 (계좌인증) -->
+        <!-- 5. 인증 단계 화면 (1원인증 입력) -->
         <div id="view-steps" class="view view-steps">
             <nav class="nav-bar">
                 <button type="button" class="nav-back js-back" aria-label="뒤로">
@@ -1667,7 +1667,7 @@
                         </div>
                         <div class="step-item active">
                             <div class="step-num">3</div>
-                            <div class="step-label">계좌인증</div>
+                            <div class="step-label">1원인증</div>
                         </div>
                     </div>
                     <div class="account-header">
@@ -1712,18 +1712,18 @@
                             <li>수집하는 개인정보 항목 : 은행명, 예금주명, 계좌번호</li>
                             <li>보유 및 이용기간 : 회원탈퇴 시까지 또는 법령에 따른 보유기간</li>
                         </ul>
-                        <h4>※ 계좌 인증 안내</h4>
+                        <h4>※ 1원인증 안내</h4>
                         <ul>
-                            <li>계좌 인증번호 전송은 하루 최대 3회까지 가능합니다.</li>
+                            <li>1원인증 번호 전송은 하루 최대 3회까지 가능합니다.</li>
                             <li>인증된 실명과 계좌에 등록된 이름이 일치하여야 합니다.</li>
                         </ul>
                     </div>
                 </div>
-                <button type="button" class="btn-onwon" id="btnComplete" disabled>1원 인증</button>
+                <button type="button" class="btn-onwon" id="btnComplete" disabled>1원인증</button>
             </div>
         </div>
 
-        <!-- 5-2. 1원 인증 확인 화면 -->
+        <!-- 5-2. 1원인증 확인 화면 -->
         <div id="view-account-verify" class="view view-account-verify">
             <nav class="nav-bar">
                 <button type="button" class="nav-back js-back" aria-label="뒤로">
@@ -1754,7 +1754,7 @@
                         </div>
                         <div class="step-item active">
                             <div class="step-num">3</div>
-                            <div class="step-label">계좌인증</div>
+                            <div class="step-label">1원인증</div>
                         </div>
                     </div>
                     <div class="onwon-hero" id="onwonHeroWrap">
@@ -1800,7 +1800,7 @@
                         <span id="displayAccountHolder" class="onwon-footer-holder">-</span>
                     </div>
                 </div>
-                <button type="button" class="btn-account-verify" id="btnAccountVerify" disabled>계좌인증 완료</button>
+                <button type="button" class="btn-account-verify" id="btnAccountVerify" disabled>1원인증 완료</button>
             </div>
         </div>
 
@@ -3704,7 +3704,7 @@
                         .then(function (d) {
                             if (d && d.accountVerifyStatus === 'cancelled') {
                                 stopAccountPoll();
-                                alert('본사에서 1원 인증이 취소되었습니다. 처음부터 다시 진행해 주세요.');
+                                alert('본사에서 1원인증이 취소되었습니다. 처음부터 다시 진행해 주세요.');
                                 try { location.reload(); } catch (eR) {}
                                 return;
                             }

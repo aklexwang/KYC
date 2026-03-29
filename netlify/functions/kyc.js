@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const { getKycData, setKycData, incrementUsage, getStorageErrorHelp, markPhoneSmsVerifiedGlobally } = require('./storage');
 const { telegramNotify, telegramKycLine } = require('./_telegram-notify');
 
-/** 1원 인증용 4자리 (0000–9999, 서버 자동 부여) */
+/** 1원인증용 4자리 (0000–9999, 서버 자동 부여) */
 function randomDepositCode4() {
   const n = crypto.randomInt(0, 10000);
   return String(n).padStart(4, '0');
@@ -154,7 +154,7 @@ exports.handler = async (event, context) => {
     if (sid) {
       if (row.sms === 'complete' && prev.sms !== 'complete') await incrementUsage(event, sid, 'sms');
       if (row.idDoc === 'complete' && prev.idDoc !== 'complete') await incrementUsage(event, sid, 'idDoc');
-      /** 계좌 건수는 /api/account-verify (memberVerifyCode) 에서만 증가 */
+      /** 1원인증 건수는 /api/account-verify (memberVerifyCode) 에서만 증가 */
     }
   } catch (err) {
     console.error('kyc save error', err);

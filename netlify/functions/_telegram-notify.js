@@ -36,7 +36,7 @@ function telegramKycLine(stage, memberName, phoneOpt) {
       : stage === 'idDoc'
         ? '신분증·얼굴 인증'
         : stage === 'account'
-          ? '계좌(1원) 인증'
+          ? '1원인증'
           : 'KYC';
   return `✅ [${label}] 완료\n이름: ${name}`;
 }

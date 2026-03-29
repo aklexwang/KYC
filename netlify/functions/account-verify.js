@@ -108,7 +108,7 @@ async function queueList(event) {
   }
 }
 
-/** 본사 로그인 시: 1원 인증 전체 이력(필터는 클라이언트) */
+/** 본사 로그인 시: 1원인증 전체 이력(필터는 클라이언트) */
 async function hqFullList(event) {
   try {
     const { data, names } = await getKycData(event);

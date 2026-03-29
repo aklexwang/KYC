@@ -279,7 +279,7 @@ async function incrementUsage(event, storeId, type) {
   await setUsageDaily(event, daily);
 }
 
-/** 전체 KYC 완료(계좌 인증까지) 1건 — 통합 단가(USDT) 일별 합산용 */
+/** 전체 KYC 완료(1원인증까지) 1건 — 통합 단가(USDT) 일별 합산용 */
 async function incrementDailyKycComplete(event, storeId) {
   const sid = String(storeId || '').trim();
   if (!sid) return;
