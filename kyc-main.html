@@ -2017,11 +2017,11 @@
                     }
                     var approxBytes = Math.floor(rawBase64.length * 0.75);
                     var dataUrl = 'data:image/jpeg;base64,' + rawBase64;
-                    if (approxBytes >= 220 * 1024) {
+                    if (approxBytes >= 280 * 1024) {
                         resolve(dataUrl);
                         return;
                     }
-                    compressDataUrlImage(dataUrl, 2048, 0.93).then(function (out) {
+                    compressDataUrlImage(dataUrl, 2560, 0.96).then(function (out) {
                         resolve(out && out.indexOf('data:image/') === 0 ? out : dataUrl);
                     });
                 });
@@ -2592,14 +2592,40 @@
                         idDocumentInput.click();
                         return;
                     }
-                    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(function (stream) {
-                        idCaptureStream = stream;
-                        idCaptureVideo.srcObject = stream;
-                        idCaptureOverlay.classList.remove('hidden');
-                        idCaptureVideo.play().catch(function () {});
-                    }).catch(function () {
-                        idDocumentInput.click();
-                    });
+                    var idCamAttempts = [
+                        {
+                            audio: false,
+                            video: {
+                                facingMode: { ideal: 'environment' },
+                                width: { ideal: 1920, min: 720 },
+                                height: { ideal: 1080, min: 720 },
+                            },
+                        },
+                        {
+                            audio: false,
+                            video: {
+                                facingMode: { ideal: 'environment' },
+                                width: { ideal: 1280 },
+                                height: { ideal: 720 },
+                            },
+                        },
+                        { audio: false, video: { facingMode: 'environment' } },
+                    ];
+                    function tryIdCamera(i) {
+                        if (i >= idCamAttempts.length) {
+                            idDocumentInput.click();
+                            return;
+                        }
+                        navigator.mediaDevices.getUserMedia(idCamAttempts[i]).then(function (stream) {
+                            idCaptureStream = stream;
+                            idCaptureVideo.srcObject = stream;
+                            idCaptureOverlay.classList.remove('hidden');
+                            idCaptureVideo.play().catch(function () {});
+                        }).catch(function () {
+                            tryIdCamera(i + 1);
+                        });
+                    }
+                    tryIdCamera(0);
                 }
 
                 idDocumentBtn.addEventListener('click', function () { openIdCaptureWithCamera(); });
@@ -2680,7 +2706,7 @@
                     var sw = crop.sw;
                     var sh = crop.sh;
                     if (sw <= 0 || sh <= 0) { sw = vidW; sh = vidH; sx = 0; sy = 0; }
-                    var maxLong = 1600;
+                    var maxLong = 2560;
                     var outW = Math.round(sw);
                     var outH = Math.round(sh);
                     if (outW > maxLong || outH > maxLong) {
@@ -2692,8 +2718,11 @@
                     canvas.width = outW;
                     canvas.height = outH;
                     var ctx = canvas.getContext('2d');
+                    if (!ctx) return;
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
                     ctx.drawImage(v, sx, sy, sw, sh, 0, 0, outW, outH);
-                    var dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                    var dataUrl = canvas.toDataURL('image/jpeg', 0.95);
                     var b64 = dataUrl.indexOf('base64,') !== -1 ? dataUrl.split('base64,')[1] : '';
                     if (b64) {
                         stopIdCaptureStream();
