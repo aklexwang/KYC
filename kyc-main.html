@@ -350,13 +350,37 @@
         .basicinfo-info-card .info-card-list li { padding-left: 0; margin-bottom: 6px; position: relative; padding-left: 16px; }
         .basicinfo-info-card .info-card-list li::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 5px; height: 5px; border-radius: 50%; background: #8E8E93; }
         .basicinfo-info-card .info-card-list li:last-child { margin-bottom: 0; }
-        .sms-code-hint { font-size: 13px; color: #8E8E93; margin: 0 0 10px 0; line-height: 1.45; }
+        .sms-code-hint { display: none; }
+        .sms-otp-verify-line {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: clamp(6px, 2vw, 10px);
+            margin-bottom: 12px;
+        }
+        .sms-otp-verify-line .sms-otp-boxes {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-bottom: 0;
+            justify-content: flex-start;
+        }
+        .sms-otp-verify-line .sms-code-verify-row {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+        }
+        .sms-otp-verify-line .sms-code-verify-row .btn-sms-verify {
+            width: auto;
+            height: 50px;
+            padding: 0 12px;
+            white-space: nowrap;
+        }
         .sms-otp-boxes {
             display: flex;
             flex-wrap: nowrap;
             justify-content: center;
-            gap: clamp(5px, 1.8vw, 8px);
-            margin-bottom: 12px;
+            gap: clamp(4px, 1.5vw, 8px);
         }
         .sms-otp-digit {
             box-sizing: border-box;
@@ -382,8 +406,6 @@
             background: #F2F2F7;
             color: #8E8E93;
         }
-        .sms-code-verify-row { display: flex; justify-content: stretch; }
-        .sms-code-verify-row .btn-sms-verify { width: 100%; }
         .btn-sms-verify { padding: 12px 20px; background: #1A2F4A; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
         .sms-timer { font-size: 13px; color: #8E8E93; margin-top: 6px; }
         .sms-timer.expired { color: #FF3B30; }
@@ -1445,16 +1467,18 @@
                         </div>
                         <div id="smsCodeSection" class="sms-code-section hidden">
                             <p class="sms-code-hint">문자로 온 6자리를 입력하세요. Chrome(안드로이드)에서는 문자에 이 사이트 주소가 포함되면 하단 제안으로 자동 입력될 수 있습니다.</p>
-                            <div class="sms-otp-boxes" role="group" aria-label="인증번호 6자리">
-                                <input type="text" class="sms-otp-digit" id="smsOtp1" inputmode="numeric" maxlength="6" name="one-time-code" autocomplete="one-time-code" autocorrect="off" spellcheck="false" aria-label="인증번호 (자동 입력 시 여기에 채워집니다)">
-                                <input type="text" class="sms-otp-digit" id="smsOtp2" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 2번째">
-                                <input type="text" class="sms-otp-digit" id="smsOtp3" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 3번째">
-                                <input type="text" class="sms-otp-digit" id="smsOtp4" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 4번째">
-                                <input type="text" class="sms-otp-digit" id="smsOtp5" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 5번째">
-                                <input type="text" class="sms-otp-digit" id="smsOtp6" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 6번째">
-                            </div>
-                            <div class="sms-code-verify-row">
-                                <button type="button" class="btn-sms-verify" id="btnSmsVerify">인증하기</button>
+                            <div class="sms-otp-verify-line">
+                                <div class="sms-otp-boxes" role="group" aria-label="인증번호 6자리">
+                                    <input type="text" class="sms-otp-digit" id="smsOtp1" inputmode="numeric" maxlength="6" name="one-time-code" autocomplete="one-time-code" autocorrect="off" spellcheck="false" aria-label="인증번호 (자동 입력 시 여기에 채워집니다)">
+                                    <input type="text" class="sms-otp-digit" id="smsOtp2" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 2번째">
+                                    <input type="text" class="sms-otp-digit" id="smsOtp3" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 3번째">
+                                    <input type="text" class="sms-otp-digit" id="smsOtp4" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 4번째">
+                                    <input type="text" class="sms-otp-digit" id="smsOtp5" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 5번째">
+                                    <input type="text" class="sms-otp-digit" id="smsOtp6" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 6번째">
+                                </div>
+                                <div class="sms-code-verify-row">
+                                    <button type="button" class="btn-sms-verify" id="btnSmsVerify">인증하기</button>
+                                </div>
                             </div>
                             <p id="smsTimer" class="sms-timer">인증번호 유효시간 3:00</p>
                         </div>
@@ -2080,8 +2104,12 @@
                 });
             }
 
-            function showWrongAuthModal(remainingCount) {
+            function showWrongAuthModal(remainingCount, detailMsg) {
                 var overlay = document.getElementById('wrongAuthModal');
+                var msgEl = document.getElementById('wrongAuthMsg');
+                if (msgEl) {
+                    msgEl.textContent = (detailMsg && String(detailMsg).trim()) ? String(detailMsg).trim() : '잘못된 인증번호 입니다.';
+                }
                 document.getElementById('wrongAuthRemain').textContent = '남은 횟수: ' + remainingCount + '회';
                 overlay.classList.add('show');
                 overlay.setAttribute('aria-hidden', 'false');
@@ -3431,19 +3459,42 @@
                         alert('인증번호 6자리를 입력해 주세요.');
                         return;
                     }
+                    if (!(lastSentPhone && String(lastSentPhone).replace(/\D/g, '').length >= 10)) {
+                        alert('먼저 인증번호 받기를 눌러 문자를 받아 주세요.');
+                        return;
+                    }
 
                     fetch(apiBase() + '/.netlify/functions/verify-otp', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ phoneNumber: lastSentPhone, code: code, storeId: getKycStoreId() })
-                    }).then(function (r) { return r.json(); }).then(function (data) {
+                    }).then(function (r) {
+                        return r.text().then(function (t) {
+                            try {
+                                return { ok: r.ok, status: r.status, data: t ? JSON.parse(t) : {} };
+                            } catch (eParse) {
+                                return { ok: r.ok, status: r.status, data: { message: t || '응답을 해석하지 못했습니다.' } };
+                            }
+                        });
+                    }).then(function (res) {
+                        var data = res.data || {};
+                        if (!res.ok) {
+                            smsFailCount++;
+                            smsOtpClear();
+                            if (smsCodeInputs[0]) smsCodeInputs[0].focus();
+                            var httpMsg = data.message || data.error || ('오류 ' + res.status);
+                            if (smsFailCount >= 3) goToSuspendedView();
+                            else showWrongAuthModal(3 - smsFailCount, httpMsg);
+                            return;
+                        }
                         if (data.success) setVerified();
                         else {
                             smsFailCount++;
                             smsOtpClear();
                             if (smsCodeInputs[0]) smsCodeInputs[0].focus();
+                            var failMsg = data.message || '잘못된 인증번호 입니다.';
                             if (smsFailCount >= 3) goToSuspendedView();
-                            else showWrongAuthModal(3 - smsFailCount);
+                            else showWrongAuthModal(3 - smsFailCount, failMsg);
                         }
                     }).catch(function () {
                         if (code === '123456') setVerified();
@@ -3452,7 +3503,7 @@
                             smsOtpClear();
                             if (smsCodeInputs[0]) smsCodeInputs[0].focus();
                             if (smsFailCount >= 3) goToSuspendedView();
-                            else showWrongAuthModal(3 - smsFailCount);
+                            else showWrongAuthModal(3 - smsFailCount, '네트워크 오류입니다. 연결을 확인해 주세요.');
                         }
                     });
                 });

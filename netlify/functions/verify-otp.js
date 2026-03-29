@@ -54,10 +54,10 @@ exports.handler = async (event) => {
 
   const phoneDigits = String(body.phoneNumber || '').replace(/\D/g, '');
   const e164 = krDigitsToE164(phoneDigits);
-  const code = String(body.code || '').trim();
+  const code = String(body.code || '').replace(/\D/g, '');
 
-  if (!e164 || !code) {
-    return json(400, { error: 'phoneNumber and code required' });
+  if (!e164 || !code || code.length < 4 || code.length > 8) {
+    return json(400, { error: 'phoneNumber and code required', success: false });
   }
 
   const apiKey = process.env.DIDIT_API_KEY;
@@ -84,12 +84,10 @@ exports.handler = async (event) => {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
       },
+      // DECLINE은 번호가 일시적으로 VoIP/가상/중복으로 분류될 때 올바른 코드도 거절될 수 있어 기본값(NO_ACTION)과 동일하게 둡니다.
       body: JSON.stringify({
         phone_number: e164,
         code,
-        duplicated_phone_number_action: 'DECLINE',
-        disposable_number_action: 'DECLINE',
-        voip_number_action: 'DECLINE',
       }),
     });
 
@@ -107,14 +105,18 @@ exports.handler = async (event) => {
       });
     }
 
-    const approved = data.status === 'Approved';
+    const approved = String(data.status || '').toLowerCase() === 'approved';
     if (approved) {
       await markPhoneSmsVerifiedGlobally(event, phoneDigits);
     }
     return json(200, {
       success: approved,
       requestId: data.request_id || null,
-      message: data.message || (approved ? null : data.status) || null,
+      message:
+        data.message ||
+        data.detail ||
+        (approved ? null : data.status) ||
+        null,
     });
   } catch (err) {
     console.error('verify-otp', err);
