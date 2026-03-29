@@ -3089,7 +3089,7 @@
                     }
 
                     function runDiditLivenessAndFace(loadingLabel) {
-                        btnIdentityVerify.textContent = loadingLabel || 'Didit 얼굴·라이브니스 검증 중…';
+                        btnIdentityVerify.textContent = loadingLabel || 'KOREA KYC 라이브니스 · 얼굴 매칭 중…';
                         fetch(apiRoot + '/api/didit-liveness-face', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -3126,7 +3126,7 @@
                     }
 
                     if (!window.KYC_USE_DIDIT_ID) {
-                        runDiditLivenessAndFace('Didit 검증 중…');
+                        runDiditLivenessAndFace('KOREA KYC 라이브니스 · 얼굴 매칭 중…');
                         return;
                     }
 
@@ -3165,7 +3165,7 @@
                                 finishDiditDocumentRejected(hint);
                                 return;
                             }
-                            runDiditLivenessAndFace('Didit 라이브니스·얼굴 매칭 중…');
+                            runDiditLivenessAndFace('KOREA KYC 라이브니스 · 얼굴 매칭 중…');
                         }).catch(function () {
                             resetAfterDiditConfigError();
                             alert('네트워크 오류로 신분증 검증을 완료하지 못했습니다.');

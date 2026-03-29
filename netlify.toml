@@ -155,6 +155,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/hq-purge-all-stores"
+  to = "/.netlify/functions/hq-purge-all-stores"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/didit-id-verification"
   to = "/.netlify/functions/didit-id-verification"
   status = 200

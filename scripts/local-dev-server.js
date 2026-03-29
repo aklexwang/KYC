@@ -60,6 +60,7 @@ const API_MAP = {
   '/api/hq-fetch-member-asset': 'hq-fetch-member-asset.js',
   '/api/store-wallet-issuance': 'store-wallet-issuance.js',
   '/api/hq-wallet-issuance': 'hq-wallet-issuance.js',
+  '/api/hq-purge-all-stores': 'hq-purge-all-stores.js',
   '/api/didit-id-verification': 'didit-id-verification.js',
   '/api/didit-liveness-face': 'didit-liveness-face.js',
 };

@@ -312,7 +312,10 @@
             background: #f3f4f6;
             color: #111827;
         }
-        .create-store-toolbar { margin-bottom: 0; flex-shrink: 0; }
+        .create-store-toolbar { margin-bottom: 0; flex-shrink: 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .btn-purge-all-stores { padding: 8px 16px; background: #b71c1c; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-purge-all-stores:hover { filter: brightness(1.08); }
+        .btn-purge-all-stores:disabled { background: #9e9e9e; cursor: not-allowed; filter: none; }
         .store-list-filters {
             display: flex;
             flex-wrap: wrap;
@@ -1117,6 +1120,8 @@
         }
         #section-settings .settings-hint { font-size: 13px; color: #86efac; margin: 14px 0 0 0; min-height: 1.2em; }
         .create-store-form .btn-register, .btn-toggle-register, .btn-copy-qr { background: #2a74ff; }
+        .btn-purge-all-stores { background: #e53935; }
+        .btn-purge-all-stores:disabled { background: #616161; }
         .store-status-option { border-color: rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.05); color: #fff; }
         .store-status-option:hover { border-color: rgba(255, 255, 255, 0.28); }
         .store-status-option.is-selected { color: #fff; }
@@ -2880,6 +2885,7 @@
         <div class="store-section-bar">
             <div class="create-store-toolbar">
                 <button type="button" class="btn-toggle-register" id="btnOpenCreateStoreModal">가맹점 생성</button>
+                <button type="button" class="btn-purge-all-stores" id="btnPurgeAllStores" title="되돌릴 수 없습니다">전체 가맹점 초기화</button>
             </div>
             <div class="store-list-filters">
                 <input type="search" id="storeListSearchInput" placeholder="가맹점 검색 (로그인 계정, 가맹명)" autocomplete="off" aria-label="가맹점 검색">
@@ -6657,6 +6663,56 @@
             modal.setAttribute('aria-hidden', 'true');
         }
         document.getElementById('btnOpenCreateStoreModal').addEventListener('click', openCreateStoreModal);
+        (function bindPurgeAllStores() {
+            var btn = document.getElementById('btnPurgeAllStores');
+            if (!btn) return;
+            btn.addEventListener('click', function () {
+                var tok = getHqSessionToken();
+                if (!tok) {
+                    alert('본사 로그인이 필요합니다.');
+                    return;
+                }
+                var warn =
+                    '등록된 모든 가맹점·회원 KYC 데이터, 포인트, 지갑 발급 기록, 허용 IP·SMS 설정, 일별 사용량, 블랙리스트·전역 SMS 검증 기록까지 삭제됩니다.\n\n' +
+                    '본사 관리자 계정·전역 수수료 단가·가맹점 이용·충전 최소 USDT 등 전역 설정은 유지됩니다.\n\n' +
+                    '이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?';
+                if (!confirm(warn)) return;
+                var phrase = window.prompt('확인을 위해 다음 문구를 그대로 입력하세요.\n\n모든 가맹점 삭제');
+                if (phrase !== '모든 가맹점 삭제') {
+                    if (phrase != null) alert('입력이 일치하지 않아 취소되었습니다.');
+                    return;
+                }
+                btn.disabled = true;
+                var apiBase = window.ADMIN_API_BASE || '';
+                fetch(apiBase + '/api/hq-purge-all-stores', {
+                    method: 'POST',
+                    headers: hqJsonHeaders(),
+                    body: JSON.stringify({ confirm: '모든 가맹점 삭제' }),
+                })
+                    .then(function (r) {
+                        return r.json().then(function (data) {
+                            return { ok: r.ok, data: data };
+                        });
+                    })
+                    .then(function (res) {
+                        btn.disabled = false;
+                        if (res.ok && res.data && res.data.ok) {
+                            alert(res.data.message || '초기화되었습니다.');
+                            loadStores(true);
+                            return;
+                        }
+                        alert(
+                            (res.data && res.data.message) ||
+                                (res.data && res.data.error) ||
+                                '초기화에 실패했습니다.'
+                        );
+                    })
+                    .catch(function () {
+                        btn.disabled = false;
+                        alert('네트워크 오류로 초기화에 실패했습니다.');
+                    });
+            });
+        })();
         document.getElementById('btnCancelCreateStore').addEventListener('click', closeCreateStoreModal);
         document.getElementById('createStoreModal').addEventListener('click', function (e) {
             if (e.target === this) {

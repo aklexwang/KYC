@@ -965,6 +965,38 @@ async function isPhoneSmsVerifiedGlobally(event, phoneDigits) {
   }
 }
 
+/**
+ * 본사 전용 전체 초기화: 모든 가맹점·회원 KYC, 비밀번호, 단가맵, 사용량, 정지/일별 집계, 포인트,
+ * 허용 IP·SMS 한도·발송 카운트, 지갑 발급 기록, 전역 SMS 검증 맵, 블랙리스트 로그를 비웁니다.
+ * 유지: 전역 수수료 단가(usage_prices), 본사 관리자(hq_admins), 가맹점 이용·충전 최소 USDT 등 전역 설정.
+ */
+async function purgeAllStoresData(event) {
+  await setKycData(event, {}, {});
+  await setStorePasswords(event, {});
+  if (USE_UPSTASH) {
+    await upstashSet('kyc_store_prices', {});
+    await upstashSet('kyc_usage_counts', {});
+    await upstashSet('kyc_suspended_stores', {});
+    await upstashSet('kyc_usage_daily', {});
+    await upstashSet(SMS_VERIFIED_PHONES_KEY, {});
+    await upstashSet(KYC_BLACKLIST_LOG_KEY, []);
+    await upstashSet('kyc_wallet_issuance', { byStore: {}, completionHistory: [] });
+  } else {
+    const store = await blobsGetStore(event);
+    await store.set('store_prices', JSON.stringify({}));
+    await store.set('usage_counts', JSON.stringify({}));
+    await store.set('suspended_stores', JSON.stringify({}));
+    await store.set('usage_daily', JSON.stringify({}));
+    await store.set('sms_verified_phones', JSON.stringify({}));
+    await store.set('kyc_blacklist_attempts', JSON.stringify([]));
+    await store.set('wallet_issuance', JSON.stringify({ byStore: {}, completionHistory: [] }));
+  }
+  await setStorePointsMap(event, {});
+  await setStoreAllowedIpsMap(event, {});
+  await setStoreSmsPerPhoneLimitMap(event, {});
+  await setSmsSendCountsByStore(event, {});
+}
+
 module.exports = {
   getKycData,
   setKycData,
@@ -1011,4 +1043,5 @@ module.exports = {
   setWalletIssuance,
   getKycBlacklistEntries,
   appendKycBlacklistEntry,
+  purgeAllStoresData,
 };
