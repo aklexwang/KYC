@@ -3470,12 +3470,13 @@
                 sub.disabled = true;
                 return;
             }
+            var hasWallet = !!(window.STORE_RECHARGE_WALLET || '').trim() || !!(lastWalletIssuanceAddress || '').trim();
             var copyVisible = btnCopy && btnCopy.classList.contains('is-visible');
-            sub.disabled = !copyVisible;
-            if (copyVisible) {
+            sub.disabled = !(hasWallet || copyVisible);
+            if (hasWallet || copyVisible) {
                 sub.removeAttribute('title');
             } else {
-                sub.setAttribute('title', '요청 → 주소발급중 → 완료 → 복사 순서를 마친 뒤 충전 신청할 수 있습니다.');
+                sub.setAttribute('title', '요청 → 주소발급중 → 완료 후 충전 신청할 수 있습니다.');
             }
         }
 
@@ -3489,8 +3490,6 @@
             var btnRequest = document.getElementById('btnWalletIssuanceRequest');
             var btnComplete = document.getElementById('btnWalletIssuanceComplete');
             var btnCopy = document.getElementById('btnCopyRechargeWallet');
-            var unlocked = '';
-            try { unlocked = sessionStorage.getItem(getWalletUnlockStorageKey()) || ''; } catch (e) {}
             if (btnRequest) {
                 btnRequest.classList.remove('is-visible');
                 btnRequest.classList.add('is-concealed');
@@ -3528,25 +3527,21 @@
                     walletEl.textContent = w;
                     walletEl.setAttribute('aria-hidden', 'false');
                 }
-                if (unlocked === w) {
-                    window.STORE_RECHARGE_WALLET = w;
-                    if (line) {
-                        line.classList.remove('is-muted');
-                        line.textContent = '복사 버튼으로 주소를 복사하세요.';
-                    }
-                    if (btnCopy) {
-                        btnCopy.classList.remove('is-concealed');
-                        btnCopy.classList.add('is-visible');
-                    }
-                } else {
-                    if (line) {
-                        line.classList.remove('is-muted');
-                        line.textContent = '지갑 주소가 준비되었습니다. 완료를 눌러 주세요.';
-                    }
-                    if (btnComplete) {
-                        btnComplete.classList.remove('is-concealed');
-                        btnComplete.classList.add('is-visible');
-                    }
+                window.STORE_RECHARGE_WALLET = w;
+                try {
+                    sessionStorage.setItem(getWalletUnlockStorageKey(), w);
+                } catch (eSs) {}
+                if (line) {
+                    line.classList.remove('is-muted');
+                    line.textContent = '복사 버튼으로 주소를 복사하세요.';
+                }
+                if (btnCopy) {
+                    btnCopy.classList.remove('is-concealed');
+                    btnCopy.classList.add('is-visible');
+                }
+                if (btnComplete) {
+                    btnComplete.classList.remove('is-visible');
+                    btnComplete.classList.add('is-concealed');
                 }
             } else if (st === 'rejected') {
                 if (walletEl) {
@@ -3626,11 +3621,7 @@
                 .catch(function () {});
         }
 
-        /**
-         * @param {{ skipCompletedApply?: boolean }} [opts] 모달을 새로 열 때 true면 서버가 completed여도 UI는 초기(idle) 유지
-         */
-        function fetchStoreWalletIssuanceOnce(opts) {
-            var skipCompleted = opts && opts.skipCompletedApply;
+        function fetchStoreWalletIssuanceOnce() {
             var api = window.ADMIN_API_BASE || '';
             var storeId = window.ADMIN_STORE_ID || '';
             if (!api || !storeId) return Promise.resolve(null);
@@ -3638,9 +3629,6 @@
                 .then(function (r) { return r.json().catch(function () { return {}; }); })
                 .then(function (d) {
                     if (d && d.ok) {
-                        if (skipCompleted && d.status === 'completed') {
-                            return d;
-                        }
                         applyStoreWalletIssuanceUI({
                             status: d.status,
                             wallet: d.wallet || '',
@@ -3790,7 +3778,6 @@
             stopPointRechargePoll();
             stopWalletIssuancePoll();
             lastWalletIssuanceAddress = '';
-            try { sessionStorage.removeItem(getWalletUnlockStorageKey()); } catch (eR) {}
             window.STORE_RECHARGE_WALLET = '';
             showPointRechargeFormPhase();
             input.value = '';
@@ -3804,7 +3791,7 @@
             hidePointRechargeUsdtHint();
             syncPointRechargeMinHints();
             input.focus();
-            fetchStoreWalletIssuanceOnce({ skipCompletedApply: true }).then(function (d) {
+            fetchStoreWalletIssuanceOnce().then(function (d) {
                 if (d && d.ok && d.status === 'pending') startWalletIssuancePoll();
             });
         }
@@ -3832,10 +3819,12 @@
             var input = document.getElementById('pointRechargeUsdtInput');
             var btnCopy = document.getElementById('btnCopyRechargeWallet');
             if (!input) return;
-            if (!btnCopy || !btnCopy.classList.contains('is-visible')) {
-                alert('요청 → 주소발급중 → 완료 → 복사 순서를 마친 뒤 충전 신청할 수 있습니다.');
+            var walletForSubmit = (window.STORE_RECHARGE_WALLET || '').trim() || (lastWalletIssuanceAddress || '').trim();
+            if (!walletForSubmit) {
+                alert('요청 → 주소발급중 → 완료 후 충전 신청할 수 있습니다.');
                 return;
             }
+            window.STORE_RECHARGE_WALLET = walletForSubmit;
             var usdt = normalizePointBalanceUsdt(parseFloat(String(input.value || '').replace(/,/g, '').trim()));
             if (isNaN(usdt) || usdt <= 0) {
                 alert('구매 USDT는 0.5 단위로, 0보다 크게 입력해 주세요.');
@@ -3854,11 +3843,12 @@
             var krw = Math.round(usdt * getUsdtKrwRate());
             var apiBase = window.ADMIN_API_BASE || '';
             var storeId = window.ADMIN_STORE_ID || '';
-            var wallet = (window.STORE_RECHARGE_WALLET || '').trim();
+            var wallet = (window.STORE_RECHARGE_WALLET || '').trim() || (lastWalletIssuanceAddress || '').trim();
             if (!wallet) {
                 alert('지갑 주소가 없습니다. 완료 단계까지 진행한 뒤 다시 시도해 주세요.');
                 return;
             }
+            window.STORE_RECHARGE_WALLET = wallet;
             setPointRechargeSubmitPollingUi(true);
             setPointRechargeFormTerminalLayout(false);
             setPointRechargeFormPendingLayout(true);
