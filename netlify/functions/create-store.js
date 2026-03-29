@@ -5,6 +5,7 @@ const {
   getStorageErrorHelp,
   setStoreAllowedIpsForStore,
   normalizeAllowedIpsInput,
+  setStoreSmsPerPhoneLimitForStore,
 } = require('./storage');
 
 const CORS = {
@@ -43,6 +44,11 @@ exports.handler = async (event, context) => {
     await setStorePassword(event, storeId, password);
     const allowedIps = normalizeAllowedIpsInput(body.allowedIps != null ? body.allowedIps : body.whitelistIp);
     await setStoreAllowedIpsForStore(event, storeId, allowedIps);
+    await setStoreSmsPerPhoneLimitForStore(
+      event,
+      storeId,
+      body.smsPerPhoneLimit != null ? body.smsPerPhoneLimit : body.smsPerPhone,
+    );
   } catch (err) {
     console.error('create-store error', err);
     const help = getStorageErrorHelp();

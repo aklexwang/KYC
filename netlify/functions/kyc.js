@@ -1,5 +1,6 @@
 const crypto = require('crypto');
-const { getKycData, setKycData, incrementUsage, getStorageErrorHelp } = require('./storage');
+const { getKycData, setKycData, incrementUsage, getStorageErrorHelp, markPhoneSmsVerifiedGlobally } = require('./storage');
+const { telegramNotify, telegramKycLine } = require('./_telegram-notify');
 
 /** 1원 인증용 4자리 (0000–9999, 서버 자동 부여) */
 function randomDepositCode4() {
@@ -139,6 +140,16 @@ exports.handler = async (event, context) => {
     }
     dataObj[sid] = list;
     await setKycData(event, dataObj, null);
+    const notifyName = row.name || memberName;
+    if (row.sms === 'complete' && prev.sms !== 'complete' && row.phone) {
+      await markPhoneSmsVerifiedGlobally(event, row.phone);
+    }
+    if (row.sms === 'complete' && prev.sms !== 'complete') {
+      void telegramNotify(telegramKycLine('sms', notifyName));
+    }
+    if (row.idDoc === 'complete' && prev.idDoc !== 'complete') {
+      void telegramNotify(telegramKycLine('idDoc', notifyName));
+    }
     if (sid) {
       if (row.sms === 'complete' && prev.sms !== 'complete') await incrementUsage(event, sid, 'sms');
       if (row.idDoc === 'complete' && prev.idDoc !== 'complete') await incrementUsage(event, sid, 'idDoc');

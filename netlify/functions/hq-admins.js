@@ -9,6 +9,7 @@ const MENU_KEYS = [
   'settlement',
   'pointLedger',
   'walletMgmt',
+  'blacklist',
   'settings',
 ];
 

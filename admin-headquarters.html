@@ -712,8 +712,18 @@
             box-shadow: 0 2px 12px rgba(217, 119, 6, 0.4);
         }
         .store-card .store-name-row > button.btn-store-ip:hover { filter: brightness(1.07); }
-        #storeAllowedIpModal .modal-prices-box { max-width: min(520px, 100%); }
-        #storeAllowedIpModal .store-ip-modal-desc { margin: 0 0 12px 0; color: #6e6e73; line-height: 1.5; }
+        .store-card .store-name-row > button.btn-store-sms-phones {
+            border-color: rgba(16, 185, 129, 0.9);
+            background: linear-gradient(180deg, #34d399 0%, #059669 100%);
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(5, 150, 105, 0.38);
+        }
+        .store-card .store-name-row > button.btn-store-sms-phones:hover { filter: brightness(1.07); }
+        #storeAllowedIpModal .modal-prices-box,
+        #storeSmsPerPhoneLimitModal .modal-prices-box { max-width: min(520px, 100%); }
+        #storeAllowedIpModal .store-ip-modal-desc,
+        #storeSmsPerPhoneLimitModal .store-sms-limit-modal-desc { margin: 0 0 12px 0; color: #6e6e73; line-height: 1.5; }
+        #storeSmsPerPhoneLimitModal .store-sms-limit-field label { font-size: 15px; font-weight: 600; }
         .modal-overlay-prices { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 9999; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
         .modal-overlay-prices.show { display: flex; }
         .modal-prices-box { background: #fff; border-radius: 16px; padding: 24px; max-width: 400px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,.15); }
@@ -1077,11 +1087,16 @@
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 16px;
             padding: 22px 24px;
-            max-width: 560px;
+            max-width: 920px;
         }
         #section-settings .settings-desc { color: rgba(255,255,255,0.72); margin: 0 0 18px 0; line-height: 1.55; }
         #section-settings .settings-usdt-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
         #section-settings .settings-usdt-row label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.88); }
+        #section-settings .settings-usdt-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
         #section-settings #hqStoreGateMinUsdt,
         #section-settings #hqStoreMinRechargeUsdt {
             width: 140px;
@@ -1092,8 +1107,13 @@
             color: #fff;
             font-size: 15px;
         }
-        #section-settings .settings-usdt-row + .settings-usdt-row {
-            margin-top: 14px;
+        #section-settings .settings-usdt-row + .settings-usdt-row { margin-top: 14px; }
+        @media (max-width: 860px) {
+            #section-settings .settings-usdt-group {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
         }
         #section-settings .settings-hint { font-size: 13px; color: #86efac; margin: 14px 0 0 0; min-height: 1.2em; }
         .create-store-form .btn-register, .btn-toggle-register, .btn-copy-qr { background: #2a74ff; }
@@ -1142,7 +1162,14 @@
             color: #fff;
             box-shadow: 0 2px 14px rgba(217, 119, 6, 0.45);
         }
-        #storeAllowedIpModal .store-ip-modal-desc { color: rgba(255, 255, 255, 0.78); }
+        .store-card .store-name-row > button.btn-store-sms-phones {
+            border-color: rgba(52, 211, 153, 0.7);
+            background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+            color: #fff;
+            box-shadow: 0 2px 14px rgba(16, 185, 129, 0.45);
+        }
+        #storeAllowedIpModal .store-ip-modal-desc,
+        #storeSmsPerPhoneLimitModal .store-sms-limit-modal-desc { color: rgba(255, 255, 255, 0.78); }
         #storeQrModal .store-qr-modal-inner { background: #0f1d4c; border-color: rgba(255, 255, 255, 0.1); }
         #storeQrModal .store-qr-modal-img { background: #fff; }
         #storeQrModal .store-qr-modal-url { color: #8cc8ff; }
@@ -1906,14 +1933,14 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 6px 12px;
-            border-radius: 999px;
+            padding: 5px 10px;
+            border-radius: 8px;
             font-size: 12px;
             font-weight: 700;
         }
         #section-account-queue .aq-tx-pill--done {
-            background: #f8fafc;
-            color: #0f172a;
+            background: #dcfce7;
+            color: #166534;
         }
         #section-account-queue .aq-tx-pill--cancel {
             background: #ffedd5;
@@ -2644,6 +2671,7 @@
             <div class="menu-item" data-view="settlement">수수료 통계</div>
             <div class="menu-item" data-view="pointLedger">포인트 내역<span class="sidebar-badge sidebar-badge--point-pending" id="pointLedgerPendingBadge" aria-live="polite">0</span></div>
             <div class="menu-item" data-view="walletMgmt">지갑관리<span class="sidebar-badge sidebar-badge--point-pending" id="walletMgmtPendingBadge" aria-live="polite">0</span></div>
+            <div class="menu-item" data-view="blacklist">블랙리스트</div>
             <div class="menu-item" data-view="settings">설정</div>
         </nav>
     </aside>
@@ -2761,6 +2789,7 @@
                     <button type="button" class="hq-sc-btn" data-hq-shortcut="settlement">수수료 통계</button>
                     <button type="button" class="hq-sc-btn" data-hq-shortcut="pointLedger">포인트 내역</button>
                     <button type="button" class="hq-sc-btn" data-hq-shortcut="walletMgmt">지갑관리</button>
+                    <button type="button" class="hq-sc-btn" data-hq-shortcut="blacklist">블랙리스트</button>
                     <button type="button" class="hq-sc-btn" data-hq-shortcut="settings">설정</button>
                 </div>
             </div>
@@ -2986,6 +3015,20 @@
             </div>
         </div>
 
+        <div id="storeSmsPerPhoneLimitModal" class="modal-overlay-prices" aria-hidden="true">
+            <div class="modal-prices-box" role="dialog" aria-modal="true" aria-labelledby="storeSmsPerPhoneLimitModalTitle">
+                <h3 id="storeSmsPerPhoneLimitModalTitle">동일 번호 문자 발송 한도</h3>
+                <p class="section-desc store-sms-limit-modal-desc">이 가맹점 QR로 진행할 때 <strong>같은 휴대폰 번호</strong>로 인증 문자를 받을 수 있는 최대 횟수입니다. Didit에 발송 요청이 성공할 때마다 1회씩 셉니다. <strong>0을 저장하면</strong> 횟수 제한 없음 + <strong>이미 다른 경로에서 문자 인증된 번호도</strong> 이 가맹점에서 다시 인증할 수 있습니다. (한도를 바꾼 뒤 반드시 저장을 눌러 주세요.)</p>
+                <div class="field store-sms-limit-field">
+                    <label for="storeSmsPerPhoneLimitInput">문자 <input type="number" id="storeSmsPerPhoneLimitInput" min="0" max="9999" step="1" inputmode="numeric" placeholder="0"> 회까지 동일 번호 허용 (0 = 제한 없음)</label>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="btn-save-prices-modal" id="btnStoreSmsPerPhoneLimitSave">저장</button>
+                    <button type="button" class="btn-cancel-prices" id="btnStoreSmsPerPhoneLimitCancel">취소</button>
+                </div>
+            </div>
+        </div>
+
         <div id="storePointModal" class="modal-overlay-prices" aria-hidden="true">
             <div class="modal-prices-box modal-point-box" role="dialog" aria-modal="true" aria-labelledby="storePointModalTitle">
                 <h3 id="storePointModalTitle">포인트</h3>
@@ -3047,6 +3090,10 @@
                     <div class="field">
                         <label for="inputStoreAllowedIps">허용 IP (화이트리스트)</label>
                         <textarea id="inputStoreAllowedIps" rows="3" placeholder="쉼표 또는 줄바꿈으로 구분 (예: 203.0.113.1, 192.168.0.0/24)" autocomplete="off" spellcheck="false"></textarea>
+                    </div>
+                    <div class="field">
+                        <label for="inputStoreSmsPerPhoneLimit">동일 번호 인증 문자 <input type="number" id="inputStoreSmsPerPhoneLimit" min="0" max="9999" step="1" value="0" inputmode="numeric" placeholder="0" style="width:4.5em; vertical-align:middle;"> 회까지 허용</label>
+                        <span class="field-hint">0 = 발송 횟수 제한 없음 + 이 가맹점에서 기존 인증 번호 재사용 허용. 1 이상 = 해당 횟수만큼만 발송 + 전역 중복 번호 차단 유지.</span>
                     </div>
                     <div class="field">
                         <label for="inputStorePriceSms">문자인증 단가 (USDT)</label>
@@ -3431,6 +3478,34 @@
             </div>
         </section>
         </section>
+        <section id="section-blacklist" class="dashboard-section">
+            <div class="member-section-head">
+                <h2 class="section-title member-section-title member-section-title--glitch">블랙리스트</h2>
+                <p class="section-desc member-section-desc">이미 등록·문자 인증된 휴대폰 번호로 <strong>인증번호 받기</strong>를 시도한 경우, 당시 입력한 정보가 기록됩니다.</p>
+            </div>
+            <div class="settlement-date-bar" style="margin-bottom: 14px;">
+                <button type="button" class="btn-settlement-query" id="btnBlacklistRefresh">새로고침</button>
+                <span class="section-desc" id="blacklistLoadStatus" style="margin:0;" aria-live="polite"></span>
+            </div>
+            <div class="table-wrap">
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>일시</th>
+                                <th>시도한 가맹점명</th>
+                                <th>통신사</th>
+                                <th>이름</th>
+                                <th>주민번호</th>
+                                <th>휴대폰 번호</th>
+                                <th>사유</th>
+                            </tr>
+                        </thead>
+                        <tbody id="blacklistTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
         <section id="section-settings" class="dashboard-section">
         <div class="settings-panel">
             <div class="member-section-head">
@@ -3438,14 +3513,16 @@
                 <p class="section-desc member-section-desc">가맹점 이용·충전 시 적용되는 USDT 기준을 설정합니다.</p>
             </div>
             <div class="settings-usdt-row">
-                <label for="hqStoreGateMinUsdt">최소 보유 USDT (기준값)</label>
-                <input type="number" id="hqStoreGateMinUsdt" min="0" step="0.5" inputmode="decimal" placeholder="100" aria-label="가맹점 이용 최소 USDT">
-                <button type="button" class="btn-settlement-query" id="btnSaveStoreGateMinUsdt">저장</button>
-            </div>
-            <div class="settings-usdt-row">
-                <label for="hqStoreMinRechargeUsdt">최소 충전 USDT</label>
-                <input type="number" id="hqStoreMinRechargeUsdt" min="0" step="0.5" inputmode="decimal" placeholder="0.5" aria-label="포인트 충전 최소 USDT">
-                <button type="button" class="btn-settlement-query" id="btnSaveStoreMinRechargeUsdt">저장</button>
+                <div class="settings-usdt-group">
+                    <label for="hqStoreGateMinUsdt">최소 보유 USDT</label>
+                    <input type="number" id="hqStoreGateMinUsdt" min="0" step="0.5" inputmode="decimal" placeholder="100" aria-label="가맹점 이용 최소 USDT">
+                    <button type="button" class="btn-settlement-query" id="btnSaveStoreGateMinUsdt">저장</button>
+                </div>
+                <div class="settings-usdt-group">
+                    <label for="hqStoreMinRechargeUsdt">최소 충전 USDT</label>
+                    <input type="number" id="hqStoreMinRechargeUsdt" min="0" step="0.5" inputmode="decimal" placeholder="0.5" aria-label="포인트 충전 최소 USDT">
+                    <button type="button" class="btn-settlement-query" id="btnSaveStoreMinRechargeUsdt">저장</button>
+                </div>
             </div>
             <p class="settings-hint" id="hqStoreGateSaveStatus" aria-live="polite"></p>
         </div>
@@ -3555,10 +3632,11 @@
             { key: 'settlement', label: '수수료 통계' },
             { key: 'pointLedger', label: '포인트 내역' },
             { key: 'walletMgmt', label: '지갑관리' },
+            { key: 'blacklist', label: '블랙리스트' },
             { key: 'settings', label: '설정' }
         ];
         var HQ_LEVEL_LABEL = { 1: '최고', 2: '관리자', 3: '운영' };
-        var ADMIN_DASHBOARD_VIEWS = ['overview', 'stores', 'members', 'accountQueue', 'settlement', 'pointLedger', 'walletMgmt', 'settings'];
+        var ADMIN_DASHBOARD_VIEWS = ['overview', 'stores', 'members', 'accountQueue', 'settlement', 'pointLedger', 'walletMgmt', 'blacklist', 'settings'];
         var ADMIN_DASHBOARD_VIEW_KEY = 'adminHqDashboardView';
 
         function getHqSessionToken() {
@@ -4072,6 +4150,8 @@
             document.getElementById('section-point-ledger').classList.toggle('active', nextView === 'pointLedger');
             var secWm = document.getElementById('section-wallet-mgmt');
             if (secWm) secWm.classList.toggle('active', nextView === 'walletMgmt');
+            var secBl = document.getElementById('section-blacklist');
+            if (secBl) secBl.classList.toggle('active', nextView === 'blacklist');
             var secSet = document.getElementById('section-settings');
             if (secSet) secSet.classList.toggle('active', nextView === 'settings');
             var secAq = document.getElementById('section-account-queue');
@@ -4087,6 +4167,9 @@
                 try {
                     if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
                 } catch (eWm) {}
+            }
+            if (nextView === 'blacklist') {
+                loadBlacklist();
             }
             if (nextView === 'settings') {
                 loadHqStoreGateSettings();
@@ -4545,7 +4628,7 @@
 
                 var txCell = '';
                 if (st === 'complete') {
-                    txCell = '<span class="aq-tx-pill aq-tx-pill--done">이체 완료</span>';
+                    txCell = '<span class="aq-tx-pill aq-tx-pill--done">완료</span>';
                 } else if (st === 'cancelled') {
                     var r = row.cancelReason || '';
                     txCell = '<span class="aq-tx-pill aq-tx-pill--cancel">취소 / ' + esc(aqCancelReasonKo(r)) + '</span>';
@@ -4553,7 +4636,7 @@
                     var hqNotified = !!(row.hqOneWonTransferConfirmedAt);
                     if (hqNotified) {
                         txCell = '<div class="aq-split aq-split--hq-done">' +
-                            '<span class="aq-tx-pill aq-tx-pill--done">이체 완료</span>' +
+                            '<span class="aq-tx-pill aq-tx-pill--done">회원입력중</span>' +
                             '<button type="button" class="aq-split-no" data-aq-store-enc="' + sidEnc + '" data-aq-member-enc="' + memEnc + '">취소</button></div>';
                     } else {
                         txCell = '<div class="aq-split">' +
@@ -5040,6 +5123,66 @@
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#39;');
         }
+
+        function formatBlacklistPhoneDigits(digits) {
+            var d = String(digits || '').replace(/\D/g, '');
+            if (d.length === 11 && d.indexOf('010') === 0) return d.slice(0, 3) + '-' + d.slice(3, 7) + '-' + d.slice(7);
+            if (d.length === 10 && d.indexOf('10') === 0) return '0' + d.slice(0, 2) + '-' + d.slice(2, 6) + '-' + d.slice(6);
+            return d || '—';
+        }
+
+        function formatBlacklistAt(iso) {
+            if (!iso) return '—';
+            try {
+                var dt = new Date(iso);
+                if (isNaN(dt.getTime())) return escapeHtml(String(iso));
+                return escapeHtml(dt.toLocaleString('ko-KR', { dateStyle: 'short', timeStyle: 'medium' }));
+            } catch (e) {
+                return escapeHtml(String(iso));
+            }
+        }
+
+        function loadBlacklist() {
+            var apiBase = window.ADMIN_API_BASE || '';
+            var tbody = document.getElementById('blacklistTableBody');
+            var statusEl = document.getElementById('blacklistLoadStatus');
+            if (!tbody) return;
+            if (!apiBase) {
+                tbody.innerHTML = '<tr><td colspan="7" class="no-data">API 주소가 없습니다.</td></tr>';
+                return;
+            }
+            if (statusEl) statusEl.textContent = '불러오는 중…';
+            fetch(apiBase + '/api/kyc-blacklist')
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (statusEl) statusEl.textContent = '';
+                    var rows = (data && data.entries) ? data.entries : [];
+                    if (!rows.length) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="no-data">기록이 없습니다.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = rows.map(function (e) {
+                        return '<tr>' +
+                            '<td>' + formatBlacklistAt(e.at) + '</td>' +
+                            '<td>' + escapeHtml(e.storeName != null ? e.storeName : (e.storeId || '—')) + '</td>' +
+                            '<td>' + escapeHtml(e.carrier || '—') + '</td>' +
+                            '<td>' + escapeHtml(e.name || '—') + '</td>' +
+                            '<td>' + escapeHtml(e.ssnDisplay || '—') + '</td>' +
+                            '<td>' + escapeHtml(formatBlacklistPhoneDigits(e.phoneDigits)) + '</td>' +
+                            '<td>' + escapeHtml(e.reason || '—') + '</td>' +
+                            '</tr>';
+                    }).join('');
+                })
+                .catch(function () {
+                    if (statusEl) statusEl.textContent = '';
+                    tbody.innerHTML = '<tr><td colspan="7" class="no-data">목록을 불러오지 못했습니다.</td></tr>';
+                });
+        }
+
+        (function bindBlacklistRefresh() {
+            var btn = document.getElementById('btnBlacklistRefresh');
+            if (btn) btn.addEventListener('click', function () { loadBlacklist(); });
+        })();
 
         function getPointHistoryNote(r) {
             if (!r) return '';
@@ -5948,17 +6091,20 @@
                     '<button type="button" class="btn-edit-store">수수료 수정</button>' +
                     '<button type="button" class="btn-account-store">계정 수정</button>' +
                     '<button type="button" class="btn-qr" data-store-id="' + (s.id || '') + '" data-store-name="' + (s.name || s.id || '').replace(/"/g, '&quot;') + '">QR 확인</button>' +
-                    '<button type="button" class="btn-store-ip">IP 설정</button></div>' +
+                    '<button type="button" class="btn-store-ip">IP 설정</button>' +
+                    '<button type="button" class="btn-store-sms-phones">문자 한도</button></div>' +
                     usageHtml +
                     '</div>';
                 card.addEventListener('click', function (e) {
-                    if (e.target.closest('.btn-qr, .btn-store-ip, .btn-edit-store, .btn-account-store, .store-status-btn, .store-point-balance-btn')) return;
+                    if (e.target.closest('.btn-qr, .btn-store-ip, .btn-store-sms-phones, .btn-edit-store, .btn-account-store, .store-status-btn, .store-point-balance-btn')) return;
                     setStoreFilter(selectedStoreId === s.id ? null : s.id);
                 });
                 card.querySelector('.store-point-balance-btn').addEventListener('click', function (e) { e.stopPropagation(); openStorePointModal(s); });
                 card.querySelector('.btn-qr').addEventListener('click', function (e) { e.stopPropagation(); openStoreQrModal(s.id, s.name || s.id); });
                 var btnIpEl = card.querySelector('.btn-store-ip');
                 if (btnIpEl) btnIpEl.addEventListener('click', function (e) { e.stopPropagation(); openStoreAllowedIpModal(s); });
+                var btnPhoneEl = card.querySelector('.btn-store-sms-phones');
+                if (btnPhoneEl) btnPhoneEl.addEventListener('click', function (e) { e.stopPropagation(); openStoreSmsPerPhoneLimitModal(s); });
                 card.querySelector('.btn-edit-store').addEventListener('click', function (e) { e.stopPropagation(); openStorePricesModal(s); });
                 card.querySelector('.store-status-btn').addEventListener('click', function (e) { e.stopPropagation(); openStoreStatusModal(s); });
                 card.querySelector('.btn-account-store').addEventListener('click', function (e) { e.stopPropagation(); openStoreAccountModal(s); });
@@ -6925,6 +7071,76 @@
             }
         })();
 
+        function parseSmsPerPhoneLimitFromInput(el) {
+            var raw = el && el.value != null ? String(el.value).trim() : '';
+            var n = parseInt(raw, 10);
+            if (!Number.isFinite(n) || n < 0) return 0;
+            return Math.min(n, 9999);
+        }
+        var editingSmsLimitStore = null;
+        function openStoreSmsPerPhoneLimitModal(store) {
+            editingSmsLimitStore = store;
+            var title = document.getElementById('storeSmsPerPhoneLimitModalTitle');
+            var inp = document.getElementById('storeSmsPerPhoneLimitInput');
+            var modal = document.getElementById('storeSmsPerPhoneLimitModal');
+            if (title) title.textContent = (store.name || store.id) + ' · 동일 번호 문자 한도';
+            var lim = store.smsPerPhoneLimit != null && Number(store.smsPerPhoneLimit) >= 1 ? Number(store.smsPerPhoneLimit) : 0;
+            if (inp) inp.value = lim;
+            if (modal) {
+                modal.classList.add('show');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+        }
+        function closeStoreSmsPerPhoneLimitModal() {
+            editingSmsLimitStore = null;
+            var modal = document.getElementById('storeSmsPerPhoneLimitModal');
+            if (modal) {
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        }
+        function saveStoreSmsPerPhoneLimitFromModal() {
+            var apiBase = window.ADMIN_API_BASE || '';
+            var store = editingSmsLimitStore;
+            var inp = document.getElementById('storeSmsPerPhoneLimitInput');
+            if (!store) { closeStoreSmsPerPhoneLimitModal(); return; }
+            if (!apiBase) { alert('API 주소가 설정되지 않았습니다.'); return; }
+            var smsPerPhoneLimit = parseSmsPerPhoneLimitFromInput(inp);
+            var btn = document.getElementById('btnStoreSmsPerPhoneLimitSave');
+            if (btn) btn.disabled = true;
+            fetch(apiBase + '/api/store-sms-per-phone-limit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ storeId: store.id, smsPerPhoneLimit: smsPerPhoneLimit })
+            }).then(function (r) { return r.json(); }).then(function (data) {
+                if (btn) btn.disabled = false;
+                if (data && data.error) { alert(data.error + (data.message ? '\n' + data.message : '')); return; }
+                closeStoreSmsPerPhoneLimitModal();
+                loadStores(true);
+                alert('문자(동일 번호) 한도가 저장되었습니다.');
+            }).catch(function () {
+                if (btn) btn.disabled = false;
+                alert('저장에 실패했습니다.');
+            });
+        }
+        (function bindStoreSmsPerPhoneLimitModal() {
+            var saveBtn = document.getElementById('btnStoreSmsPerPhoneLimitSave');
+            var cancelBtn = document.getElementById('btnStoreSmsPerPhoneLimitCancel');
+            var modalEl = document.getElementById('storeSmsPerPhoneLimitModal');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    saveStoreSmsPerPhoneLimitFromModal();
+                });
+            }
+            if (cancelBtn) cancelBtn.addEventListener('click', closeStoreSmsPerPhoneLimitModal);
+            if (modalEl) {
+                modalEl.addEventListener('click', function (e) {
+                    if (e.target === modalEl) closeStoreSmsPerPhoneLimitModal();
+                });
+            }
+        })();
+
         document.getElementById('formCreateStore').addEventListener('submit', function (e) {
             e.preventDefault();
             var idInput = document.getElementById('inputStoreId');
@@ -6934,7 +7150,9 @@
             var storeName = (nameInput.value || '').trim() || storeId;
             var password = (pwInput.value || '').trim();
             var ipInput = document.getElementById('inputStoreAllowedIps');
+            var smsLimitInput = document.getElementById('inputStoreSmsPerPhoneLimit');
             var allowedIps = ipInput ? parseAllowedIpsText(ipInput.value || '') : [];
+            var smsPerPhoneLimit = parseSmsPerPhoneLimitFromInput(smsLimitInput);
             if (!storeId) { alert('가맹점 로그인 계정을 입력해 주세요.'); return; }
             if (!password) { alert('가맹점 로그인 비밀번호를 입력해 주세요.'); return; }
             var btn = document.getElementById('btnRegister');
@@ -6943,7 +7161,7 @@
             fetch(apiBase + '/api/create-store', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ storeId: storeId, storeName: storeName, password: password, allowedIps: allowedIps })
+                body: JSON.stringify({ storeId: storeId, storeName: storeName, password: password, allowedIps: allowedIps, smsPerPhoneLimit: smsPerPhoneLimit })
             }).then(function (r) {
                 return r.json().then(function (data) {
                     if (!r.ok) throw new Error(data.error || data.message || '생성 실패 (HTTP ' + r.status + ')');
@@ -6973,7 +7191,7 @@
                 var accountEn = getCreateStorePriceToggleRow('account');
                 var integratedEn = getCreateStorePriceToggleRow('integrated');
                 // 생성 직후 목록에 바로 반영 (이후 loadStores로 서버 데이터와 동기화)
-                var newStore = { id: storeId, name: storeName, pointBalance: 0, pointHistory: [], members: [], usage: { sms: { count: 0, amount: 0 }, idDoc: { count: 0, amount: 0 }, account: { count: 0, amount: 0 } }, totalAmount: 0, prices: { sms: sms, idDoc: idDoc, account: account, integrated: integrated || 0, smsEnabled: smsEn, idDocEnabled: idDocEn, accountEnabled: accountEn, integratedEnabled: integratedEn }, suspended: false, withdrawn: false, allowedIps: allowedIps };
+                var newStore = { id: storeId, name: storeName, pointBalance: 0, pointHistory: [], members: [], usage: { sms: { count: 0, amount: 0 }, idDoc: { count: 0, amount: 0 }, account: { count: 0, amount: 0 } }, totalAmount: 0, prices: { sms: sms, idDoc: idDoc, account: account, integrated: integrated || 0, smsEnabled: smsEn, idDocEnabled: idDocEn, accountEnabled: accountEn, integratedEnabled: integratedEn }, suspended: false, withdrawn: false, allowedIps: allowedIps, smsPerPhoneLimit: smsPerPhoneLimit };
                 stores = stores.filter(function (s) { return s.id !== storeId; });
                 stores.push(newStore);
                 updateSummary();
@@ -6983,6 +7201,7 @@
                 nameInput.value = '';
                 pwInput.value = '';
                 if (ipInput) ipInput.value = '';
+                if (smsLimitInput) smsLimitInput.value = '0';
                 btn.disabled = false;
                 closeCreateStoreModal();
                 alert('가맹점이 생성되었습니다.');

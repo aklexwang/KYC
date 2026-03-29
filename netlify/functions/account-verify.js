@@ -1,5 +1,6 @@
 const { getKycData, setKycData, incrementUsage, incrementDailyKycComplete, getStorageErrorHelp } = require('./storage');
 const { verifyHqSessionFromEvent } = require('./hq-session');
+const { telegramNotify, telegramKycLine } = require('./_telegram-notify');
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -297,6 +298,8 @@ async function memberVerifyCode(event, body) {
     if (!wasComplete) {
       await incrementUsage(event, storeId, 'account');
       await incrementDailyKycComplete(event, storeId);
+      const displayName = String((prev && prev.name) || memberName || '').trim();
+      void telegramNotify(telegramKycLine('account', displayName));
     }
     return json(200, { ok: true, match: true });
   } catch (err) {

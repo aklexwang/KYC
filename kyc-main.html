@@ -52,7 +52,7 @@
         }
         @media (max-width: 360px) {
             .wrap { border-radius: 0; border-left: none; border-right: none; }
-            .view-consent .view-body, .view-basicinfo .view-body, .view-identity .view-body,
+            .view-consent .view-body, .view-basicinfo .view-body, .view-id-doc-type .view-body, .view-identity .view-body,
             .view-steps .view-body, .view-account-verify .view-body { padding-left: 16px; padding-right: 16px; }
             .step-item { padding: 10px 4px 8px; }
             .step-num { width: 32px; height: 32px; font-size: 12px; }
@@ -327,7 +327,7 @@
         .basicinfo-ssn-bubble::after { content: ''; position: absolute; top: -6px; left: 21px; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 7px solid #F2F2F7; }
         .basicinfo-ssn-bubble-icon { width: 24px; height: 24px; flex-shrink: 0; background: #FF9500; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: 700; }
         .basicinfo-ssn-bubble-text { font-size: 13px; font-weight: 500; color: #1a1a1a; line-height: 1.5; }
-        .basicinfo-field input[type="text"] { width: 100%; padding: 12px 14px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 16px; font-family: inherit; }
+        .basicinfo-field input[type="text"]:not(.sms-otp-digit) { width: 100%; padding: 12px 14px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 16px; font-family: inherit; }
         .basicinfo-field input::placeholder { color: #C7C7CC; }
         .basicinfo-select { width: 100%; padding: 12px 14px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 16px; font-family: inherit; color: #1a1a1a; background: #fff; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238E8E93' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
         .basicinfo-row { display: flex; gap: 10px; }
@@ -340,7 +340,7 @@
         .phone-verify-row input { flex: 1; min-width: 0; }
         .btn-sms-send { flex-shrink: 0; padding: 12px 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
         .btn-sms-send:disabled { background: #C7C7CC; cursor: not-allowed; }
-        .sms-code-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E5EA; }
+        .sms-code-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E5EA; position: relative; }
         .sms-code-section.hidden { display: none; }
         .sms-verified.hidden { display: none; }
         .basicinfo-info-card { margin-top: 16px; margin-bottom: 16px; padding: 20px 18px; background: #F2F2F7; border-radius: 14px; border-left: 4px solid #1A2F4A; }
@@ -350,8 +350,40 @@
         .basicinfo-info-card .info-card-list li { padding-left: 0; margin-bottom: 6px; position: relative; padding-left: 16px; }
         .basicinfo-info-card .info-card-list li::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 5px; height: 5px; border-radius: 50%; background: #8E8E93; }
         .basicinfo-info-card .info-card-list li:last-child { margin-bottom: 0; }
-        .sms-code-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
-        .sms-code-row input { flex: 1; min-width: 0; max-width: 220px; letter-spacing: 6px; text-align: center; font-size: clamp(16px, 4.5vw, 20px); font-weight: 600; padding: 12px 16px; }
+        .sms-code-hint { font-size: 13px; color: #8E8E93; margin: 0 0 10px 0; line-height: 1.45; }
+        .sms-otp-boxes {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: center;
+            gap: clamp(5px, 1.8vw, 8px);
+            margin-bottom: 12px;
+        }
+        .sms-otp-digit {
+            box-sizing: border-box;
+            width: clamp(42px, 11.5vw, 50px) !important;
+            height: 50px;
+            padding: 0 !important;
+            border: 1px solid #E5E5EA;
+            border-radius: 10px;
+            font-size: clamp(18px, 5vw, 22px);
+            font-weight: 700;
+            text-align: center;
+            font-family: inherit;
+            background: #fff;
+            color: #1a1a1a;
+        }
+        .sms-otp-digit:focus {
+            outline: none;
+            border-color: #007AFF;
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.25);
+        }
+        .sms-otp-digit:disabled,
+        .sms-otp-digit[readonly] {
+            background: #F2F2F7;
+            color: #8E8E93;
+        }
+        .sms-code-verify-row { display: flex; justify-content: stretch; }
+        .sms-code-verify-row .btn-sms-verify { width: 100%; }
         .btn-sms-verify { padding: 12px 20px; background: #1A2F4A; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
         .sms-timer { font-size: 13px; color: #8E8E93; margin-top: 6px; }
         .sms-timer.expired { color: #FF3B30; }
@@ -369,7 +401,7 @@
         .view-basicinfo .basicinfo-field label { color: #0F2A47; }
         .view-basicinfo .basicinfo-field label .required { color: #1863FD; }
         .view-basicinfo .basicinfo-field-hint { color: #6D84A1; }
-        .view-basicinfo .basicinfo-field input[type="text"],
+        .view-basicinfo .basicinfo-field input[type="text"]:not(.sms-otp-digit),
         .view-basicinfo .basicinfo-select { border-color: #B9CAE0; color: #0F2A47; }
         .view-basicinfo .basicinfo-field input::placeholder { color: #9CB0C9; }
         .view-basicinfo .basicinfo-select { background-color: #fff; }
@@ -381,6 +413,40 @@
         .view-basicinfo .btn-sms-send:disabled,
         .view-basicinfo .btn-next:disabled { background: #AFC1D9; }
         .view-basicinfo .sms-code-section { border-top-color: #CAD8E9; }
+        .view-basicinfo .sms-otp-digit { border-color: #B9CAE0; background: #fff; color: #0F2A47; }
+        .view-basicinfo .sms-otp-digit:focus { border-color: #1863FD; box-shadow: 0 0 0 2px rgba(24, 99, 253, 0.28); }
+
+        /* ===== 신분증 종류 선택 (기본정보 → 촬영 전) ===== */
+        .view-id-doc-type .view-body { padding: 0 clamp(16px, 4vw, 20px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; background: #F1F6FF; }
+        .view-id-doc-type .step-indicator { margin-bottom: 8px; }
+        .view-id-doc-type .id-doc-type-title { font-size: clamp(18px, 4.8vw, 22px); font-weight: 700; color: #0F2A47; margin: 12px 0 8px 0; line-height: 1.35; }
+        .view-id-doc-type .id-doc-type-sub { font-size: 14px; color: #6D84A1; line-height: 1.45; margin: 0 0 20px 0; }
+        .id-doc-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+        .id-doc-option {
+            display: flex; align-items: center; gap: 14px;
+            padding: 16px 18px; border-radius: 14px;
+            border: 2px solid #B9CAE0; background: #fff;
+            cursor: pointer; text-align: left; font-size: 16px; font-weight: 600; color: #0F2A47;
+            font-family: inherit; transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .id-doc-option:active { opacity: 0.92; }
+        .id-doc-option .id-doc-option-radio {
+            width: 22px; height: 22px; border-radius: 50%; border: 2px solid #AFC2DB; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .id-doc-option .id-doc-option-radio::after {
+            content: ''; width: 10px; height: 10px; border-radius: 50%; background: transparent;
+        }
+        .id-doc-option.selected {
+            border-color: #1863FD; box-shadow: 0 0 0 1px rgba(24, 99, 253, 0.2);
+        }
+        .id-doc-option.selected .id-doc-option-radio { border-color: #1863FD; }
+        .id-doc-option.selected .id-doc-option-radio::after { background: #1863FD; }
+        .id-doc-option-desc { font-size: 13px; font-weight: 400; color: #6D84A1; margin-top: 4px; line-height: 1.4; }
+        .id-doc-option-text { display: flex; flex-direction: column; }
+        .id-doc-type-privacy { font-size: 12px; color: #6D84A1; line-height: 1.5; margin-top: auto; margin-bottom: 12px; }
+        .view-id-doc-type .btn-next { flex-shrink: 0; margin-top: 0; background: #1863FD; }
+        .view-id-doc-type .btn-next:disabled { background: #AFC1D9; cursor: not-allowed; }
         .btn-next--prompt {
             animation: btn-prompt-pulse 1.8s ease-in-out infinite;
         }
@@ -437,37 +503,114 @@
         }
 
         /* 신분증 인증 화면 (step 2) — 단계 카드 색: 문자인증(기본정보)과 동일 */
-        .view-identity .step-item:not(.active) { background: #DCE7F5; }
-        .view-identity .step-item:not(.active):not(.step-done) .step-num { background: #EDF3FC; color: #2E4D71; border-color: #1863FD; }
+        .view-identity .step-item:not(.active),
+        .view-id-doc-type .step-item:not(.active) { background: #DCE7F5; }
+        .view-identity .step-item:not(.active):not(.step-done) .step-num,
+        .view-id-doc-type .step-item:not(.active):not(.step-done) .step-num { background: #EDF3FC; color: #2E4D71; border-color: #1863FD; }
         .view-identity .view-body { padding: 0 clamp(16px, 4vw, 20px) 24px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
         .view-identity .basicinfo-title { font-size: clamp(13px, 3.5vw, 17px); line-height: 1.35; }
-        .view-identity .step-item.step-done .step-num { background: #1863FD; color: #fff; border-color: #1863FD; }
-        .view-identity .step-item.step-done .step-num svg { stroke: #fff; }
-        .view-identity .step-item.step-done .step-label { color: #5c5c5c; }
+        .view-identity .step-item.step-done .step-num,
+        .view-id-doc-type .step-item.step-done .step-num { background: #1863FD; color: #fff; border-color: #1863FD; }
+        .view-identity .step-item.step-done .step-num svg,
+        .view-id-doc-type .step-item.step-done .step-num svg { stroke: #fff; }
+        .view-identity .step-item.step-done .step-label,
+        .view-id-doc-type .step-item.step-done .step-label { color: #5c5c5c; }
         .identity-desc { font-size: 15px; color: #8E8E93; margin: 0 0 20px 0; line-height: 1.5; }
-        .identity-upload { margin-bottom: 20px; }
-        .identity-upload label { display: block; font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
-        .identity-upload input[type="file"] { display: none; }
-        .identity-upload .upload-btn { display: inline-block; padding: 12px 20px; background: #F2F2F7; color: #1A2F4A; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
-        .identity-upload .upload-btn:active { opacity: 0.8; }
+
+        /* 신분증 인증 — 국제 KYC 스타일 캡처 카드 */
+        .identity-flow-head { text-align: center; margin: 4px 0 22px; padding: 0 4px; }
+        .identity-flow-eyebrow {
+            font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+            color: #1863FD; margin: 0 0 10px 0; opacity: 0.9;
+        }
+        .identity-flow-title-ko {
+            font-size: clamp(19px, 4.8vw, 22px); font-weight: 700; color: #0F2A47; margin: 0 0 8px 0;
+            line-height: 1.35; letter-spacing: -0.02em;
+        }
+        .identity-flow-title-en {
+            font-size: 13px; font-weight: 500; color: #6D84A1; margin: 0 0 22px 0; line-height: 1.4;
+        }
+        .kyc-capture-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px 18px 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 28px rgba(15, 42, 71, 0.07);
+            border: 1px solid rgba(24, 99, 253, 0.1);
+        }
+        .kyc-capture-card:last-of-type { margin-bottom: 20px; }
+        .kyc-capture-card__header {
+            display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px;
+        }
+        .kyc-step-badge {
+            flex-shrink: 0; min-width: 30px; height: 30px; border-radius: 10px;
+            background: linear-gradient(145deg, #1863FD, #0F56E0);
+            color: #fff; font-size: 14px; font-weight: 800; font-family: inherit;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 3px 10px rgba(24, 99, 253, 0.35);
+        }
+        .kyc-capture-card__icon {
+            flex-shrink: 0; width: 48px; height: 48px; border-radius: 14px;
+            background: linear-gradient(160deg, #EEF4FF 0%, #DCE9FC 100%);
+            border: 1px solid rgba(24, 99, 253, 0.15);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .kyc-capture-card__icon svg { width: 26px; height: 26px; stroke: #1863FD; fill: none; stroke-width: 1.75; }
+        .kyc-capture-card__titles { flex: 1; min-width: 0; padding-top: 2px; }
+        .kyc-capture-card__title { font-size: 17px; font-weight: 700; color: #0F2A47; margin: 0 0 4px 0; line-height: 1.25; }
+        .kyc-capture-card__subtitle { font-size: 13px; font-weight: 500; color: #6D84A1; margin: 0; line-height: 1.45; }
+        .kyc-capture-card__subtitle-en { font-size: 12px; color: #8FA4C0; margin-top: 3px; letter-spacing: 0.01em; }
+        .kyc-capture-card input[type="file"] { display: none; }
+        .kyc-capture-cta {
+            width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 15px 18px; border: none; border-radius: 14px; font-size: 16px; font-weight: 600;
+            font-family: inherit; cursor: pointer;
+            -webkit-appearance: none; appearance: none;
+            background: linear-gradient(180deg, #2B7AFF 0%, #1863FD 55%, #1557E5 100%);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(24, 99, 253, 0.38);
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+        }
+        .kyc-capture-cta:active:not(:disabled) { transform: scale(0.985); box-shadow: 0 4px 14px rgba(24, 99, 253, 0.3); }
+        .kyc-capture-cta .kyc-cta-icon { width: 22px; height: 22px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; }
+        .kyc-capture-card__preview { margin-top: 16px; display: flex; justify-content: center; width: 100%; }
         .identity-preview { width: 100%; max-width: 200px; height: 120px; margin-top: 10px; border-radius: 8px; object-fit: cover; border: 1px solid #E5E5EA; }
         .identity-preview.hidden { display: none; }
-        .identity-preview--in-wrap { margin-top: 0; border: none; display: block; }
-        .identity-id-error-msg { font-size: 14px; font-weight: 600; color: #FF3B30; text-align: center; margin: 12px 0 0 0; line-height: 1.5; display: none; }
+        .identity-preview--in-wrap { margin-top: 0; border: none; display: block; width: 100%; }
+        .identity-id-error-msg { font-size: 13px; font-weight: 600; color: #FF3B30; text-align: center; margin: 14px 0 0 0; line-height: 1.5; display: none; }
         .identity-id-error-msg.show { display: block; }
-        .identity-upload-row { display: flex; align-items: flex-start; gap: 12px; margin-top: 0; flex-wrap: wrap; }
-        .identity-upload-row .upload-btn { margin-top: 0; flex-shrink: 0; }
-        .identity-upload-row .id-preview-scan-wrap { margin-top: 0; margin-left: 0; flex-shrink: 0; }
-        .id-preview-scan-wrap { position: relative; display: inline-block; margin-top: 10px; border-radius: 10px; overflow: hidden; border: 2px solid #007AFF; box-shadow: 0 0 16px rgba(0,122,255,0.35); max-width: 200px; }
-        #idDocumentPreviewWrap { margin-left: 1cm; }
-        #faceSelfiePreviewWrap { margin-left: 1cm; }
+        .id-preview-scan-wrap {
+            position: relative; display: block; width: 100%; max-width: min(100%, 300px);
+            margin: 0 auto; border-radius: 14px; overflow: hidden;
+            border: 2px solid #1863FD;
+            box-shadow: 0 8px 28px rgba(24, 99, 253, 0.22);
+        }
         .id-preview-scan-wrap.hidden { display: none; }
-        .id-preview-scan-wrap.scan-done { border-color: #000; box-shadow: 0 0 0 0 transparent; }
+        .id-preview-scan-wrap.scan-done { border-color: #1a1a1a; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); }
         .id-preview-scan-wrap.scan-done .id-scan-line { display: none; }
-        .id-preview-scan-wrap .identity-preview--in-wrap { width: 100%; max-width: 100%; height: 120px; border-radius: 8px; }
-        .id-scan-line { position: absolute; left: 0; right: 0; height: 24px; pointer-events: none; background: linear-gradient(180deg, transparent 0%, rgba(0,122,255,0.15) 20%, rgba(0,122,255,0.5) 50%, rgba(0,122,255,0.15) 80%, transparent 100%); animation: id-scan 2s ease-in-out 2; box-shadow: 0 0 12px rgba(0,122,255,0.4); }
+        .id-preview-scan-wrap .identity-preview--in-wrap {
+            width: 100%; max-width: 100%; height: clamp(128px, 36vw, 168px); border-radius: 12px; object-fit: cover;
+        }
+        .id-scan-line {
+            position: absolute; left: 0; right: 0; height: 26px; pointer-events: none;
+            background: linear-gradient(180deg, transparent 0%, rgba(24, 99, 253, 0.12) 25%, rgba(24, 99, 253, 0.45) 50%, rgba(24, 99, 253, 0.12) 75%, transparent 100%);
+            animation: id-scan 2s ease-in-out 2;
+            box-shadow: 0 0 14px rgba(24, 99, 253, 0.35);
+        }
         @keyframes id-scan { 0% { top: 0; opacity: 1; } 100% { top: 100%; opacity: 1; } }
-        .view-identity .btn-next { margin-top: auto; }
+
+        .view-identity .btn-next {
+            margin-top: auto;
+            border-radius: 14px;
+            min-height: 54px;
+            background: #1863FD;
+            box-shadow: 0 6px 22px rgba(24, 99, 253, 0.28);
+        }
+        .view-identity .btn-next:disabled {
+            background: #AFC1D9;
+            box-shadow: none;
+        }
+        .view-identity .btn-next:not(:disabled):active { opacity: 0.94; }
         .identity-verified-msg { font-size: 14px; font-weight: 600; margin-bottom: 16px; text-align: center; font-family: inherit; line-height: 1.5; }
         .identity-verified-msg.ok { color: #34C759; }
         .identity-verified-msg.fail { color: #FF3B30; }
@@ -946,16 +1089,21 @@
 
         /* ===== 남은 화면 블루 테마 색상 통일 (색상만) ===== */
         .view-identity .view-body,
+        .view-id-doc-type .view-body,
         .view-steps .view-body,
         .view-account-verify .view-body,
         .view-suspended .view-body { background: #F1F6FF; }
         .view-identity .step-item.step-done .step-num,
+        .view-id-doc-type .step-item.step-done .step-num,
         .view-steps .step-item.step-done .step-num,
         .view-account-verify .step-item.step-done .step-num { background: #1863FD; border-color: #1863FD; color: #fff; }
         .view-identity .step-item.step-done .step-label,
+        .view-id-doc-type .step-item.step-done .step-label,
         .view-steps .step-item.step-done .step-label,
         .view-account-verify .step-item.step-done .step-label { color: #2E4D71; }
         .view-identity .basicinfo-title,
+        .view-identity .identity-flow-title-ko,
+        .view-id-doc-type .id-doc-type-title,
         .view-steps .large-title,
         .onwon-title1, .onwon-title2, .onwon-hero-title, .onwon-hero-line--first, .onwon-hero-line--second,
         .onwon-hero-title--waiting,
@@ -965,9 +1113,10 @@
         .view-account-verify .onwon-timer { font-size: 30px; font-weight: 600; letter-spacing: 0.03em; }
         .identity-upload label, .onwon-bank-section h3,
         .onwon-code-row label, .field-row label { color: #0F2A47; }
-        .identity-upload .upload-btn { background: #E6EEFA; color: #1B4D94; border-color: #B9CAE0; }
+        .kyc-capture-card__title { color: #0F2A47; }
+        .kyc-capture-card__subtitle, .kyc-capture-card__subtitle-en { color: #6D84A1; }
         .identity-preview, .identity-result-face { border-color: #B9CAE0; }
-        .id-preview-scan-wrap { border-color: #1863FD; box-shadow: 0 0 16px rgba(24,99,253,0.3); }
+        .id-preview-scan-wrap { border-color: #1863FD; box-shadow: 0 8px 28px rgba(24,99,253,0.22); }
         .identity-result-box { background: #ECF3FF; border-color: #C7D8EE; }
         .identity-result-title, .identity-result-similarity-value { color: #0F2A47; }
         .identity-result-similarity-label, .identity-result-eq { color: #6D84A1; }
@@ -1295,8 +1444,16 @@
                             <button type="button" class="btn-sms-send" id="btnSmsSend">인증번호 받기</button>
                         </div>
                         <div id="smsCodeSection" class="sms-code-section hidden">
-                            <div class="sms-code-row">
-                                <input type="text" id="smsCode" placeholder="인증번호 6자리" inputmode="numeric" maxlength="6">
+                            <p class="sms-code-hint">문자로 온 6자리를 입력하세요. Chrome(안드로이드)에서는 문자에 이 사이트 주소가 포함되면 하단 제안으로 자동 입력될 수 있습니다.</p>
+                            <div class="sms-otp-boxes" role="group" aria-label="인증번호 6자리">
+                                <input type="text" class="sms-otp-digit" id="smsOtp1" inputmode="numeric" maxlength="6" name="one-time-code" autocomplete="one-time-code" autocorrect="off" spellcheck="false" aria-label="인증번호 (자동 입력 시 여기에 채워집니다)">
+                                <input type="text" class="sms-otp-digit" id="smsOtp2" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 2번째">
+                                <input type="text" class="sms-otp-digit" id="smsOtp3" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 3번째">
+                                <input type="text" class="sms-otp-digit" id="smsOtp4" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 4번째">
+                                <input type="text" class="sms-otp-digit" id="smsOtp5" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 5번째">
+                                <input type="text" class="sms-otp-digit" id="smsOtp6" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="인증번호 6번째">
+                            </div>
+                            <div class="sms-code-verify-row">
                                 <button type="button" class="btn-sms-verify" id="btnSmsVerify">인증하기</button>
                             </div>
                             <p id="smsTimer" class="sms-timer">인증번호 유효시간 3:00</p>
@@ -1305,6 +1462,61 @@
                     </div>
                 </div>
                 <button type="button" class="btn-next" id="btnBasicNext">다음</button>
+            </div>
+        </div>
+
+        <!-- 3-1. 신분증 종류 선택 -->
+        <div id="view-id-doc-type" class="view view-id-doc-type">
+            <nav class="nav-bar">
+                <button type="button" class="nav-back js-back" aria-label="뒤로">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </button>
+                <span class="nav-title">고객확인제도</span>
+            </nav>
+            <div class="view-body">
+                <div class="scroll-area">
+                    <div class="step-indicator">
+                        <div class="step-item step-done">
+                            <div class="step-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
+                            <div class="step-label">문자인증</div>
+                        </div>
+                        <div class="step-item active">
+                            <div class="step-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
+                            <div class="step-label">신분증인증</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-num">3</div>
+                            <div class="step-label">계좌인증</div>
+                        </div>
+                    </div>
+                    <h2 class="id-doc-type-title">어떤 신분증을 사용하시나요?</h2>
+                    <p class="id-doc-type-sub">공식정부 신분증만 사용할 수 있습니다. 종류에 맞게 촬영해 주세요.</p>
+                    <div class="id-doc-options" role="radiogroup" aria-label="신분증 종류">
+                        <button type="button" class="id-doc-option selected" role="radio" aria-checked="true" data-doc-type="resident">
+                            <span class="id-doc-option-radio" aria-hidden="true"></span>
+                            <span class="id-doc-option-text">
+                                주민등록증
+                                <span class="id-doc-option-desc">카드 전체·네 모서리와 여백이 보이게 촬영</span>
+                            </span>
+                        </button>
+                        <button type="button" class="id-doc-option" role="radio" aria-checked="false" data-doc-type="drivers">
+                            <span class="id-doc-option-radio" aria-hidden="true"></span>
+                            <span class="id-doc-option-text">
+                                운전면허증
+                                <span class="id-doc-option-desc">앞면 전체가 프레임 안에 들어오게 촬영</span>
+                            </span>
+                        </button>
+                        <button type="button" class="id-doc-option" role="radio" aria-checked="false" data-doc-type="passport">
+                            <span class="id-doc-option-radio" aria-hidden="true"></span>
+                            <span class="id-doc-option-text">
+                                여권
+                                <span class="id-doc-option-desc">사진 식별 페이지가 한 화면에 들어오게 펼쳐서 촬영</span>
+                            </span>
+                        </button>
+                    </div>
+                    <p class="id-doc-type-privacy">선택하신 정보는 본인 확인 목적으로만 사용됩니다.</p>
+                </div>
+                <button type="button" class="btn-next" id="btnIdDocTypeNext">다음</button>
             </div>
         </div>
 
@@ -1332,31 +1544,63 @@
                             <div class="step-label">계좌인증</div>
                         </div>
                     </div>
-                    <h2 class="basicinfo-title" style="text-align: center">신분증 사진과 얼굴 촬영으로 본인인증 진행</h2>
-                    <div class="identity-upload">
-                        <label>1. 신분증 사진</label>
+                    <div class="identity-flow-head">
+                        <p class="identity-flow-eyebrow">Identity verification</p>
+                        <h2 class="identity-flow-title-ko">신분증과 얼굴로 본인을 확인합니다</h2>
+                        <p class="identity-flow-title-en">Verify with your government ID and a live selfie</p>
+                    </div>
+
+                    <section class="kyc-capture-card" aria-labelledby="kycCapIdTitle">
+                        <div class="kyc-capture-card__header">
+                            <span class="kyc-step-badge" aria-hidden="true">1</span>
+                            <div class="kyc-capture-card__icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h10M7 14h6" stroke-linecap="round"/></svg>
+                            </div>
+                            <div class="kyc-capture-card__titles">
+                                <h3 id="kycCapIdTitle" class="kyc-capture-card__title">주민등록증 촬영</h3>
+                                <p id="kycCapIdSubtitle" class="kyc-capture-card__subtitle">앞면 · 네 모서리와 여백이 보이게 촬영해 주세요.</p>
+                                <p id="kycCapIdSubtitleEn" class="kyc-capture-card__subtitle-en">Resident registration card · Front</p>
+                            </div>
+                        </div>
                         <input type="file" id="idDocumentInput" accept="image/*" capture="environment">
-                        <div class="identity-upload-row">
-                            <span class="upload-btn" id="idDocumentBtn">사진 촬영</span>
+                        <button type="button" class="kyc-capture-cta" id="idDocumentBtn">
+                            <svg class="kyc-cta-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            <span>촬영 또는 파일 업로드</span>
+                        </button>
+                        <div class="kyc-capture-card__preview">
                             <div class="id-preview-scan-wrap hidden" id="idDocumentPreviewWrap">
                                 <img id="idDocumentPreview" class="identity-preview identity-preview--in-wrap" alt="신분증 미리보기">
                                 <div class="id-scan-line" aria-hidden="true"></div>
                             </div>
                         </div>
                         <p id="idDocumentErrorMsg" class="identity-id-error-msg" aria-live="polite">신분증이 아닌 것 같습니다. 신분증 전체가 보이도록 다시 촬영해 주세요.</p>
-                    </div>
-                    <div class="identity-upload">
-                        <label>2. 얼굴 촬영 (셀카)</label>
+                    </section>
+
+                    <section class="kyc-capture-card" aria-labelledby="kycCapFaceTitle">
+                        <div class="kyc-capture-card__header">
+                            <span class="kyc-step-badge" aria-hidden="true">2</span>
+                            <div class="kyc-capture-card__icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="3.5"/><path d="M6.5 20.5v-.5a5.5 5.5 0 0111 0v.5" stroke-linecap="round"/></svg>
+                            </div>
+                            <div class="kyc-capture-card__titles">
+                                <h3 id="kycCapFaceTitle" class="kyc-capture-card__title">셀카 촬영</h3>
+                                <p class="kyc-capture-card__subtitle">조명이 밝은 곳에서 얼굴 전체가 보이게</p>
+                                <p class="kyc-capture-card__subtitle-en">Liveness check · Face capture</p>
+                            </div>
+                        </div>
                         <input type="file" id="faceSelfieInput" accept="image/*" capture="user">
-                        <div class="identity-upload-row">
-                            <span class="upload-btn" id="faceSelfieBtn">사진 촬영</span>
+                        <button type="button" class="kyc-capture-cta" id="faceSelfieBtn">
+                            <svg class="kyc-cta-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            <span>촬영 또는 파일 업로드</span>
+                        </button>
+                        <div class="kyc-capture-card__preview">
                             <div class="id-preview-scan-wrap hidden" id="faceSelfiePreviewWrap">
                                 <img id="faceSelfiePreview" class="identity-preview identity-preview--in-wrap" alt="얼굴 미리보기">
                                 <div class="id-scan-line" aria-hidden="true"></div>
                             </div>
                         </div>
                         <p id="faceSelfieErrorMsg" class="identity-id-error-msg" aria-live="polite">얼굴이 보이도록 다시 촬영해 주세요.</p>
-                    </div>
+                    </section>
                     <!-- 분석 결과: 비교 이미지 + 일치율 + 진행 바 -->
                     <div id="identityResultBox" class="identity-result-box" aria-hidden="true">
                         <div class="identity-result-compare">
@@ -1632,8 +1876,12 @@
 
     <script>
         window.KYC_API_BASE = window.KYC_API_BASE || (typeof location !== 'undefined' ? location.origin : '');  // 비우면 같은 사이트(Netlify Functions) 사용
+        /** false면 Didit 신분증(ID) API만 건너뜀. 얼굴은 항상 Didit 패시브 라이브니스+얼굴 매칭 API 사용. 기본 true. */
+        if (typeof window.KYC_USE_DIDIT_ID !== 'boolean') {
+            window.KYC_USE_DIDIT_ID = true;
+        }
         (function () {
-            var viewIds = ['view-consent', 'view-company', 'view-store-confirm', 'view-basicinfo', 'view-identity', 'view-steps', 'view-account-verify', 'view-complete', 'view-suspended'];
+            var viewIds = ['view-consent', 'view-company', 'view-store-confirm', 'view-basicinfo', 'view-id-doc-type', 'view-identity', 'view-steps', 'view-account-verify', 'view-complete', 'view-suspended'];
             var views = {};
             viewIds.forEach(function (id) { views[id] = document.getElementById(id); });
             var wrap = document.getElementById('wrap');
@@ -1665,6 +1913,15 @@
             }
 
             var FIXED_COMPANY_BADGE_TEXT = 'Government-grade security';
+
+            function goToKycFirstScreen() {
+                historyStack.length = 0;
+                showView('view-company');
+                var nameEl = document.getElementById('companyStoreName');
+                if (nameEl) nameEl.textContent = FIXED_COMPANY_BADGE_TEXT;
+            }
+
+            var KYC_MSG_PHONE_ALREADY_USED = '이 번호은 사용된 번호로 이용하실수없습니다.';
 
             function applySuspendedStoreMessage() {
                 var lineEl = document.getElementById('suspendedStoreContactLine');
@@ -1725,6 +1982,25 @@
                 if (historyStack.length) {
                     showView(historyStack.pop());
                 }
+            }
+
+            /** Didit 신분증 API 전송용: 작은 JPEG는 재인코딩해 디테일·용량 확보 */
+            function ensureDiditIdImageDataUrl(rawBase64) {
+                return new Promise(function (resolve) {
+                    if (!rawBase64 || typeof rawBase64 !== 'string') {
+                        resolve('');
+                        return;
+                    }
+                    var approxBytes = Math.floor(rawBase64.length * 0.75);
+                    var dataUrl = 'data:image/jpeg;base64,' + rawBase64;
+                    if (approxBytes >= 220 * 1024) {
+                        resolve(dataUrl);
+                        return;
+                    }
+                    compressDataUrlImage(dataUrl, 2048, 0.93).then(function (out) {
+                        resolve(out && out.indexOf('data:image/') === 0 ? out : dataUrl);
+                    });
+                });
             }
 
             function compressDataUrlImage(dataUrl, maxSide, quality) {
@@ -1890,10 +2166,64 @@
 
             document.getElementById('btnBasicNext').addEventListener('click', function () {
                 sendKycState({ sms: 'complete', idDoc: 'wait', account: 'wait' });
-                goTo('view-identity');
+                goTo('view-id-doc-type');
             });
 
-            // Amazon Rekognition 신분증·얼굴 인증
+            (function initIdDocTypeView() {
+                var opts = document.querySelectorAll('#view-id-doc-type .id-doc-option');
+                var btnNext = document.getElementById('btnIdDocTypeNext');
+                function syncSelection(selectedBtn) {
+                    opts.forEach(function (el) {
+                        var on = el === selectedBtn;
+                        el.classList.toggle('selected', on);
+                        el.setAttribute('aria-checked', on ? 'true' : 'false');
+                    });
+                    try {
+                        window.KYC_SELECTED_ID_DOC_TYPE = selectedBtn ? selectedBtn.getAttribute('data-doc-type') || 'resident' : 'resident';
+                    } catch (e) { window.KYC_SELECTED_ID_DOC_TYPE = 'resident'; }
+                }
+                opts.forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        syncSelection(btn);
+                    });
+                });
+                if (opts.length) syncSelection(document.querySelector('#view-id-doc-type .id-doc-option.selected') || opts[0]);
+                updateKycIdCaptureCardTitle();
+                if (btnNext) {
+                    btnNext.addEventListener('click', function () {
+                        if (btnNext.disabled) return;
+                        var sel = document.querySelector('#view-id-doc-type .id-doc-option.selected');
+                        syncSelection(sel || opts[0]);
+                        updateKycIdCaptureCardTitle();
+                        goTo('view-identity');
+                    });
+                }
+            })();
+
+            function updateKycIdCaptureCardTitle() {
+                var t = '';
+                try { t = String(window.KYC_SELECTED_ID_DOC_TYPE || 'resident'); } catch (e) { t = 'resident'; }
+                var names = { resident: '주민등록증', drivers: '운전면허증', passport: '여권' };
+                var nameKo = names[t] || names.resident;
+                var titleEl = document.getElementById('kycCapIdTitle');
+                if (titleEl) titleEl.textContent = nameKo + ' 촬영';
+                var subKo = {
+                    resident: '앞면 · 네 모서리와 여백이 보이게 촬영해 주세요.',
+                    drivers: '앞면 전체가 선명하게 보이도록 촬영해 주세요.',
+                    passport: '사진·개인정보가 있는 페이지를 펼쳐 한 화면에 담아 주세요.'
+                };
+                var subEn = {
+                    resident: 'Resident registration card · Front',
+                    drivers: "Driver's license · Front",
+                    passport: 'Passport · Photo & data page'
+                };
+                var subEl = document.getElementById('kycCapIdSubtitle');
+                var subEnEl = document.getElementById('kycCapIdSubtitleEn');
+                if (subEl) subEl.textContent = subKo[t] || subKo.resident;
+                if (subEnEl) subEnEl.textContent = subEn[t] || subEn.resident;
+            }
+
+            // Didit 신분증 + 패시브 라이브니스 + 얼굴 매칭 1:1
             (function () {
                 var idDocumentInput = document.getElementById('idDocumentInput');
                 var faceSelfieInput = document.getElementById('faceSelfieInput');
@@ -1953,10 +2283,17 @@
                     }
                 }
 
-                // 신분증 모양 검사: 여권/주민등록증/운전면허증 비율 범위
+                // 신분증 모양 검사: 선택 종류에 따라 비율 허용 범위 (여권은 가로·세로 촬영 모두 고려)
                 var ID_ASPECT_MIN = 1.2;
                 var ID_ASPECT_MAX = 1.95;
                 var ID_MIN_SIDE = 200;
+
+                function getIdAspectBounds() {
+                    var t = '';
+                    try { t = String(window.KYC_SELECTED_ID_DOC_TYPE || 'resident'); } catch (e) { t = 'resident'; }
+                    if (t === 'passport') return { minR: 1.05, maxR: 2.45, allowPortrait: true };
+                    return { minR: ID_ASPECT_MIN, maxR: ID_ASPECT_MAX, allowPortrait: false };
+                }
                 var ID_SCAN_DELAY_MS = 4100;
                 var idDocumentValidateTimer = null;
 
@@ -1967,8 +2304,14 @@
                     var h = imgEl.naturalHeight || imgEl.height;
                     if (!w || !h) { callback(true); return; }
                     var ratio = w / h;
-                    if (ratio < 1) { callback(false); return; }
-                    if (ratio < ID_ASPECT_MIN || ratio > ID_ASPECT_MAX) { callback(false); return; }
+                    var b = getIdAspectBounds();
+                    if (b.allowPortrait) {
+                        var eff = ratio >= 1 ? ratio : 1 / ratio;
+                        if (eff < b.minR || eff > b.maxR) { callback(false); return; }
+                    } else {
+                        if (ratio < 1) { callback(false); return; }
+                        if (ratio < b.minR || ratio > b.maxR) { callback(false); return; }
+                    }
                     if (typeof FaceDetector !== 'undefined') {
                         var detector = new FaceDetector();
                         detector.detect(imgEl).then(function (faces) {
@@ -2309,7 +2652,7 @@
                     var sw = crop.sw;
                     var sh = crop.sh;
                     if (sw <= 0 || sh <= 0) { sw = vidW; sh = vidH; sx = 0; sy = 0; }
-                    var maxLong = 1200;
+                    var maxLong = 1600;
                     var outW = Math.round(sw);
                     var outH = Math.round(sh);
                     if (outW > maxLong || outH > maxLong) {
@@ -2322,7 +2665,7 @@
                     canvas.height = outH;
                     var ctx = canvas.getContext('2d');
                     ctx.drawImage(v, sx, sy, sw, sh, 0, 0, outW, outH);
-                    var dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+                    var dataUrl = canvas.toDataURL('image/jpeg', 0.92);
                     var b64 = dataUrl.indexOf('base64,') !== -1 ? dataUrl.split('base64,')[1] : '';
                     if (b64) {
                         stopIdCaptureStream();
@@ -2470,13 +2813,23 @@
 
                         function fallbackCrop() {
                             if (isIdDocument) {
-                                // 한국 신분증/운전면허: 증명사진이 왼쪽에 있음 → 왼쪽 영역에서 얼굴 구역 크롭
-                                var leftPadding = w * 0.06;
-                                size = Math.min(w * 0.42, h * 0.6);
-                                x = leftPadding;
-                                y = (h - size) * 0.35;
-                                x = Math.max(0, Math.min(x, w - size));
-                                y = Math.max(0, Math.min(y, h - size));
+                                var docKind = '';
+                                try { docKind = String(window.KYC_SELECTED_ID_DOC_TYPE || ''); } catch (e) {}
+                                if (docKind === 'passport') {
+                                    size = Math.min(w, h) * 0.58;
+                                    x = (w - size) / 2;
+                                    y = Math.max(0, (h - size) * 0.28);
+                                    x = Math.max(0, Math.min(x, w - size));
+                                    y = Math.max(0, Math.min(y, h - size));
+                                } else {
+                                    // 한국 주민증/운전면허: 증명사진이 왼쪽
+                                    var leftPadding = w * 0.06;
+                                    size = Math.min(w * 0.42, h * 0.6);
+                                    x = leftPadding;
+                                    y = (h - size) * 0.35;
+                                    x = Math.max(0, Math.min(x, w - size));
+                                    y = Math.max(0, Math.min(y, h - size));
+                                }
                             } else {
                                 size = Math.min(w, h) * 0.75;
                                 x = (w - size) / 2;
@@ -2507,52 +2860,41 @@
                     }
                 }
 
-                // 데모: 두 이미지 픽셀 유사도 계산 (0~100), 서버 없이 클라이언트 판단
-                function computeImageSimilarity(b64A, b64B, callback) {
-                    var size = 48;
-                    var canvas = document.createElement('canvas');
-                    canvas.width = size;
-                    canvas.height = size;
-                    var ctx = canvas.getContext('2d');
-                    function getGrayData(data) {
-                        var out = [];
-                        for (var i = 0; i < data.length; i += 4) {
-                            out.push((data[i] + data[i + 1] + data[i + 2]) / 3);
-                        }
-                        return out;
+                function getIdentityVendorData() {
+                    var sid = '';
+                    try { sid = localStorage.getItem('kyc_store_id') || ''; } catch (e) {}
+                    if (!sid) {
+                        try {
+                            var p = new URLSearchParams(window.location.search);
+                            sid = p.get('store') || p.get('sid') || '';
+                        } catch (e2) {}
                     }
-                    function drawAndGetGray(b64, done) {
-                        var img = new Image();
-                        img.crossOrigin = 'anonymous';
-                        img.onload = function () {
-                            ctx.clearRect(0, 0, size, size);
-                            ctx.drawImage(img, 0, 0, size, size);
-                            var d = ctx.getImageData(0, 0, size, size).data;
-                            done(getGrayData(d));
-                        };
-                        img.onerror = function () { done(null); };
-                        img.src = 'data:image/jpeg;base64,' + b64;
+                    var nameEl = document.getElementById('basicName');
+                    var nm = (nameEl && nameEl.value) ? String(nameEl.value).trim().replace(/;/g, ',') : '';
+                    var docT = '';
+                    try {
+                        docT = String(window.KYC_SELECTED_ID_DOC_TYPE || '').replace(/;/g, ',').trim();
+                    } catch (e3) {}
+                    return 'store:' + sid + ';member:' + nm + (docT ? ';docType:' + docT : '');
+                }
+
+                function finishDiditDocumentRejected(hint) {
+                    btnIdentityVerify.disabled = false;
+                    btnIdentityVerify.classList.remove('btn-next--scanning');
+                    btnIdentityVerify.classList.remove('btn-next--prompt');
+                    var resultBox = document.getElementById('identityResultBox');
+                    if (resultBox) resultBox.classList.remove('show');
+                    identityVerifiedMsg.classList.remove('hidden');
+                    identityVerifiedMsg.classList.remove('ok');
+                    identityVerifiedMsg.classList.add('fail');
+                    var extra = hint ? ' (' + String(hint) + ')' : '';
+                    identityVerifiedMsg.innerHTML = '신분증 검증에 통과하지 못했습니다.' + extra;
+                    btnIdentityVerify.textContent = '다시 인증하기';
+                    identityFailCount++;
+                    if (identityFailCount >= 3) {
+                        sendKycState({ sms: 'complete', idDoc: 'fail', account: 'wait' });
+                        goToSuspendedView();
                     }
-                    drawAndGetGray(b64A, function (grayA) {
-                        if (!grayA || grayA.length === 0) { callback(0); return; }
-                        var img2 = new Image();
-                        img2.onload = function () {
-                            ctx.clearRect(0, 0, size, size);
-                            ctx.drawImage(img2, 0, 0, size, size);
-                            var d = ctx.getImageData(0, 0, size, size).data;
-                            var grayB = getGrayData(d);
-                            if (!grayB || grayB.length !== grayA.length) { callback(0); return; }
-                            var sum = 0;
-                            for (var i = 0; i < grayA.length; i++) {
-                                sum += Math.abs(grayA[i] - grayB[i]);
-                            }
-                            var maxDiff = grayA.length * 255;
-                            var similarity = Math.round(100 * (1 - sum / maxDiff));
-                            callback(Math.max(0, Math.min(100, similarity)));
-                        };
-                        img2.onerror = function () { callback(0); };
-                        img2.src = 'data:image/jpeg;base64,' + b64B;
-                    });
                 }
 
                 btnIdentityVerify.addEventListener('click', function () {
@@ -2590,16 +2932,15 @@
                     }
                     if (!idDocumentBase64 || !faceBase64) return;
                     btnIdentityVerify.disabled = true;
-                    btnIdentityVerify.textContent = 'AWS Rekognition으로 비교 중…';
                     btnIdentityVerify.classList.remove('btn-next--prompt');
                     btnIdentityVerify.classList.add('btn-next--scanning');
                     identityVerifiedMsg.classList.add('hidden');
 
                     var minShowMs = 2500;
                     var t0 = Date.now();
-                    var apiBaseUrl = window.location.origin;
+                    var apiRoot = window.KYC_API_BASE || window.location.origin;
 
-                    function showComparisonResult(similarity, pass) {
+                    function showComparisonResult(similarity, pass, failKind) {
                         var simVal = Number(similarity).toFixed(1);
                         var resultBox = document.getElementById('identityResultBox');
                         var resultIdFace = document.getElementById('identityResultIdFace');
@@ -2627,12 +2968,16 @@
                             btnIdentityVerify.classList.remove('btn-next--prompt');
                             if (pass) {
                                 identityVerified = true;
-                                identityVerifiedMsg.innerHTML = '신분증 사진과 촬영한 얼굴이 동일인으로 확인되었습니다.';
+                                identityVerifiedMsg.innerHTML = 'Didit 얼굴 매칭으로 동일인으로 확인되었습니다.';
                                 btnIdentityVerify.disabled = false;
                                 btnIdentityVerify.textContent = '다음';
                             } else {
                                 identityFailCount++;
-                                identityVerifiedMsg.innerHTML = '신분증 사진과 촬영한 얼굴이 일치하지 않습니다.';
+                                if (failKind === 'liveness') {
+                                    identityVerifiedMsg.innerHTML = '본인 촬영(라이브니스) 확인에 통과하지 못했습니다. 조명을 밝게 하고 가리지 말고 다시 촬영해 주세요.';
+                                } else {
+                                    identityVerifiedMsg.innerHTML = '신분증 사진과 촬영한 얼굴이 일치하지 않습니다. (Didit 얼굴 매칭)';
+                                }
                                 btnIdentityVerify.disabled = false;
                                 btnIdentityVerify.textContent = '다시 인증하기';
                                 if (identityFailCount >= 3) {
@@ -2659,33 +3004,105 @@
                         });
                     }
 
-                    function runWithDelay(similarity, pass) {
+                    function runWithDelay(similarity, pass, failKind) {
                         var elapsed = Date.now() - t0;
                         var wait = Math.max(0, minShowMs - elapsed);
-                        setTimeout(function () { showComparisonResult(similarity, pass); }, wait);
+                        setTimeout(function () { showComparisonResult(similarity, pass, failKind); }, wait);
                     }
 
-                    fetch(apiBaseUrl + '/.netlify/functions/rekognition-compare-faces', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ idDocumentBase64: idDocumentBase64, faceBase64: faceBase64 })
-                    }).then(function (r) { return r.json(); }).then(function (data) {
-                        if (data.success && typeof data.similarity === 'number') {
-                            runWithDelay(data.similarity, data.similarity >= 60);
-                        } else {
-                            computeImageSimilarity(idDocumentBase64, faceBase64, function (similarity) {
-                                runWithDelay(similarity, similarity >= 60);
-                            });
+                    function resetAfterDiditConfigError() {
+                        btnIdentityVerify.disabled = false;
+                        btnIdentityVerify.classList.remove('btn-next--scanning');
+                        btnIdentityVerify.classList.add('btn-next--prompt');
+                    }
+
+                    function runDiditLivenessAndFace(loadingLabel) {
+                        btnIdentityVerify.textContent = loadingLabel || 'Didit 얼굴·라이브니스 검증 중…';
+                        fetch(apiRoot + '/api/didit-liveness-face', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                selfieImageBase64: 'data:image/jpeg;base64,' + faceBase64,
+                                idFrontImageBase64: 'data:image/jpeg;base64,' + idDocumentBase64,
+                                vendorData: getIdentityVendorData()
+                            })
+                        }).then(function (r) { return r.json(); }).then(function (data) {
+                            if (data.error === 'not_configured') {
+                                resetAfterDiditConfigError();
+                                alert('Netlify 환경 변수 DIDIT_API_KEY를 설정한 뒤 재배포해 주세요.');
+                                return;
+                            }
+                            if (data.error === 'didit_error' || data.error === 'upstream') {
+                                var st = data.stage === 'liveness' ? 'liveness' : 'face';
+                                var fs = data.faceScore != null ? data.faceScore : (data.livenessScore != null ? data.livenessScore : 0);
+                                runWithDelay(fs, false, st);
+                                return;
+                            }
+                            if (!data.success) {
+                                var scoreShow = data.stage === 'liveness'
+                                    ? (data.livenessScore != null ? data.livenessScore : 0)
+                                    : (data.faceScore != null ? data.faceScore : 0);
+                                runWithDelay(scoreShow, false, data.stage === 'liveness' ? 'liveness' : 'face');
+                                return;
+                            }
+                            var okScore = data.faceScore != null ? data.faceScore : 100;
+                            runWithDelay(okScore, true, null);
+                        }).catch(function () {
+                            resetAfterDiditConfigError();
+                            alert('네트워크 오류로 얼굴 검증을 완료하지 못했습니다.');
+                        });
+                    }
+
+                    if (!window.KYC_USE_DIDIT_ID) {
+                        runDiditLivenessAndFace('Didit 검증 중…');
+                        return;
+                    }
+
+                    btnIdentityVerify.textContent = '신분증 검증 중…';
+                    ensureDiditIdImageDataUrl(idDocumentBase64).then(function (frontDataUrl) {
+                        if (!frontDataUrl) {
+                            resetAfterDiditConfigError();
+                            finishDiditDocumentRejected('신분증 이미지를 다시 촬영하거나 선택해 주세요.');
+                            return;
                         }
-                    }).catch(function () {
-                        computeImageSimilarity(idDocumentBase64, faceBase64, function (similarity) {
-                            runWithDelay(similarity, similarity >= 60);
+                        fetch(apiRoot + '/api/didit-id-verification', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                frontImageBase64: frontDataUrl,
+                                vendorData: getIdentityVendorData(),
+                                performDocumentLiveness: true
+                            })
+                        }).then(function (r) { return r.json(); }).then(function (data) {
+                            if (data.error === 'not_configured') {
+                                resetAfterDiditConfigError();
+                                alert('Netlify 환경 변수 DIDIT_API_KEY를 설정한 뒤 재배포해 주세요.');
+                                return;
+                            }
+                            if (data.error === 'didit_error' || data.error === 'upstream') {
+                                finishDiditDocumentRejected(data.message || '서버 오류');
+                                return;
+                            }
+                            if (data.error === 'image_too_small') {
+                                finishDiditDocumentRejected(data.message || '이미지 용량이 너무 작습니다. 밝은 곳에서 문서 전체가 보이게 다시 촬영해 주세요.');
+                                return;
+                            }
+                            if (!data.success) {
+                                var w0 = (data.idVerification && data.idVerification.warnings && data.idVerification.warnings[0]);
+                                var hint = (w0 && (w0.short_description || w0.risk)) || data.status || '';
+                                finishDiditDocumentRejected(hint);
+                                return;
+                            }
+                            runDiditLivenessAndFace('Didit 라이브니스·얼굴 매칭 중…');
+                        }).catch(function () {
+                            resetAfterDiditConfigError();
+                            alert('네트워크 오류로 신분증 검증을 완료하지 못했습니다.');
                         });
                     });
                 });
             })();
 
-            // AWS 문자 인증 (SMS) UI
+            // 문자 인증 (SMS) UI — Web OTP: 첫 칸 autocomplete=one-time-code + credentials.get
             (function () {
                 var basicCarrier = document.getElementById('basicCarrier');
                 var basicName = document.getElementById('basicName');
@@ -2693,7 +3110,14 @@
                 var basicPhone = document.getElementById('basicPhone');
                 var btnSmsSend = document.getElementById('btnSmsSend');
                 var smsCodeSection = document.getElementById('smsCodeSection');
-                var smsCode = document.getElementById('smsCode');
+                var smsCodeInputs = [
+                    document.getElementById('smsOtp1'),
+                    document.getElementById('smsOtp2'),
+                    document.getElementById('smsOtp3'),
+                    document.getElementById('smsOtp4'),
+                    document.getElementById('smsOtp5'),
+                    document.getElementById('smsOtp6')
+                ];
                 var btnSmsVerify = document.getElementById('btnSmsVerify');
                 var smsTimer = document.getElementById('smsTimer');
                 var smsVerified = document.getElementById('smsVerified');
@@ -2704,13 +3128,119 @@
                 var lastSentPhone = '';
                 var smsVerifiedDone = false;
                 var smsFailCount = 0;
+                var smsOtpAbort = null;
+
+                function abortSmsOtpListen() {
+                    if (smsOtpAbort) {
+                        try { smsOtpAbort.abort(); } catch (eAbort) {}
+                        smsOtpAbort = null;
+                    }
+                }
+
+                function smsOtpJoin() {
+                    return smsCodeInputs.map(function (el) {
+                        return (el && el.value) ? String(el.value).replace(/\D/g, '') : '';
+                    }).join('');
+                }
+
+                function smsOtpFillFromString(s) {
+                    var d = String(s || '').replace(/\D/g, '').slice(0, 6);
+                    for (var i = 0; i < 6; i++) {
+                        if (smsCodeInputs[i]) smsCodeInputs[i].value = d.charAt(i) || '';
+                    }
+                }
+
+                function smsOtpClear() {
+                    smsOtpFillFromString('');
+                }
+
+                function smsOtpSetDisabled(dis) {
+                    smsCodeInputs.forEach(function (el) {
+                        if (el) el.disabled = !!dis;
+                    });
+                }
+
+                function startSmsOtpListen() {
+                    abortSmsOtpListen();
+                    if (!window.isSecureContext) return;
+                    if (!navigator.credentials || typeof navigator.credentials.get !== 'function') return;
+                    var ac = new AbortController();
+                    smsOtpAbort = ac;
+                    var to = setTimeout(function () {
+                        try { ac.abort(); } catch (eAbort2) {}
+                    }, 180000);
+                    navigator.credentials.get({
+                        otp: { transport: ['sms'] },
+                        signal: ac.signal
+                    }).then(function (cred) {
+                        clearTimeout(to);
+                        if (cred && cred.code) {
+                            smsOtpFillFromString(cred.code);
+                            if (smsCodeInputs[5]) smsCodeInputs[5].focus();
+                        }
+                    }).catch(function () {
+                        clearTimeout(to);
+                    }).finally(function () {
+                        if (smsOtpAbort === ac) smsOtpAbort = null;
+                    });
+                }
+
+                function wireSmsOtpDigits() {
+                    smsCodeInputs.forEach(function (el, i) {
+                        if (!el) return;
+                        el.addEventListener('input', function () {
+                            var v = (this.value || '').replace(/\D/g, '');
+                            if (v.length > 1) {
+                                smsOtpFillFromString(v);
+                                var fi = Math.min(v.length, 6) - 1;
+                                if (fi >= 0 && smsCodeInputs[fi]) smsCodeInputs[fi].focus();
+                                return;
+                            }
+                            this.value = v;
+                            if (v && i < 5 && smsCodeInputs[i + 1]) smsCodeInputs[i + 1].focus();
+                        });
+                        el.addEventListener('keydown', function (e) {
+                            if (e.key === 'Backspace' && !this.value && i > 0 && smsCodeInputs[i - 1]) {
+                                smsCodeInputs[i - 1].focus();
+                            }
+                        });
+                    });
+                }
 
                 function apiBase() { return window.location.origin; }
 
+                function kycPostBlacklistAttempt(phoneDigits, reason) {
+                    try {
+                        var carrierEl = document.getElementById('basicCarrier');
+                        var carrier = '';
+                        if (carrierEl && carrierEl.options && carrierEl.selectedIndex >= 0) {
+                            carrier = (carrierEl.options[carrierEl.selectedIndex].text || carrierEl.value || '').trim();
+                        }
+                        var nm = (basicName && basicName.value) ? String(basicName.value).trim() : '';
+                        var ssnVal = (basicSsn && basicSsn.value) ? String(basicSsn.value) : '';
+                        fetch(apiBase() + '/api/kyc-blacklist', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                storeId: getKycStoreId(),
+                                carrier: carrier,
+                                name: nm,
+                                ssn: ssnVal,
+                                phone: phoneDigits,
+                                reason: reason
+                            })
+                        }).catch(function () {});
+                    } catch (e) {}
+                }
+
                 function showCodeSection() {
+                    abortSmsOtpListen();
                     smsCodeSection.classList.remove('hidden');
                     smsVerified.classList.add('hidden');
-                    smsCode.value = '';
+                    smsOtpClear();
+                    smsOtpSetDisabled(false);
+                    if (btnSmsVerify) btnSmsVerify.disabled = false;
+                    smsTimer.classList.remove('expired');
                     countdownSec = 180;
                     updateTimerText();
                     if (timerInterval) clearInterval(timerInterval);
@@ -2719,10 +3249,20 @@
                         updateTimerText();
                         if (countdownSec <= 0) {
                             clearInterval(timerInterval);
+                            timerInterval = null;
+                            abortSmsOtpListen();
                             smsTimer.classList.add('expired');
                             smsTimer.textContent = '인증번호가 만료되었습니다. 다시 받아 주세요.';
                         }
                     }, 1000);
+                    requestAnimationFrame(function () {
+                        requestAnimationFrame(function () {
+                            if (smsCodeInputs[0]) {
+                                try { smsCodeInputs[0].focus(); } catch (eFocus) {}
+                            }
+                            startSmsOtpListen();
+                        });
+                    });
                 }
 
                 function updateTimerText() {
@@ -2735,10 +3275,11 @@
 
                 function setVerified() {
                     smsVerifiedDone = true;
+                    abortSmsOtpListen();
                     if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
                     smsCodeSection.classList.add('hidden');
                     smsVerified.classList.remove('hidden');
-                    smsCode.disabled = true;
+                    smsOtpSetDisabled(true);
                     btnSmsVerify.disabled = true;
                     btnSmsSend.disabled = true;
                     updateNextButton();
@@ -2748,6 +3289,7 @@
                     btnBasicNext.disabled = !smsVerifiedDone;
                 }
                 updateNextButton();
+                wireSmsOtpDigits();
 
                 /** 주민등록번호 7자리(생년월일6+성별1) 유효성: 날짜 존재 여부, 성별코드 0~9 */
                 function isValidSsn7(ssn7) {
@@ -2822,26 +3364,69 @@
                         alert('휴대폰 번호를 올바르게 입력해 주세요.');
                         return;
                     }
-                    btnSmsSend.disabled = true;
-                    lastSentPhone = phone;
+                    function proceedSendOtp() {
+                        btnSmsSend.disabled = true;
+                        lastSentPhone = phone;
+                        var sendOtpCooldownMs = 0;
+                        fetch(apiBase() + '/.netlify/functions/send-otp', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ phoneNumber: phone, storeId: getKycStoreId() })
+                        }).then(function (r) {
+                            return r.json().then(function (data) {
+                                return { ok: r.ok, data: data };
+                            });
+                        }).then(function (res) {
+                            if (!res.ok) {
+                                if (res.data && res.data.error === 'phone_already_sms_verified') {
+                                    kycPostBlacklistAttempt(phone, 'phone_already_sms_verified');
+                                    alert(KYC_MSG_PHONE_ALREADY_USED);
+                                    goToKycFirstScreen();
+                                    btnSmsSend.disabled = false;
+                                    return;
+                                }
+                                var msg = (res.data && res.data.message) || (res.data && res.data.error) || '인증 문자 발송에 실패했습니다.';
+                                alert(msg);
+                                btnSmsSend.disabled = false;
+                                return;
+                            }
+                            sendOtpCooldownMs = 60000;
+                            showCodeSection();
+                            if (res.data && res.data.code) alert('(테스트) 인증번호: ' + res.data.code);
+                        }).catch(function () {
+                            sendOtpCooldownMs = 60000;
+                            showCodeSection();
+                            showTestAuthModal('123456');
+                        }).finally(function () {
+                            if (sendOtpCooldownMs > 0) {
+                                setTimeout(function () { btnSmsSend.disabled = false; }, sendOtpCooldownMs);
+                            }
+                        });
+                    }
 
-                    fetch(apiBase() + '/.netlify/functions/send-otp', {
+                    fetch(apiBase() + '/api/check-phone-used', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ phoneNumber: phone })
-                    }).then(function (r) { return r.json(); }).then(function (data) {
-                        showCodeSection();
-                        if (data.code) alert('(테스트) 인증번호: ' + data.code);
+                        body: JSON.stringify({ phoneNumber: phone, storeId: getKycStoreId() })
+                    }).then(function (r) {
+                        return r.json().then(function (data) {
+                            return { ok: r.ok, data: data };
+                        });
+                    }).then(function (res) {
+                        if (res.ok && res.data && res.data.used === true) {
+                            kycPostBlacklistAttempt(phone, 'phone_already_in_use');
+                            alert(KYC_MSG_PHONE_ALREADY_USED);
+                            goToKycFirstScreen();
+                            return;
+                        }
+                        proceedSendOtp();
                     }).catch(function () {
-                        showCodeSection();
-                        showTestAuthModal('123456');
-                    }).finally(function () {
-                        setTimeout(function () { btnSmsSend.disabled = false; }, 60000);
+                        proceedSendOtp();
                     });
                 });
 
                 btnSmsVerify.addEventListener('click', function () {
-                    var code = (smsCode.value || '').trim();
+                    var code = smsOtpJoin();
                     if (code.length !== 6) {
                         alert('인증번호 6자리를 입력해 주세요.');
                         return;
@@ -2850,11 +3435,13 @@
                     fetch(apiBase() + '/.netlify/functions/verify-otp', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ phoneNumber: lastSentPhone, code: code })
+                        body: JSON.stringify({ phoneNumber: lastSentPhone, code: code, storeId: getKycStoreId() })
                     }).then(function (r) { return r.json(); }).then(function (data) {
                         if (data.success) setVerified();
                         else {
                             smsFailCount++;
+                            smsOtpClear();
+                            if (smsCodeInputs[0]) smsCodeInputs[0].focus();
                             if (smsFailCount >= 3) goToSuspendedView();
                             else showWrongAuthModal(3 - smsFailCount);
                         }
@@ -2862,6 +3449,8 @@
                         if (code === '123456') setVerified();
                         else {
                             smsFailCount++;
+                            smsOtpClear();
+                            if (smsCodeInputs[0]) smsCodeInputs[0].focus();
                             if (smsFailCount >= 3) goToSuspendedView();
                             else showWrongAuthModal(3 - smsFailCount);
                         }

@@ -450,6 +450,146 @@ async function setStoreAllowedIpsForStore(event, storeId, ips) {
   await setStoreAllowedIpsMap(event, next);
 }
 
+/**
+ * 가맹점별 동일 휴대폰 번호로 인증 문자 발송 허용 횟수.
+ * 맵에 값이 없음 = 미설정(발송 횟수는 무제한이나, 전역 ‘이미 인증된 번호’ 차단은 적용).
+ * 맵에 0을 명시 = 제한 없음 + 해당 가맹점 QR에서는 전역 중복 번호 차단 생략.
+ */
+function parseSmsPerPhoneLimitRaw(raw) {
+  const n = typeof raw === 'number' ? raw : parseInt(String(raw ?? '').trim(), 10);
+  if (!Number.isFinite(n) || n < 1) return 0;
+  return Math.min(Math.floor(n), 9999);
+}
+
+async function getStoreSmsPerPhoneLimitMap(event) {
+  if (USE_UPSTASH) {
+    const p = await upstashGet('kyc_store_sms_per_phone_limit');
+    return p && typeof p === 'object' && !Array.isArray(p) ? p : {};
+  }
+  const store = await blobsGetStore(event);
+  const raw = await store.get('store_sms_per_phone_limit');
+  if (!raw) return {};
+  try {
+    const p = JSON.parse(typeof raw === 'string' ? raw : String(raw));
+    return typeof p === 'object' && p !== null && !Array.isArray(p) ? p : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+async function setStoreSmsPerPhoneLimitMap(event, map) {
+  const obj = typeof map === 'object' && map !== null && !Array.isArray(map) ? map : {};
+  if (USE_UPSTASH) {
+    await upstashSet('kyc_store_sms_per_phone_limit', obj);
+    return;
+  }
+  const store = await blobsGetStore(event);
+  await store.set('store_sms_per_phone_limit', JSON.stringify(obj));
+}
+
+async function getStoreSmsPerPhoneLimitForStore(event, storeId) {
+  const sid = String(storeId ?? '').trim();
+  const map = await getStoreSmsPerPhoneLimitMap(event);
+  const v = map[sid];
+  return parseSmsPerPhoneLimitRaw(v);
+}
+
+/**
+ * storeId 없음 → 항상 전역 중복(이미 문자 인증된 번호) 차단.
+ * 한도 맵에 해당 가맹점 키 없음 → 차단 적용(기본).
+ * 맵에 0이 명시됐을 때만 전역 중복 차단 생략.
+ */
+async function shouldApplyGlobalSmsDuplicateBlock(event, storeId) {
+  const sid = String(storeId ?? '').trim();
+  if (!sid) return true;
+  const map = await getStoreSmsPerPhoneLimitMap(event);
+  if (!Object.prototype.hasOwnProperty.call(map, sid)) return true;
+  const limit = parseSmsPerPhoneLimitRaw(map[sid]);
+  return limit >= 1;
+}
+
+async function setStoreSmsPerPhoneLimitForStore(event, storeId, rawLimit) {
+  const sid = String(storeId).trim();
+  if (!sid) return;
+  const map = await getStoreSmsPerPhoneLimitMap(event);
+  const next = { ...map };
+  if (rawLimit == null || (typeof rawLimit === 'string' && rawLimit.trim() === '')) {
+    delete next[sid];
+    await setStoreSmsPerPhoneLimitMap(event, next);
+    return;
+  }
+  const limit = parseSmsPerPhoneLimitRaw(rawLimit);
+  if (limit < 1) {
+    next[sid] = 0;
+  } else {
+    next[sid] = limit;
+  }
+  await setStoreSmsPerPhoneLimitMap(event, next);
+}
+
+/** { storeId: { phoneKey: 발송 성공 횟수 } } */
+async function getSmsSendCountsByStore(event) {
+  if (USE_UPSTASH) {
+    const p = await upstashGet('kyc_sms_send_counts_by_store');
+    return p && typeof p === 'object' && !Array.isArray(p) ? p : {};
+  }
+  const store = await blobsGetStore(event);
+  const raw = await store.get('store_sms_send_counts');
+  if (!raw) return {};
+  try {
+    const p = JSON.parse(typeof raw === 'string' ? raw : String(raw));
+    return typeof p === 'object' && p !== null && !Array.isArray(p) ? p : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+async function setSmsSendCountsByStore(event, map) {
+  const obj = typeof map === 'object' && map !== null && !Array.isArray(map) ? map : {};
+  if (USE_UPSTASH) {
+    await upstashSet('kyc_sms_send_counts_by_store', obj);
+    return;
+  }
+  const store = await blobsGetStore(event);
+  await store.set('store_sms_send_counts', JSON.stringify(obj));
+}
+
+async function getSmsSendCountForStorePhone(event, storeId, phoneDigits) {
+  const sid = String(storeId ?? '').trim();
+  const key = phoneKeyKrFromDigits(phoneDigits);
+  if (!key) return 0;
+  const all = await getSmsSendCountsByStore(event);
+  const sub = all[sid];
+  if (!sub || typeof sub !== 'object') return 0;
+  const c = sub[key];
+  const n = Number(c);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+}
+
+async function incrementSmsSendCountForStorePhone(event, storeId, phoneDigits) {
+  const sid = String(storeId ?? '').trim();
+  const key = phoneKeyKrFromDigits(phoneDigits);
+  if (!key) return;
+  try {
+    const all = await getSmsSendCountsByStore(event);
+    const next = { ...all };
+    const sub = { ...(typeof next[sid] === 'object' && next[sid] !== null ? next[sid] : {}) };
+    sub[key] = (Number(sub[key]) || 0) + 1;
+    next[sid] = sub;
+    await setSmsSendCountsByStore(event, next);
+  } catch (e) {
+    console.error('incrementSmsSendCountForStorePhone', e);
+  }
+}
+
+async function isSmsSendAllowedForStorePhone(event, storeId, phoneDigits) {
+  const limit = await getStoreSmsPerPhoneLimitForStore(event, storeId);
+  if (limit < 1) return { ok: true, limit: 0, used: 0 };
+  const used = await getSmsSendCountForStorePhone(event, storeId, phoneDigits);
+  if (used >= limit) return { ok: false, limit, used };
+  return { ok: true, limit, used };
+}
+
 async function deleteStore(event, storeId) {
   if (storeId == null) return;
   let sid = String(storeId).trim();
@@ -458,7 +598,7 @@ async function deleteStore(event, storeId) {
   const keysToPurge = new Set([sid]);
   if (sid === '') keysToPurge.add('미지정');
 
-  const [kycData, passwords, storePrices, counts, suspended, pointsMapRaw, allowedIpsMapRaw, dailyMapRaw] = await Promise.all([
+  const [kycData, passwords, storePrices, counts, suspended, pointsMapRaw, allowedIpsMapRaw, smsLimitMapRaw, smsSendCountsRaw, dailyMapRaw] = await Promise.all([
     getKycData(event),
     getStorePasswords(event),
     getStorePrices(event),
@@ -466,10 +606,14 @@ async function deleteStore(event, storeId) {
     getSuspendedStores(event),
     getStorePointsMap(event).catch(() => ({})),
     getStoreAllowedIpsMap(event).catch(() => ({})),
+    getStoreSmsPerPhoneLimitMap(event).catch(() => ({})),
+    getSmsSendCountsByStore(event).catch(() => ({})),
     getUsageDaily(event).catch(() => ({})),
   ]);
   const pointsMap = typeof pointsMapRaw === 'object' && pointsMapRaw !== null ? { ...pointsMapRaw } : {};
   const allowedIpsMap = typeof allowedIpsMapRaw === 'object' && allowedIpsMapRaw !== null ? { ...allowedIpsMapRaw } : {};
+  const smsLimitMap = typeof smsLimitMapRaw === 'object' && smsLimitMapRaw !== null ? { ...smsLimitMapRaw } : {};
+  const smsSendCounts = typeof smsSendCountsRaw === 'object' && smsSendCountsRaw !== null ? { ...smsSendCountsRaw } : {};
   const dailyMap = typeof dailyMapRaw === 'object' && dailyMapRaw !== null ? { ...dailyMapRaw } : {};
   const data = { ...kycData.data };
   const namesObj = { ...kycData.names };
@@ -486,6 +630,8 @@ async function deleteStore(event, storeId) {
     delete susp[k];
     delete pointsMap[k];
     delete allowedIpsMap[k];
+    delete smsLimitMap[k];
+    delete smsSendCounts[k];
     delete dailyMap[k];
   });
   await setKycData(event, data, namesObj);
@@ -504,6 +650,8 @@ async function deleteStore(event, storeId) {
   }
   await setStorePointsMap(event, pointsMap);
   await setStoreAllowedIpsMap(event, allowedIpsMap);
+  await setStoreSmsPerPhoneLimitMap(event, smsLimitMap);
+  await setSmsSendCountsByStore(event, smsSendCounts);
 }
 
 function getStorageErrorHelp() {
@@ -671,10 +819,158 @@ async function setWalletIssuance(event, obj) {
   await store.set('wallet_issuance', JSON.stringify(data));
 }
 
+const KYC_BLACKLIST_LOG_KEY = 'kyc_blacklist_attempts';
+const KYC_BLACKLIST_MAX = 5000;
+
+async function getKycBlacklistEntries(event) {
+  if (USE_UPSTASH) {
+    const p = await upstashGet(KYC_BLACKLIST_LOG_KEY);
+    return Array.isArray(p) ? p : [];
+  }
+  const store = await blobsGetStore(event);
+  const raw = await store.get('kyc_blacklist_attempts');
+  if (!raw) return [];
+  try {
+    const p = JSON.parse(typeof raw === 'string' ? raw : String(raw));
+    return Array.isArray(p) ? p : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+async function setKycBlacklistEntries(event, entries) {
+  const arr = Array.isArray(entries) ? entries.slice(0, KYC_BLACKLIST_MAX) : [];
+  if (USE_UPSTASH) {
+    await upstashSet(KYC_BLACKLIST_LOG_KEY, arr);
+    return;
+  }
+  const store = await blobsGetStore(event);
+  await store.set('kyc_blacklist_attempts', JSON.stringify(arr));
+}
+
+/** 이미 사용된 번호 등으로 문자 인증을 시도한 사람 기록 (본사 블랙리스트 화면) */
+async function appendKycBlacklistEntry(event, row) {
+  const sid = String(row.storeId || '').trim();
+  let storeName = String(row.storeName || '').trim();
+  if (!storeName && sid) {
+    try {
+      const { names } = await getKycData(event);
+      if (names && typeof names === 'object' && names[sid] != null && String(names[sid]).trim()) {
+        storeName = String(names[sid]).trim();
+      }
+    } catch (e) {}
+  }
+  if (!storeName) storeName = sid ? sid : '—';
+
+  const phoneDigits = String(row.phone || '').replace(/\D/g, '').slice(0, 15);
+  const ssnRaw = String(row.ssn || '').replace(/\D/g, '');
+  let ssnDisplay = '—';
+  if (ssnRaw.length >= 7) {
+    ssnDisplay = `${ssnRaw.slice(0, 6)}-${ssnRaw.slice(6, 7)}`;
+  } else if (ssnRaw.length > 0) {
+    ssnDisplay = ssnRaw;
+  }
+
+  const entry = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+    at: new Date().toISOString(),
+    storeId: sid,
+    storeName: storeName.slice(0, 120),
+    carrier: String(row.carrier || '').trim().slice(0, 40),
+    name: String(row.name || '').trim().slice(0, 80),
+    ssnDisplay,
+    phoneDigits,
+    reason: String(row.reason || '').trim().slice(0, 80),
+  };
+
+  const list = await getKycBlacklistEntries(event);
+  const next = [entry, ...list].slice(0, KYC_BLACKLIST_MAX);
+  await setKycBlacklistEntries(event, next);
+  return entry;
+}
+
+const SMS_VERIFIED_PHONES_KEY = 'kyc_sms_verified_phone_keys';
+
+/** 010… / 10… / 82… → 비교용 10자리 키 (예: 1090074164) */
+function phoneKeyKrFromDigits(digits) {
+  let d = String(digits || '').replace(/\D/g, '');
+  if (!d) return '';
+  if (d.startsWith('82')) d = d.slice(2);
+  if (d.startsWith('0') && d.length >= 10) d = d.slice(1);
+  if (d.length === 10 && /^10\d{8}$/.test(d)) return d;
+  return '';
+}
+
+async function getSmsVerifiedPhoneMap(event) {
+  if (USE_UPSTASH) {
+    const o = await upstashGet(SMS_VERIFIED_PHONES_KEY);
+    return o && typeof o === 'object' && !Array.isArray(o) ? o : {};
+  }
+  const store = await blobsGetStore(event);
+  const raw = await store.get('sms_verified_phones');
+  if (!raw) return {};
+  try {
+    const p = JSON.parse(typeof raw === 'string' ? raw : String(raw));
+    return p && typeof p === 'object' && !Array.isArray(p) ? p : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+async function markPhoneSmsVerifiedGlobally(event, phoneDigits) {
+  const key = phoneKeyKrFromDigits(phoneDigits);
+  if (!key) return;
+  try {
+    const map = await getSmsVerifiedPhoneMap(event);
+    map[key] = true;
+    if (USE_UPSTASH) {
+      await upstashSet(SMS_VERIFIED_PHONES_KEY, map);
+    } else {
+      const store = await blobsGetStore(event);
+      await store.set('sms_verified_phones', JSON.stringify(map));
+    }
+  } catch (e) {
+    console.error('markPhoneSmsVerifiedGlobally', e);
+  }
+}
+
+async function kycDataHasSmsCompleteForPhone(event, phoneDigits) {
+  const want = phoneKeyKrFromDigits(phoneDigits);
+  if (!want) return false;
+  const { data } = await getKycData(event);
+  const obj = data && typeof data === 'object' ? data : {};
+  const keys = Object.keys(obj);
+  for (let i = 0; i < keys.length; i++) {
+    const list = Array.isArray(obj[keys[i]]) ? obj[keys[i]] : [];
+    for (let j = 0; j < list.length; j++) {
+      const m = list[j];
+      if (!m || m.sms !== 'complete') continue;
+      if (phoneKeyKrFromDigits(m.phone || '') === want) return true;
+    }
+  }
+  return false;
+}
+
+/** Didit/앱 기준: 동일 번호로 문자 인증을 다시 보내지 않음 */
+async function isPhoneSmsVerifiedGlobally(event, phoneDigits) {
+  const want = phoneKeyKrFromDigits(phoneDigits);
+  if (!want) return false;
+  try {
+    const map = await getSmsVerifiedPhoneMap(event);
+    if (map[want] === true) return true;
+    return await kycDataHasSmsCompleteForPhone(event, phoneDigits);
+  } catch (e) {
+    console.error('isPhoneSmsVerifiedGlobally', e);
+    return false;
+  }
+}
+
 module.exports = {
   getKycData,
   setKycData,
   getStorageErrorHelp,
+  isPhoneSmsVerifiedGlobally,
+  markPhoneSmsVerifiedGlobally,
   getUsagePrices,
   setUsagePrices,
   getUsageCounts,
@@ -701,10 +997,18 @@ module.exports = {
   getStoreAllowedIpsMap,
   setStoreAllowedIpsForStore,
   normalizeAllowedIpsInput,
+  getStoreSmsPerPhoneLimitMap,
+  setStoreSmsPerPhoneLimitForStore,
+  getStoreSmsPerPhoneLimitForStore,
+  shouldApplyGlobalSmsDuplicateBlock,
+  isSmsSendAllowedForStorePhone,
+  incrementSmsSendCountForStorePhone,
   USE_UPSTASH,
   getHqAdmins,
   setHqAdmins,
   ensureDefaultHqAdminIfEmpty,
   getWalletIssuance,
   setWalletIssuance,
+  getKycBlacklistEntries,
+  appendKycBlacklistEntry,
 };

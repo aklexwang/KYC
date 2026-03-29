@@ -6,6 +6,7 @@ const {
   getSuspendedStores,
   getStorePointsMap,
   getStoreAllowedIpsMap,
+  getStoreSmsPerPhoneLimitMap,
   getStorageErrorHelp,
 } = require('./storage');
 
@@ -19,7 +20,7 @@ exports.handler = async (event, context) => {
   const onlyStoreId = typeof qs.storeId === 'string' ? qs.storeId.trim() : '';
 
   try {
-    const [kycResult, globalPrices, counts, storePricesMap, suspendedMap, pointsMap, allowedIpsMap] = await Promise.all([
+    const [kycResult, globalPrices, counts, storePricesMap, suspendedMap, pointsMap, allowedIpsMap, smsPerPhoneLimitMap] = await Promise.all([
       getKycData(event),
       getUsagePrices(event).catch(() => ({ sms: 100, idDoc: 200, account: 150, integrated: 0 })),
       getUsageCounts(event).catch(() => ({})),
@@ -27,9 +28,11 @@ exports.handler = async (event, context) => {
       getSuspendedStores(event).catch(() => ({})),
       getStorePointsMap(event).catch(() => ({})),
       getStoreAllowedIpsMap(event).catch(() => ({})),
+      getStoreSmsPerPhoneLimitMap(event).catch(() => ({})),
     ]);
     const pointsByStore = typeof pointsMap === 'object' && pointsMap !== null ? pointsMap : {};
     const ipsByStore = typeof allowedIpsMap === 'object' && allowedIpsMap !== null ? allowedIpsMap : {};
+    const smsLimitByStore = typeof smsPerPhoneLimitMap === 'object' && smsPerPhoneLimitMap !== null ? smsPerPhoneLimitMap : {};
     const { data, names } = kycResult;
     const dataObj = typeof data === 'object' && data !== null ? data : {};
     const namesObj = typeof names === 'object' && names !== null ? names : {};
@@ -56,6 +59,11 @@ exports.handler = async (event, context) => {
       const pb = pbRaw != null && !isNaN(Number(pbRaw)) ? Math.round(Number(pbRaw) * 2) / 2 : 0;
       const ph = Array.isArray(pt.pointHistory) ? pt.pointHistory : [];
       const allowedIps = Array.isArray(ipsByStore[id]) ? ipsByStore[id] : [];
+      const rawLim = smsLimitByStore[id];
+      const smsPerPhoneLimit =
+        rawLim != null && String(rawLim).trim() !== '' && Number.isFinite(Number(rawLim)) && Number(rawLim) >= 1
+          ? Math.min(Math.floor(Number(rawLim)), 9999)
+          : 0;
       return {
         // 실제 저장 키(빈 문자열 = 가맹점 미지정). 삭제·단가 API와 동일해야 함.
         id,
@@ -69,6 +77,7 @@ exports.handler = async (event, context) => {
         pointBalance: pb,
         pointHistory: ph,
         allowedIps,
+        smsPerPhoneLimit,
       };
     });
     return {

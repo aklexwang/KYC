@@ -41,6 +41,24 @@
   force = true
 
 [[redirects]]
+  from = "/api/store-sms-per-phone-limit"
+  to = "/.netlify/functions/store-sms-per-phone-limit"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/check-phone-used"
+  to = "/.netlify/functions/check-phone-used"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/kyc-blacklist"
+  to = "/.netlify/functions/kyc-blacklist"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/usage-prices"
   to = "/.netlify/functions/usage-prices"
   status = 200
@@ -135,3 +153,21 @@
   to = "/.netlify/functions/hq-wallet-issuance"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/api/didit-id-verification"
+  to = "/.netlify/functions/didit-id-verification"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/didit-liveness-face"
+  to = "/.netlify/functions/didit-liveness-face"
+  status = 200
+  force = true
+
+# Chrome Web OTP(문자 코드 자동 입력) — 일부 환경에서 헤더가 없으면 동작이 막힐 수 있음
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Permissions-Policy = "otp-credentials=(self)"

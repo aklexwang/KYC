@@ -41,6 +41,9 @@ const API_MAP = {
   '/api/stores': 'stores.js',
   '/api/create-store': 'create-store.js',
   '/api/store-allowed-ips': 'store-allowed-ips.js',
+  '/api/store-sms-per-phone-limit': 'store-sms-per-phone-limit.js',
+  '/api/check-phone-used': 'check-phone-used.js',
+  '/api/kyc-blacklist': 'kyc-blacklist.js',
   '/api/usage-prices': 'usage-prices.js',
   '/api/store-login': 'store-login.js',
   '/api/store-prices': 'store-prices.js',
@@ -57,6 +60,8 @@ const API_MAP = {
   '/api/hq-fetch-member-asset': 'hq-fetch-member-asset.js',
   '/api/store-wallet-issuance': 'store-wallet-issuance.js',
   '/api/hq-wallet-issuance': 'hq-wallet-issuance.js',
+  '/api/didit-id-verification': 'didit-id-verification.js',
+  '/api/didit-liveness-face': 'didit-liveness-face.js',
 };
 
 const MIME = {

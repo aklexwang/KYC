@@ -602,27 +602,28 @@
             margin: 0;
         }
         .store-qr-border-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
         }
         .store-qr-border-chip {
-            padding: 8px 14px;
-            border-radius: 999px;
-            border: 1px solid #e5e5ea;
-            background: #fff;
-            font-size: 13px;
-            font-weight: 600;
-            color: #3a3a3c;
+            min-height: 44px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(37, 99, 235, 0.5);
+            background: linear-gradient(180deg, #3078f0 0%, #2563eb 55%, #1e66d5 100%);
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
             cursor: pointer;
             font-family: inherit;
-            transition: border-color 0.15s ease, background 0.15s ease;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+            transition: filter 0.15s ease, transform 0.08s ease, box-shadow 0.15s ease;
         }
-        .store-qr-border-chip:hover { border-color: #c7c7cc; }
+        .store-qr-border-chip:hover { filter: brightness(1.06); }
+        .store-qr-border-chip:active { transform: translateY(1px); }
         .store-qr-border-chip.is-selected {
-            border-color: #1a1a1a;
-            background: #1a1a1a;
-            color: #fff;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.92), 0 6px 16px rgba(37, 99, 235, 0.36);
         }
         /* ===== 대시보드 UI (가맹점 어드민 v2) ===== */
         .dashboard-shell { display: flex; min-height: 100vh; }
@@ -1106,15 +1107,14 @@
         }
         .store-qr-border-hint { color: rgba(255, 255, 255, 0.55); }
         .store-qr-border-chip {
-            background: #141f33;
-            border-color: rgba(255, 255, 255, 0.14);
-            color: rgba(255, 255, 255, 0.88);
+            border-color: rgba(37, 99, 235, 0.58);
+            background: linear-gradient(180deg, #3078f0 0%, #2563eb 55%, #1e66d5 100%);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.32);
         }
-        .store-qr-border-chip:hover { border-color: rgba(255, 255, 255, 0.28); }
+        .store-qr-border-chip:hover { filter: brightness(1.06); }
         .store-qr-border-chip.is-selected {
-            border-color: #fff;
-            background: #fff;
-            color: #0d1425;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.95), 0 6px 16px rgba(37, 99, 235, 0.42);
         }
         .store-qr-card .qr-url { color: #93c5fd; }
         .store-qr-card .btn-copy-qr { background: #2563eb; }
@@ -2434,10 +2434,18 @@
         function renderTable(members) {
             var tbody = document.getElementById('memberList');
             tbody.innerHTML = '';
-            if (!members || members.length === 0) {
+            var sortedMembers = Array.isArray(members) ? members.slice() : [];
+            sortedMembers.sort(function (a, b) {
+                var ta = new Date(pickMemberJoinedIso(a)).getTime();
+                var tb = new Date(pickMemberJoinedIso(b)).getTime();
+                ta = isNaN(ta) ? 0 : ta;
+                tb = isNaN(tb) ? 0 : tb;
+                return tb - ta;
+            });
+            if (!sortedMembers || sortedMembers.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="no-data">등록된 회원이 없습니다.</td></tr>';
             } else {
-                members.forEach(function (m) {
+                sortedMembers.forEach(function (m) {
                     var tr = document.createElement('tr');
                     tr.className = 'member-row';
                     tr.dataset.memberName = String(m.name || '').toLowerCase();
@@ -2454,7 +2462,7 @@
                     tbody.appendChild(tr);
                 });
             }
-            var list = Array.isArray(members) ? members : [];
+            var list = sortedMembers;
             var total = list.length;
             var complete = list.filter(isKycComplete).length;
             var progress = total - complete;
@@ -3477,6 +3485,7 @@
             var st = payload && payload.status ? String(payload.status) : 'idle';
             var w = payload && payload.wallet ? String(payload.wallet).trim() : '';
             if (st === 'completed' && w) lastWalletIssuanceAddress = w;
+            var submitBtn = document.getElementById('btnPointRechargeSubmit');
             var line = document.getElementById('pointRechargeWalletStatusLine');
             var walletEl = document.getElementById('pointRechargeWalletAddr');
             var btnRequest = document.getElementById('btnWalletIssuanceRequest');
@@ -3501,6 +3510,11 @@
                 line.classList.add('is-muted');
                 line.classList.remove('is-wallet-rejected');
                 line.textContent = '';
+            }
+            if (submitBtn && st !== 'rejected') {
+                delete submitBtn.dataset.rechargeModalConfirmOnly;
+                submitBtn.textContent = POINT_RECHARGE_SUBMIT_LABEL_DEFAULT;
+                submitBtn.classList.remove('is-deposit-polling-label');
             }
             if (st === 'pending') {
                 if (walletEl) {
@@ -3552,6 +3566,7 @@
                     btnRequest.classList.remove('is-concealed');
                     btnRequest.classList.add('is-visible');
                 }
+                setPointRechargeSubmitAsResultConfirm();
             } else {
                 if (walletEl) {
                     walletEl.textContent = '';

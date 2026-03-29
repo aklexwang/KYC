@@ -11,3 +11,9 @@ https://kyckorea.netlify.app/admin-store.html
 본사 
 
 https://kyckorea.netlify.app/admin-headquarters.html
+
+DIDIT
+https://business.didit.me/console/0d1399a8-8282-4fdd-b318-677ce57bbc49/fb5d9d2e-75b7-43b5-8c83-e81088b061dc/workflows/5f6942da-3a04-4e69-8cc8-5f4ec859d66a/graph
+
+
+didit koreakyc id = 445a5963-8066-47ab-b7bb-d155f22faaf5
