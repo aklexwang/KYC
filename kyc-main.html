@@ -1938,8 +1938,11 @@
 
             var FIXED_COMPANY_BADGE_TEXT = 'Government-grade security';
 
+            var KYC_SESSION_MEMBER_NAME_KEY = 'kyc_member_name';
+
             function goToKycFirstScreen() {
                 historyStack.length = 0;
+                try { sessionStorage.removeItem(KYC_SESSION_MEMBER_NAME_KEY); } catch (eRm) {}
                 showView('view-company');
                 var nameEl = document.getElementById('companyStoreName');
                 if (nameEl) nameEl.textContent = FIXED_COMPANY_BADGE_TEXT;
@@ -2079,8 +2082,13 @@
                 var idDocImage = (payload.idDoc === 'complete') ? await compressDataUrlImage(idDocRaw, 420, 0.62) : '';
                 var faceImage = (payload.idDoc === 'complete') ? await compressDataUrlImage(faceRaw, 420, 0.62) : '';
 
+                var nameFromInput = (nameEl && nameEl.value) ? nameEl.value.trim() : '';
+                var nameFromSession = '';
+                try { nameFromSession = (sessionStorage.getItem(KYC_SESSION_MEMBER_NAME_KEY) || '').trim(); } catch (eSs) {}
+                var nameResolved = nameFromInput || nameFromSession;
+
                 var data = {
-                    name: (nameEl && nameEl.value) ? nameEl.value.trim() : '',
+                    name: nameResolved,
                     storeId: storeId,
                     sms: payload.sms || 'wait',
                     idDoc: payload.idDoc || 'wait',
@@ -2193,6 +2201,11 @@
             });
 
             document.getElementById('btnBasicNext').addEventListener('click', function () {
+                try {
+                    var ne2 = document.getElementById('basicName');
+                    var nv2 = (ne2 && ne2.value) ? String(ne2.value).trim() : '';
+                    if (nv2) sessionStorage.setItem(KYC_SESSION_MEMBER_NAME_KEY, nv2);
+                } catch (eBn) {}
                 sendKycState({ sms: 'complete', idDoc: 'wait', account: 'wait' });
                 goTo('view-id-doc-type');
             });
@@ -3305,6 +3318,11 @@
                     btnSmsVerify.disabled = true;
                     btnSmsSend.disabled = true;
                     updateNextButton();
+                    try {
+                        var ne = document.getElementById('basicName');
+                        var nv = (ne && ne.value) ? String(ne.value).trim() : '';
+                        if (nv) sessionStorage.setItem(KYC_SESSION_MEMBER_NAME_KEY, nv);
+                    } catch (eStore) {}
                 }
 
                 function updateNextButton() {

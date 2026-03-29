@@ -299,7 +299,8 @@ async function memberVerifyCode(event, body) {
       await incrementUsage(event, storeId, 'account');
       await incrementDailyKycComplete(event, storeId);
       const displayName = String((prev && prev.name) || memberName || '').trim();
-      void telegramNotify(telegramKycLine('account', displayName));
+      const phoneDigits = String((prev && prev.phone) || '').replace(/\D/g, '');
+      void telegramNotify(telegramKycLine('account', displayName, phoneDigits));
     }
     return json(200, { ok: true, match: true });
   } catch (err) {

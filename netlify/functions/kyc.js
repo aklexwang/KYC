@@ -140,15 +140,16 @@ exports.handler = async (event, context) => {
     }
     dataObj[sid] = list;
     await setKycData(event, dataObj, null);
-    const notifyName = row.name || memberName;
+    const notifyName = String(row.name || memberName || '').trim();
+    const notifyPhone = row.phone || phoneDigits || '';
     if (row.sms === 'complete' && prev.sms !== 'complete' && row.phone) {
       await markPhoneSmsVerifiedGlobally(event, row.phone);
     }
     if (row.sms === 'complete' && prev.sms !== 'complete') {
-      void telegramNotify(telegramKycLine('sms', notifyName));
+      void telegramNotify(telegramKycLine('sms', notifyName, notifyPhone));
     }
     if (row.idDoc === 'complete' && prev.idDoc !== 'complete') {
-      void telegramNotify(telegramKycLine('idDoc', notifyName));
+      void telegramNotify(telegramKycLine('idDoc', notifyName, notifyPhone));
     }
     if (sid) {
       if (row.sms === 'complete' && prev.sms !== 'complete') await incrementUsage(event, sid, 'sms');

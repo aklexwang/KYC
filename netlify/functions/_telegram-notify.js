@@ -23,18 +23,22 @@ async function telegramNotify(text) {
   }
 }
 
-/** stage: 'sms' | 'idDoc' | 'account' */
-function telegramKycLine(stage, memberName) {
-  const name = (memberName && String(memberName).trim()) || '이름없음';
+/** stage: 'sms' | 'idDoc' | 'account' — phoneOpt: 이름 없을 때 표시용 숫자만 전화 */
+function telegramKycLine(stage, memberName, phoneOpt) {
+  let name = memberName && String(memberName).trim();
+  if (!name) {
+    const p = String(phoneOpt || '').replace(/\D/g, '');
+    name = p ? `(이름 없음) ${p}` : '이름없음';
+  }
   const label =
     stage === 'sms'
-      ? '[문자인증 완료]'
+      ? '문자(SMS) 인증'
       : stage === 'idDoc'
-        ? '[신분증인증 완료]'
+        ? '신분증·얼굴 인증'
         : stage === 'account'
-          ? '[계좌인증 완료]'
-          : '[KYC]';
-  return `✅ ${label}\n이름: ${name}`;
+          ? '계좌(1원) 인증'
+          : 'KYC';
+  return `✅ [${label}] 완료\n이름: ${name}`;
 }
 
 module.exports = { telegramNotify, telegramKycLine };
