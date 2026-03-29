@@ -722,6 +722,18 @@
             box-shadow: 0 2px 12px rgba(5, 150, 105, 0.38);
         }
         .store-card .store-name-row > button.btn-store-sms-phones:hover { filter: brightness(1.07); }
+        .store-card .store-name-row > button.btn-store-delete {
+            border-color: rgba(220, 38, 38, 0.85);
+            background: linear-gradient(180deg, #f87171 0%, #b91c1c 100%);
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(185, 28, 28, 0.42);
+        }
+        .store-card .store-name-row > button.btn-store-delete:hover { filter: brightness(1.06); }
+        .store-card .store-name-row > button.btn-store-delete:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            filter: none;
+        }
         #storeAllowedIpModal .modal-prices-box,
         #storeSmsPerPhoneLimitModal .modal-prices-box { max-width: min(520px, 100%); }
         #storeAllowedIpModal .store-ip-modal-desc,
@@ -1172,6 +1184,12 @@
             background: linear-gradient(180deg, #10b981 0%, #047857 100%);
             color: #fff;
             box-shadow: 0 2px 14px rgba(16, 185, 129, 0.45);
+        }
+        .store-card .store-name-row > button.btn-store-delete {
+            border-color: rgba(248, 113, 113, 0.75);
+            background: linear-gradient(180deg, #dc2626 0%, #7f1d1d 100%);
+            color: #fff;
+            box-shadow: 0 2px 14px rgba(220, 38, 38, 0.45);
         }
         #storeAllowedIpModal .store-ip-modal-desc,
         #storeSmsPerPhoneLimitModal .store-sms-limit-modal-desc { color: rgba(255, 255, 255, 0.78); }
@@ -6091,6 +6109,9 @@
                 var statusHtml = '<button type="button" class="store-status-btn ' + storeStatusBtnClass(accSt) + '">상태 : ' + storeStatusLabelKo(accSt) + '</button>';
                 var pointAmt = getStorePointBalance(s);
                 var pointHtml = '<button type="button" class="store-point-balance-btn">보유 포인트 <span class="store-point-num">' + formatStorePointUsdt(pointAmt) + '</span> USDT</button>';
+                var deleteBtnHtml = getHqSessionLevel() === 1
+                    ? '<button type="button" class="btn-store-delete" title="가맹점·소속 회원 데이터 영구 삭제">삭제</button>'
+                    : '';
                 card.innerHTML =
                     '<div class="store-info">' +
                     '<div class="store-name-row"><span class="store-id">' + storeIdLabel(s.id) + '</span><span class="store-name">' + (s.name || '-') + '</span>' + pointHtml + statusHtml +
@@ -6098,11 +6119,11 @@
                     '<button type="button" class="btn-account-store">계정 수정</button>' +
                     '<button type="button" class="btn-qr" data-store-id="' + (s.id || '') + '" data-store-name="' + (s.name || s.id || '').replace(/"/g, '&quot;') + '">QR 확인</button>' +
                     '<button type="button" class="btn-store-ip">IP 설정</button>' +
-                    '<button type="button" class="btn-store-sms-phones">문자 한도</button></div>' +
+                    '<button type="button" class="btn-store-sms-phones">문자 한도</button>' + deleteBtnHtml + '</div>' +
                     usageHtml +
                     '</div>';
                 card.addEventListener('click', function (e) {
-                    if (e.target.closest('.btn-qr, .btn-store-ip, .btn-store-sms-phones, .btn-edit-store, .btn-account-store, .store-status-btn, .store-point-balance-btn')) return;
+                    if (e.target.closest('.btn-qr, .btn-store-ip, .btn-store-sms-phones, .btn-edit-store, .btn-account-store, .store-status-btn, .store-point-balance-btn, .btn-store-delete')) return;
                     setStoreFilter(selectedStoreId === s.id ? null : s.id);
                 });
                 card.querySelector('.store-point-balance-btn').addEventListener('click', function (e) { e.stopPropagation(); openStorePointModal(s); });
@@ -6114,6 +6135,48 @@
                 card.querySelector('.btn-edit-store').addEventListener('click', function (e) { e.stopPropagation(); openStorePricesModal(s); });
                 card.querySelector('.store-status-btn').addEventListener('click', function (e) { e.stopPropagation(); openStoreStatusModal(s); });
                 card.querySelector('.btn-account-store').addEventListener('click', function (e) { e.stopPropagation(); openStoreAccountModal(s); });
+                var btnDelStore = card.querySelector('.btn-store-delete');
+                if (btnDelStore) {
+                    btnDelStore.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        var sid = s.id != null ? String(s.id) : '';
+                        var disp = (s.name && String(s.name).trim()) ? String(s.name).trim() : storeIdLabel(sid);
+                        if (!confirm('"' + disp + '" 가맹점을 삭제하시겠습니까?\n\n연관 회원·KYC·포인트 등이 저장소에서 제거되며 되돌릴 수 없습니다.')) return;
+                        if (!getHqSessionToken()) {
+                            alert('본사 로그인이 필요합니다.');
+                            return;
+                        }
+                        btnDelStore.disabled = true;
+                        var apiBase = window.ADMIN_API_BASE || '';
+                        fetch(apiBase + '/api/store-delete', {
+                            method: 'POST',
+                            headers: hqJsonHeaders(),
+                            body: JSON.stringify({ storeId: sid }),
+                        })
+                            .then(function (r) {
+                                return r.json().then(function (data) {
+                                    return { ok: r.ok, status: r.status, data: data };
+                                });
+                            })
+                            .then(function (res) {
+                                btnDelStore.disabled = false;
+                                if (res.ok && res.data && res.data.ok) {
+                                    if (selectedStoreId === s.id) selectedStoreId = null;
+                                    loadStores(true);
+                                    return;
+                                }
+                                var msg =
+                                    (res.data && res.data.message) ||
+                                    (res.data && res.data.error) ||
+                                    (res.status === 403 ? '삭제 권한이 없습니다.' : '삭제에 실패했습니다.');
+                                alert(msg);
+                            })
+                            .catch(function () {
+                                btnDelStore.disabled = false;
+                                alert('네트워크 오류로 삭제하지 못했습니다.');
+                            });
+                    });
+                }
                 el.appendChild(card);
             });
         }

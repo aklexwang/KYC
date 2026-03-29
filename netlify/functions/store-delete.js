@@ -1,14 +1,34 @@
+const { verifyHqSessionFromEvent } = require('./hq-session');
 const { deleteStore, getKycData, getStorageErrorHelp } = require('./storage');
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Headers': 'Content-Type, X-HQ-Admin-Token',
 };
 
 exports.handler = async (event, context) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
   if (event.httpMethod !== 'POST') return { statusCode: 405, headers: CORS, body: '' };
+
+  const session = verifyHqSessionFromEvent(event);
+  if (!session) {
+    return {
+      statusCode: 401,
+      headers: { ...CORS, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Unauthorized' }),
+    };
+  }
+  if (session.level !== 1) {
+    return {
+      statusCode: 403,
+      headers: { ...CORS, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        error: 'Forbidden',
+        message: '가맹점 삭제는 최고 등급 관리자만 할 수 있습니다.',
+      }),
+    };
+  }
 
   // Netlify Blobs: 배포 환경에서 컨텍스트를 요청 직후 연결
   try {
