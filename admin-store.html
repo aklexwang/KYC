@@ -3451,11 +3451,6 @@
             return 'kyc_wallet_unlocked_val_' + (window.ADMIN_STORE_ID || '');
         }
 
-        /** 모달을 닫은 뒤에는 서버가 completed여도 주소·복사 UI를 자동으로 다시 채우지 않음(확인으로만 공개) */
-        function getWalletRevealSuppressedStorageKey() {
-            return 'kyc_wallet_reveal_suppressed_' + (window.ADMIN_STORE_ID || '');
-        }
-
         function stopWalletIssuancePoll() {
             if (walletIssuancePollTimer) {
                 clearInterval(walletIssuancePollTimer);
@@ -3483,7 +3478,7 @@
             if (canSubmit) {
                 sub.removeAttribute('title');
             } else {
-                sub.setAttribute('title', '요청 → 주소발급중 → 완료 후 충전 신청할 수 있습니다.');
+                sub.setAttribute('title', '요청 → 발급 완료 후 확인으로 주소 표시 → 충전 신청할 수 있습니다.');
             }
         }
 
@@ -3653,12 +3648,7 @@
                     if (d && d.ok) {
                         var w = d.wallet || '';
                         var st = d.status;
-                        var suppressReveal = false;
-                        try {
-                            suppressReveal =
-                                sessionStorage.getItem(getWalletRevealSuppressedStorageKey()) === '1';
-                        } catch (eSup) {}
-                        if (st === 'completed' && w && suppressReveal) {
+                        if (st === 'completed' && w) {
                             applyStoreWalletIssuanceUI({
                                 status: 'completed_pending_reveal',
                                 wallet: w,
@@ -3749,7 +3739,7 @@
             if (dok) dok.hidden = true;
         }
 
-        /** 취소·닫기 시 지갑 표시·클라이언트 상태를 비움(다음 오픈 시 서버 completed는 확인 버튼으로만 주소 공개) */
+        /** 취소·닫기 시 지갑 표시·클라이언트 상태를 비움(서버 completed는 조회 시에도 확인 전까지 주소 미표시) */
         function resetPointRechargeModalFieldsAndWalletState() {
             lastWalletIssuanceAddress = '';
             window.STORE_RECHARGE_WALLET = '';
@@ -3881,9 +3871,6 @@
             showPointRechargeFormPhase();
             modal.classList.remove('show');
             modal.setAttribute('aria-hidden', 'true');
-            try {
-                sessionStorage.setItem(getWalletRevealSuppressedStorageKey(), '1');
-            } catch (eClose) {}
         }
 
         function submitPointRecharge() {
@@ -4060,9 +4047,6 @@
                 if (data.usdtKrwRate != null && !isNaN(Number(data.usdtKrwRate)) && Number(data.usdtKrwRate) > 0) {
                     window.STORE_USDT_KRW_RATE = Number(data.usdtKrwRate);
                 }
-                if (typeof data.rechargeWallet === 'string' && data.rechargeWallet.trim()) {
-                    window.STORE_RECHARGE_WALLET = data.rechargeWallet.trim();
-                }
                 finishLogin(data.storeId || storeId, data.storeName || rawId, data.pointBalanceUsdt != null ? data.pointBalanceUsdt : data.pointBalance);
             }).catch(function () {
                 btn.disabled = false;
@@ -4182,9 +4166,6 @@
             function reveal(addr) {
                 var a = (addr || '').trim();
                 if (!a) return;
-                try {
-                    sessionStorage.removeItem(getWalletRevealSuppressedStorageKey());
-                } catch (eRs) {}
                 try { sessionStorage.setItem(getWalletUnlockStorageKey(), a); } catch (e) {}
                 window.STORE_RECHARGE_WALLET = a;
                 applyStoreWalletIssuanceUI({ status: 'completed', wallet: a });
