@@ -2316,11 +2316,9 @@
                 });
         }
 
-        /** 표시명 AAA → 저장소 키 STORE_001 (본사에서 부여한 ID와 동일하게 로그인) */
+        /** 로그인란 값 = 저장소 가맹점 ID(본사에서 만든 로그인 계정) 그대로 사용. 예전 AAA→STORE_001 치환은 운영에서 ID가 다를 때 충전·포인트가 다른 키에 쌓여 본사 내역에 안 보이는 원인이 됨. */
         function resolveStoreIdForLogin(raw) {
-            var s = (raw || '').trim();
-            if (s.toUpperCase() === 'AAA') return 'STORE_001';
-            return s;
+            return String(raw || '').trim();
         }
 
         function renderBadge(value) {
@@ -3871,6 +3869,12 @@
                 alert(msg);
                 closePointRechargeModal();
             }
+            function rechargeRequestFailed(msg) {
+                setPointRechargeSubmitPollingUi(false);
+                setPointRechargeFormPendingLayout(false);
+                syncPointRechargeSubmitFromWalletStep();
+                alert(msg || '충전 신청에 실패했습니다. 잠시 후 다시 시도하거나 본사에 문의해 주세요.');
+            }
             function postRechargeRequest() {
                 if (apiBase && storeId) {
                     fetch(apiBase + '/api/store-point-recharge-request', {
@@ -3884,15 +3888,21 @@
                             wallet: (window.STORE_RECHARGE_WALLET || '').trim()
                         })
                     })
-                        .then(function (r) { return r.json().catch(function () { return {}; }); })
-                        .then(function (data) {
-                            if (data && data.ok) {
+                        .then(function (r) {
+                            return r.json().catch(function () { return {}; }).then(function (data) {
+                                return { httpOk: r.ok, status: r.status, data: data };
+                            });
+                        })
+                        .then(function (res) {
+                            var data = res.data;
+                            if (res.httpOk && data && data.ok) {
                                 var hid = data.historyId != null ? String(data.historyId) : '';
                                 if (hid) {
                                     startPointRechargeStatusPoll(storeId, hid);
                                     return;
                                 }
                                 setPointRechargeSubmitPollingUi(false);
+                                setPointRechargeFormPendingLayout(false);
                                 syncPointRechargeSubmitFromWalletStep();
                                 alert(data.message || '충전 신청이 접수되었습니다.');
                                 closePointRechargeModal();
@@ -3909,20 +3919,28 @@
                                 } catch (e2) {}
                                 return;
                             }
-                            doneOk('신청 정보가 전송되지 않았습니다. 아래 안내를 확인하세요.\n\n' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑으로 입금 후 본사에 문의해 주세요.');
+                            var m = (data && data.message) ? String(data.message) : '';
+                            rechargeRequestFailed(
+                                m ||
+                                    '서버에서 신청을 접수하지 못했습니다. (HTTP ' + (res.status != null ? res.status : '?') + ')\n\n' +
+                                        '동일 금액·지갑으로 2분 이내 중복 신청은 기존 건으로 처리됩니다. 본사 포인트 내역에서 확인해 주세요.'
+                            );
                         })
                         .catch(function () {
-                            doneOk('충전 신청: ' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑 주소로 입금해 주세요.');
+                            rechargeRequestFailed(
+                                '네트워크 오류로 서버에 충전 신청이 전달되지 않았습니다.\n\n' +
+                                    '인터넷 연결과 사이트 주소(https)를 확인한 뒤 다시 시도해 주세요.'
+                            );
                         });
                 } else {
-                    doneOk('충전 신청: ' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑 주소로 입금해 주세요.');
+                    rechargeRequestFailed(
+                        (!apiBase
+                            ? '이 페이지는 배포된 사이트 주소에서 열어야 충전 신청이 본사에 전달됩니다.'
+                            : '가맹점 로그인 정보가 없습니다. 다시 로그인한 뒤 신청해 주세요.')
+                    );
                 }
             }
-            if (apiBase && storeId) {
-                postRechargeRequest();
-            } else {
-                doneOk('충전 신청: ' + usdt + ' USDT (약 ' + krw.toLocaleString('ko-KR') + '원)\n표시된 지갑 주소로 입금해 주세요.');
-            }
+            postRechargeRequest();
         }
 
         function checkStoredLogin() {
@@ -3979,7 +3997,8 @@
                 finishLogin(data.storeId || storeId, data.storeName || rawId, data.pointBalanceUsdt != null ? data.pointBalanceUsdt : data.pointBalance);
             }).catch(function () {
                 btn.disabled = false;
-                if (storeId === 'STORE_001' && password === '111111') {
+                var rawUp = (rawId || '').trim().toUpperCase();
+                if (password === '111111' && (storeId === 'STORE_001' || rawUp === 'AAA')) {
                     finishLogin('STORE_001', 'AAA');
                     return;
                 }
