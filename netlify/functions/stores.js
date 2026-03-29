@@ -37,11 +37,17 @@ exports.handler = async (event, context) => {
     const dataObj = typeof data === 'object' && data !== null ? data : {};
     const namesObj = typeof names === 'object' && names !== null ? names : {};
     const isKycComplete = (m) => m.sms === 'complete' && m.idDoc === 'complete' && m.account === 'complete';
-    const storeEntries = Object.entries(dataObj).filter(([id]) => {
-      if (!onlyStoreId) return true;
-      return id === onlyStoreId;
+    // 본사 포인트 내역은 stores[].pointHistory 로만 그림. 포인트만 있고 KYC 키가 없으면 목록에서 빠져 충전 신청이 안 보임.
+    const allIds = new Set([...Object.keys(dataObj), ...Object.keys(pointsByStore)]);
+    let storeIds = [...allIds].filter((id) => (!onlyStoreId ? true : id === onlyStoreId));
+    storeIds.sort((a, b) => {
+      const aK = Object.prototype.hasOwnProperty.call(dataObj, a);
+      const bK = Object.prototype.hasOwnProperty.call(dataObj, b);
+      if (aK !== bK) return aK ? -1 : 1;
+      return String(a).localeCompare(String(b), 'ko');
     });
-    const stores = storeEntries.map(([id, members]) => {
+    const stores = storeIds.map((id) => {
+      const members = dataObj[id];
       const prices = { ...globalPrices, ...(storePricesMap[id] || {}) };
       const c = counts[id] || { sms: 0, idDoc: 0, account: 0 };
       const memberList = Array.isArray(members) ? members : [];
