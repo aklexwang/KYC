@@ -2323,6 +2323,36 @@
 
         .hq-app-root { display: none; min-height: 100vh; }
         .hq-app-root.is-visible { display: block; }
+        .hq-point-recharge-toast {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20000;
+            padding: 12px 18px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #0f172a;
+            background: linear-gradient(180deg, #fde68a 0%, #fbbf24 100%);
+            border-bottom: 2px solid rgba(180, 83, 9, 0.55);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            cursor: pointer;
+            line-height: 1.45;
+        }
+        .hq-point-recharge-toast[hidden] { display: none !important; }
+        .hq-stores-api-banner {
+            margin: 0 0 14px 0;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: rgba(127, 29, 29, 0.35);
+            border: 1px solid rgba(248, 113, 113, 0.5);
+            color: #fecaca;
+            font-size: 13px;
+            line-height: 1.55;
+            white-space: pre-wrap;
+        }
+        .hq-stores-api-banner[hidden] { display: none !important; }
         .hq-login-section {
             position: fixed;
             inset: 0;
@@ -2464,6 +2494,18 @@
             display: none;
         }
         .hq-login-error.show { display: block; }
+        .kyc-local-file-warning {
+            display: none;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            border-radius: 10px;
+            background: rgba(251, 191, 36, 0.12);
+            border: 1px solid rgba(251, 191, 36, 0.45);
+            color: #fde68a;
+            font-size: 0.8125rem;
+            line-height: 1.5;
+        }
+        .kyc-local-file-warning.is-visible { display: block; }
         .hq-bootstrap-panel {
             margin-top: 22px;
             padding-top: 22px;
@@ -2641,6 +2683,21 @@
         <div class="hq-login-card">
             <img src="kyc-icon.png" alt="" class="hq-login-card-brand-icon" width="40" height="40" decoding="async">
             <h2>본사 어드민 로그인</h2>
+            <p id="kycLocalFileWarning" class="kyc-local-file-warning" role="alert">
+                이 페이지를 <strong>파일로 직접 연 상태(file://)</strong>이면 API에 연결할 수 없어 로그인되지 않습니다.
+                프로젝트 폴더에서 <code style="word-break:break-all;">npm run dev</code> 실행 후
+                <strong>http://127.0.0.1:8888/admin-headquarters.html</strong> 로 접속하세요.
+            </p>
+            <script>
+                (function () {
+                    try {
+                        if (typeof location !== 'undefined' && location.protocol === 'file:') {
+                            var el = document.getElementById('kycLocalFileWarning');
+                            if (el) el.classList.add('is-visible');
+                        }
+                    } catch (e) {}
+                })();
+            </script>
             <p class="hq-login-sub">본사 관리자 아이디와 비밀번호를 입력하세요.</p>
             <div class="field">
                 <label for="hqLoginId">아이디</label>
@@ -2677,6 +2734,7 @@
         </div>
     </div>
     <div id="hqAppRoot" class="hq-app-root">
+    <div id="hqPointRechargeToast" class="hq-point-recharge-toast" hidden role="status" aria-live="assertive"></div>
     <div class="dashboard-shell">
     <aside class="dashboard-sidebar">
         <h2 class="sidebar-title">Admin Dashboard</h2>
@@ -2706,6 +2764,7 @@
             </div>
         </div>
     </header>
+    <div id="hqStoresApiBanner" class="hq-stores-api-banner" hidden role="alert"></div>
     <main class="admin-body">
         <section id="section-overview" class="dashboard-section active hq-overview-wrap">
         <div class="hq-overview">
@@ -3400,7 +3459,7 @@
         <section class="settlement-section point-ledger-section">
             <div class="member-section-head">
                 <h2 class="section-title member-section-title member-section-title--glitch">포인트 내역</h2>
-                <p class="section-desc member-section-desc">가맹점별 포인트 충전·지급·차감 이력을 조회합니다.</p>
+                <p class="section-desc member-section-desc">가맹점이 <strong>포인트 충전</strong>을 신청하면 이 목록에 <strong>구분: 충전</strong>, <strong>상태: 진행중</strong>으로 올라옵니다. 실제 입금을 확인한 뒤 해당 행의 <strong>진행중</strong>을 눌러 <strong>확인</strong>(승인·잔액 반영) 또는 <strong>취소</strong>(거부)하세요. 가맹점·본사가 같은 저장소(Netlify/로컬 JSON)를 바라보는지 확인하세요.</p>
             </div>
             <div class="settlement-date-bar point-ledger-toolbar">
                 <span class="settlement-date-inline-label">기간</span>
@@ -4134,6 +4193,21 @@
         ];
 
         var stores = [];
+        /** /api/stores 를 한 번이라도 정상 수신했는지 — 실패 시 데모 목록으로 덮어쓰지 않음 */
+        var hqStoresApiOkOnce = false;
+
+        function setHqStoresApiBanner(msg) {
+            var el = document.getElementById('hqStoresApiBanner');
+            if (!el) return;
+            if (msg) {
+                el.textContent = msg;
+                el.hidden = false;
+            } else {
+                el.textContent = '';
+                el.hidden = true;
+            }
+        }
+
         var hqRevenueChartInstance = null;
         var selectedStoreId = null;
         var settlementTfootSnapshot = '';
@@ -4215,6 +4289,22 @@
 
         var lastPointRechargePendingCount = 0;
         var pointRechargeSkipNotify = true;
+        var hqSavedDocumentTitle = '';
+
+        /** 1원인증 대기·포인트 충전 신청 증가 시 짧은 비프 (알림 권한과 무관) */
+        function hqPlayAttentionBeep(freqHz) {
+            try {
+                var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                var o = ctx.createOscillator();
+                var g = ctx.createGain();
+                o.connect(g);
+                g.connect(ctx.destination);
+                o.frequency.value = typeof freqHz === 'number' && freqHz > 0 ? freqHz : 880;
+                g.gain.value = 0.05;
+                o.start();
+                setTimeout(function () { o.stop(); ctx.close(); }, 120);
+            } catch (e2) {}
+        }
 
         function countPendingDepositRecharges(storesArr) {
             var n = 0;
@@ -4238,11 +4328,37 @@
                 el.classList.toggle('is-visible', n > 0);
             }
             if (!pointRechargeSkipNotify && n > lastPointRechargePendingCount) {
+                var added = n - lastPointRechargePendingCount;
                 try {
                     if (window.Notification && Notification.permission === 'granted') {
-                        new Notification('포인트 충전 신청', { body: '새 충전 신청이 있습니다.' });
+                        new Notification('포인트 충전 신청', {
+                            body: added + '건 접수. 포인트 내역에서 승인·거부할 수 있습니다.'
+                        });
+                    } else if (window.Notification && Notification.permission === 'default') {
+                        Notification.requestPermission();
                     }
                 } catch (e) {}
+                hqPlayAttentionBeep(740);
+                try {
+                    if (!hqSavedDocumentTitle) hqSavedDocumentTitle = document.title;
+                    document.title = '(' + added + '건 충전신청) ' + hqSavedDocumentTitle;
+                    if (window.__hqTitleResetTimer) clearTimeout(window.__hqTitleResetTimer);
+                    window.__hqTitleResetTimer = setTimeout(function () {
+                        document.title = hqSavedDocumentTitle;
+                    }, 12000);
+                } catch (eT) {}
+                var toast = document.getElementById('hqPointRechargeToast');
+                if (toast) {
+                    toast.textContent =
+                        '포인트 충전 신청 ' +
+                        added +
+                        '건이 접수되었습니다. 포인트 내역(구분: 충전·진행중)에서 확인하세요. — 클릭하면 이동';
+                    toast.hidden = false;
+                    if (window.__hqRechargeToastTimer) clearTimeout(window.__hqRechargeToastTimer);
+                    window.__hqRechargeToastTimer = setTimeout(function () {
+                        toast.hidden = true;
+                    }, 25000);
+                }
             }
             lastPointRechargePendingCount = n;
             pointRechargeSkipNotify = false;
@@ -4856,17 +4972,7 @@
                                 new Notification('1원인증 요청', { body: '새 요청이 있습니다.' });
                             }
                         } catch (e) {}
-                        try {
-                            var ctx = new (window.AudioContext || window.webkitAudioContext)();
-                            var o = ctx.createOscillator();
-                            var g = ctx.createGain();
-                            o.connect(g);
-                            g.connect(ctx.destination);
-                            o.frequency.value = 880;
-                            g.gain.value = 0.05;
-                            o.start();
-                            setTimeout(function () { o.stop(); ctx.close(); }, 120);
-                        } catch (e2) {}
+                        hqPlayAttentionBeep(880);
                     }
                     lastAccountQueuePending = activeAq;
                     accountQueueSkipNotify = false;
@@ -4887,7 +4993,18 @@
             try {
                 if (window.ADMIN_API_BASE) loadStores(true);
             } catch (e2) {}
-        }, 10000);
+        }, 4000);
+
+        if (!document.body.dataset.hqVisibilityStoresRefresh) {
+            document.body.dataset.hqVisibilityStoresRefresh = '1';
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState !== 'visible') return;
+                var app = document.getElementById('hqAppRoot');
+                if (!app || !app.classList.contains('is-visible')) return;
+                if (!window.ADMIN_API_BASE) return;
+                loadStores(true);
+            });
+        }
 
         setInterval(function () {
             try {
@@ -7304,24 +7421,65 @@
 
         function loadStores(noCache) {
             if (window.ADMIN_API_BASE) {
-                var url = window.ADMIN_API_BASE + '/api/stores';
-                if (noCache) url += '?t=' + Date.now();
-                fetch(url, noCache ? { cache: 'no-store' } : {})
-                    .then(function (r) { return r.json(); })
-                    .then(function (data) {
-                        stores = (data && data.stores) ? data.stores : storesFallback;
-                        if (data && data.prices) fillPriceInputs(data.prices);
-                        updatePointLedgerPendingBadge(stores);
-                        updateSummary();
-                        renderStoreListFromState();
-                        renderAllMembersTable();
-                        syncSettlementTableRowSearchAttr();
-                        applySettlementStoreFilter();
-                        renderGlobalPointLedger();
-                        updateOverviewRevenueChart();
+                /* /api/stores 는 항상 캐시 무효화: 초기 loadStores() 만 호출되는 경로가 많아 이전 JSON이 남으면 충전 신청 행이 안 보일 수 있음 */
+                var url = window.ADMIN_API_BASE + '/api/stores?t=' + Date.now();
+                fetch(url, { cache: 'no-store' })
+                    .then(function (r) {
+                        return r.text().then(function (t) {
+                            var data = null;
+                            try {
+                                data = t && String(t).trim() ? JSON.parse(t) : null;
+                            } catch (eJson) {
+                                data = null;
+                            }
+                            return { httpOk: r.ok, status: r.status, data: data };
+                        });
+                    })
+                    .then(function (res) {
+                        var data = res.data;
+                        var listOk =
+                            res.httpOk && data && Object.prototype.hasOwnProperty.call(data, 'stores') && Array.isArray(data.stores);
+                        function paintAll() {
+                            updatePointLedgerPendingBadge(stores);
+                            updateSummary();
+                            renderStoreListFromState();
+                            renderAllMembersTable();
+                            syncSettlementTableRowSearchAttr();
+                            applySettlementStoreFilter();
+                            renderGlobalPointLedger();
+                            updateOverviewRevenueChart();
+                        }
+                        if (listOk) {
+                            hqStoresApiOkOnce = true;
+                            setHqStoresApiBanner('');
+                            stores = data.stores;
+                            if (data.prices) fillPriceInputs(data.prices);
+                            paintAll();
+                            return;
+                        }
+                        var why =
+                            '가맹점·포인트 데이터(/api/stores)를 불러오지 못했습니다. (HTTP ' +
+                            (res.status != null ? res.status : '?') +
+                            ')\n\n' +
+                            '가맹점 어드민·본사 어드민 모두 같은 주소로 열어야 충전 신청이 포인트 내역에 보입니다.\n' +
+                            '로컬: 터미널에서 npm run dev 실행 후\n' +
+                            'http://127.0.0.1:8888/admin-store.html\n' +
+                            'http://127.0.0.1:8888/admin-headquarters.html\n' +
+                            'Live Server(5500)·파일 직접 열기(file://)는 API가 없어 목록이 비거나 예시 데이터만 보일 수 있습니다.';
+                        setHqStoresApiBanner(why);
+                        if (!hqStoresApiOkOnce) {
+                            stores = [];
+                        }
+                        paintAll();
                     })
                     .catch(function () {
-                        if (stores.length === 0) stores = storesFallback;
+                        setHqStoresApiBanner(
+                            '네트워크 오류로 /api/stores 를 불러오지 못했습니다.\n\n' +
+                                '로컬이면 npm run dev 후 http://127.0.0.1:8888/admin-headquarters.html 로 접속했는지 확인하세요.'
+                        );
+                        if (!hqStoresApiOkOnce) {
+                            stores = [];
+                        }
                         updatePointLedgerPendingBadge(stores);
                         updateSummary();
                         renderStoreListFromState();
@@ -7332,6 +7490,7 @@
                         updateOverviewRevenueChart();
                     });
             } else {
+                setHqStoresApiBanner('');
                 stores = storesFallback;
                 fillPriceInputs({ sms: 1, idDoc: 2, account: 1.5 });
                 updatePointLedgerPendingBadge(stores);
@@ -7344,6 +7503,32 @@
                 updateOverviewRevenueChart();
             }
         }
+
+        (function bindHqStoresReloadWhenTabVisible() {
+            if (document.body.dataset.hqStoresVisReload) return;
+            document.body.dataset.hqStoresVisReload = '1';
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState !== 'visible') return;
+                if (!window.ADMIN_API_BASE) return;
+                var ledger = document.getElementById('section-point-ledger');
+                if (!ledger || !ledger.classList.contains('active')) return;
+                loadStores(true);
+            });
+        })();
+
+        (function bindHqBroadcastStoresRefresh() {
+            if (document.body.dataset.hqStoresBcBound) return;
+            document.body.dataset.hqStoresBcBound = '1';
+            try {
+                if (typeof BroadcastChannel === 'undefined') return;
+                var bc = new BroadcastChannel('kyc-hq-stores');
+                bc.onmessage = function (ev) {
+                    if (!ev || !ev.data || ev.data.type !== 'point-recharge-requested') return;
+                    if (!window.ADMIN_API_BASE) return;
+                    loadStores(true);
+                };
+            } catch (eBc) {}
+        })();
 
         function openMemberImagePreview(src, altText) {
             var overlay = document.getElementById('memberImagePreview');
@@ -7484,6 +7669,15 @@
         }
 
         function bootHqDashboard() {
+        if (!hqSavedDocumentTitle) hqSavedDocumentTitle = document.title;
+        var toastBar = document.getElementById('hqPointRechargeToast');
+        if (toastBar && !toastBar.dataset.hqToastClickBound) {
+            toastBar.dataset.hqToastClickBound = '1';
+            toastBar.addEventListener('click', function () {
+                toastBar.hidden = true;
+                switchDashboardView('pointLedger');
+            });
+        }
         syncHqAdminAddLevelSelect();
         var addLvl = document.getElementById('hqAdminAddLevel');
         if (addLvl && !addLvl.dataset.hqLvlBound) {

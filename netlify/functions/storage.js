@@ -16,16 +16,27 @@ const LOCAL_FALLBACK_FILE = process.env.KYC_LOCAL_STORE_FILE
 
 let localFallbackCache = null;
 let localFallbackDirty = false;
+/** 마지막으로 읽거나 저장한 `.kyc-local-store.json`의 mtime — 다른 프로세스가 파일을 바꾼 뒤에도 최신 store_points 를 읽도록 함 */
+let localFallbackMtimeMs = null;
 
 async function loadLocalFallbackStore() {
-  if (localFallbackCache) return localFallbackCache;
+  if (localFallbackDirty) {
+    if (!localFallbackCache) localFallbackCache = {};
+    return localFallbackCache;
+  }
   try {
+    const st = await fs.stat(LOCAL_FALLBACK_FILE);
+    if (localFallbackCache != null && localFallbackMtimeMs === st.mtimeMs) {
+      return localFallbackCache;
+    }
     const raw = await fs.readFile(LOCAL_FALLBACK_FILE, 'utf8');
     const parsed = JSON.parse(raw || '{}');
-    localFallbackCache = (parsed && typeof parsed === 'object') ? parsed : {};
+    localFallbackCache = parsed && typeof parsed === 'object' ? parsed : {};
+    localFallbackMtimeMs = st.mtimeMs;
   } catch (err) {
     if (err && err.code === 'ENOENT') {
       localFallbackCache = {};
+      localFallbackMtimeMs = null;
     } else {
       throw err;
     }
@@ -38,6 +49,12 @@ async function persistLocalFallbackStore() {
   const data = localFallbackCache || {};
   await fs.writeFile(LOCAL_FALLBACK_FILE, JSON.stringify(data, null, 2), 'utf8');
   localFallbackDirty = false;
+  try {
+    const st = await fs.stat(LOCAL_FALLBACK_FILE);
+    localFallbackMtimeMs = st.mtimeMs;
+  } catch (e) {
+    localFallbackMtimeMs = Date.now();
+  }
 }
 
 function getLocalFallbackBlobsStore() {
@@ -374,17 +391,44 @@ async function setStoreSuspended(event, storeId, suspended) {
   await store.set('suspended_stores', JSON.stringify(all));
 }
 
+function normalizeStorePointsMapPointHistory(map) {
+  if (!map || typeof map !== 'object') return;
+  Object.keys(map).forEach((sid) => {
+    const cur = map[sid];
+    if (!cur || typeof cur !== 'object') return;
+    let ph = cur.pointHistory;
+    if (typeof ph === 'string') {
+      try {
+        ph = JSON.parse(ph);
+      } catch (e) {
+        ph = [];
+      }
+    }
+    if (!Array.isArray(ph)) ph = [];
+    cur.pointHistory = ph;
+  });
+}
+
 async function getStorePointsMap(event) {
   if (USE_UPSTASH) {
     const p = await upstashGet('kyc_store_points');
-    return p && typeof p === 'object' ? p : {};
+    const map = p && typeof p === 'object' ? p : {};
+    normalizeStorePointsMapPointHistory(map);
+    return map;
   }
   const store = await blobsGetStore(event);
   const raw = await store.get('store_points');
-  if (!raw) return {};
+  if (raw == null || raw === '') return {};
   try {
-    const p = JSON.parse(raw);
-    return typeof p === 'object' && p !== null ? p : {};
+    const p =
+      typeof raw === 'string'
+        ? JSON.parse(raw)
+        : typeof raw === 'object'
+          ? raw
+          : {};
+    const map = typeof p === 'object' && p !== null ? p : {};
+    normalizeStorePointsMapPointHistory(map);
+    return map;
   } catch (e) {
     return {};
   }
