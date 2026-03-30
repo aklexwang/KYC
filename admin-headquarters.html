@@ -1496,6 +1496,12 @@
         #section-point-ledger .table-scroll {
             overflow-x: auto;
             overflow-y: visible;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        #section-point-ledger .table-scroll::-webkit-scrollbar {
+            display: none;
+            height: 0;
         }
         .table--point-ledger {
             min-width: 1120px;
@@ -1508,6 +1514,9 @@
             white-space: nowrap;
             text-align: center;
         }
+        .table--point-ledger th.th-point-ledger-deposit-amount {
+            color: #f87171;
+        }
         .table--point-ledger td {
             padding: 11px 10px;
             font-size: 13px;
@@ -1519,6 +1528,19 @@
         .table--point-ledger .td-point-ledger-deposit { color: #7dd3fc; font-weight: 600; }
         .table--point-ledger .td-point-ledger-amt-grant { color: #86efac; font-weight: 700; font-variant-numeric: tabular-nums; }
         .table--point-ledger .td-point-ledger-amt-deduct { color: #fca5a5; font-weight: 700; font-variant-numeric: tabular-nums; }
+        @keyframes hq-point-ledger-amt-pending-blink {
+            0%, 100% { opacity: 1; filter: brightness(1); }
+            50% { opacity: 0.45; filter: brightness(1.15); }
+        }
+        .table--point-ledger .td-point-ledger-amt--deposit-pending-blink {
+            animation: hq-point-ledger-amt-pending-blink 1s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .table--point-ledger .td-point-ledger-amt--deposit-pending-blink {
+                animation: none;
+                opacity: 1;
+            }
+        }
         .table--point-ledger .td-point-ledger-balance { font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, 0.88); font-weight: 600; }
         .table--point-ledger .td-point-ledger-status {
             font-size: 12px;
@@ -1528,6 +1550,12 @@
             overflow: visible;
             position: relative;
         }
+        .table--point-ledger .point-ledger-status-label { font-weight: 600; }
+        .table--point-ledger .point-ledger-status-label--done { color: #86efac; }
+        .table--point-ledger .point-ledger-status-label--cancel { color: #fca5a5; }
+        .table--point-ledger .point-ledger-status-label--wait { color: #fcd34d; }
+        .table--point-ledger .point-ledger-status-label--fail { color: #fb923c; }
+        .table--point-ledger .point-ledger-status-label--default { color: rgba(255, 255, 255, 0.82); }
         .table--point-ledger tr.point-ledger-row-popup-open {
             position: relative;
             z-index: 40;
@@ -1535,12 +1563,6 @@
         .table--point-ledger tr.point-ledger-row-popup-open td {
             background: #0b153d;
         }
-        .table--point-ledger .point-ledger-status-label { font-weight: 600; }
-        .table--point-ledger .point-ledger-status-label--done { color: #86efac; }
-        .table--point-ledger .point-ledger-status-label--cancel { color: #fca5a5; }
-        .table--point-ledger .point-ledger-status-label--wait { color: #fcd34d; }
-        .table--point-ledger .point-ledger-status-label--fail { color: #fb923c; }
-        .table--point-ledger .point-ledger-status-label--default { color: rgba(255, 255, 255, 0.82); }
         .table--point-ledger .point-ledger-pending-wrap {
             position: relative;
             display: inline-block;
@@ -1615,16 +1637,20 @@
             border-color: rgba(248, 113, 113, 0.45);
         }
         .table--point-ledger .point-ledger-pending-choice--cancel:hover { background: rgba(239, 68, 68, 0.3); }
-        .table--point-ledger .td-point-ledger-note {
+        .table--point-ledger .td-point-ledger-mstore {
             text-align: center;
-            max-width: 360px;
             vertical-align: middle;
-            font-size: 11px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.88);
-            word-break: break-all;
-            line-height: 1.35;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
         }
+        .table--point-ledger .td-point-ledger-mstore--ok { color: #7dd3fc; }
+        .table--point-ledger .td-point-ledger-mstore--wait { color: #fcd34d; }
+        .table--point-ledger .td-point-ledger-mstore--cancel { color: #fca5a5; }
+        .table--point-ledger .td-point-ledger-mstore--hqcancel { color: #fb923c; }
+        .table--point-ledger .td-point-ledger-mstore--fail { color: #fb923c; }
+        .table--point-ledger .td-point-ledger-mstore--hq { color: rgba(196, 181, 253, 0.95); }
+        .table--point-ledger .td-point-ledger-mstore--na { color: rgba(255, 255, 255, 0.45); font-weight: 600; }
         .table--point-ledger .td-point-ledger-dash { color: rgba(255, 255, 255, 0.4); font-weight: 600; }
         .table--point-ledger .td-point-ledger-date {
             font-variant-numeric: tabular-nums;
@@ -1822,6 +1848,15 @@
             color: rgba(147, 197, 253, 0.95);
             max-width: 280px;
         }
+        .table--wallet-history .td-wallet-hist-mstore {
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .table--wallet-history .td-wallet-hist-mstore--ok { color: #7dd3fc; }
+        .table--wallet-history .td-wallet-hist-mstore--cancel { color: #fca5a5; }
+        .table--wallet-history .td-wallet-hist-mstore--reject { color: #fdba74; }
+        .table--wallet-history .td-wallet-hist-mstore--na { color: rgba(255, 255, 255, 0.45); font-weight: 600; }
         .table--wallet-history .td-wallet-hist-admin { color: rgba(255, 255, 255, 0.82); }
         .table--wallet-history .wallet-mgmt-hist-empty td {
             text-align: center;
@@ -2341,6 +2376,12 @@
             line-height: 1.45;
         }
         .hq-point-recharge-toast[hidden] { display: none !important; }
+        .hq-wallet-mgmt-toast {
+            z-index: 19999;
+        }
+        .hq-wallet-mgmt-toast.is-below-point-toast {
+            top: 52px;
+        }
         .hq-stores-api-banner {
             margin: 0 0 14px 0;
             padding: 12px 14px;
@@ -2735,6 +2776,7 @@
     </div>
     <div id="hqAppRoot" class="hq-app-root">
     <div id="hqPointRechargeToast" class="hq-point-recharge-toast" hidden role="status" aria-live="assertive"></div>
+    <div id="hqWalletMgmtToast" class="hq-point-recharge-toast hq-wallet-mgmt-toast" hidden role="status" aria-live="polite"></div>
     <div class="dashboard-shell">
     <aside class="dashboard-sidebar">
         <h2 class="sidebar-title">Admin Dashboard</h2>
@@ -3381,73 +3423,20 @@
                                 <th>수수료 (USDT)</th>
                             </tr>
                         </thead>
-                        <tbody id="settlementList">
-                            <tr>
-                                <td>강남점</td>
-                                <td>142</td>
-                                <td>1</td>
-                                <td>142</td>
-                                <td>118</td>
-                                <td>2</td>
-                                <td>236</td>
-                                <td>96</td>
-                                <td>1.5</td>
-                                <td>144</td>
-                                <td class="td-total-fee">522</td>
-                            </tr>
-                            <tr>
-                                <td>서초점</td>
-                                <td>88</td>
-                                <td>1</td>
-                                <td>88</td>
-                                <td>74</td>
-                                <td>2</td>
-                                <td>148</td>
-                                <td>61</td>
-                                <td>1.5</td>
-                                <td>91.5</td>
-                                <td class="td-total-fee">327.5</td>
-                            </tr>
-                            <tr>
-                                <td>역삼점</td>
-                                <td>203</td>
-                                <td>1</td>
-                                <td>203</td>
-                                <td>165</td>
-                                <td>2</td>
-                                <td>330</td>
-                                <td>140</td>
-                                <td>1.5</td>
-                                <td>210</td>
-                                <td class="td-total-fee">743</td>
-                            </tr>
-                            <tr>
-                                <td>잠실점</td>
-                                <td>56</td>
-                                <td>1</td>
-                                <td>56</td>
-                                <td>42</td>
-                                <td>2</td>
-                                <td>84</td>
-                                <td>38</td>
-                                <td>1.5</td>
-                                <td>57</td>
-                                <td class="td-total-fee">197</td>
-                            </tr>
-                        </tbody>
+                        <tbody id="settlementList"></tbody>
                         <tfoot>
                             <tr id="settlementTableFootRow">
                                 <td>합계</td>
-                                <td>489</td>
+                                <td>0</td>
                                 <td class="settlement-td-dash">—</td>
-                                <td>489</td>
-                                <td>399</td>
+                                <td>0</td>
+                                <td>0</td>
                                 <td class="settlement-td-dash">—</td>
-                                <td>798</td>
-                                <td>335</td>
+                                <td>0</td>
+                                <td>0</td>
                                 <td class="settlement-td-dash">—</td>
-                                <td>502.5</td>
-                                <td class="td-total-fee">1,789.5</td>
+                                <td>0</td>
+                                <td class="td-total-fee">0</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -3459,7 +3448,7 @@
         <section class="settlement-section point-ledger-section">
             <div class="member-section-head">
                 <h2 class="section-title member-section-title member-section-title--glitch">포인트 내역</h2>
-                <p class="section-desc member-section-desc">가맹점이 <strong>포인트 충전</strong>을 신청하면 이 목록에 <strong>구분: 충전</strong>, <strong>상태: 진행중</strong>으로 올라옵니다. 실제 입금을 확인한 뒤 해당 행의 <strong>진행중</strong>을 눌러 <strong>확인</strong>(승인·잔액 반영) 또는 <strong>취소</strong>(거부)하세요. 가맹점·본사가 같은 저장소(Netlify/로컬 JSON)를 바라보는지 확인하세요.</p>
+                <p class="section-desc member-section-desc">가맹점이 <strong>포인트 충전</strong>을 신청하면 이 목록에 <strong>구분·상태</strong>(진행중·완료·취소 등)가 표시됩니다. 가맹점·본사가 같은 저장소(Netlify/로컬 JSON)를 바라보는지 확인하세요.</p>
             </div>
             <div class="settlement-date-bar point-ledger-toolbar">
                 <span class="settlement-date-inline-label">기간</span>
@@ -3487,6 +3476,7 @@
                     <option value="진행중">진행중</option>
                     <option value="실패">실패</option>
                     <option value="취소">취소</option>
+                    <option value="가맹점 취소">가맹점 취소</option>
                 </select>
                 <label for="pointLedgerStoreSearch">가맹점</label>
                 <input type="search" id="pointLedgerStoreSearch" class="settlement-store-search" placeholder="가맹명·로그인 계정 검색" autocomplete="off" aria-label="포인트 내역 가맹점 검색">
@@ -3501,9 +3491,9 @@
                                 <th>가맹명</th>
                                 <th>구분</th>
                                 <th>이전 금액</th>
-                                <th>변동 금액</th>
+                                <th class="th-point-ledger-deposit-amount">입금 금액</th>
                                 <th>이후 금액</th>
-                                <th>지갑 주소</th>
+                                <th>가맹점 상태</th>
                                 <th>상태</th>
                             </tr>
                         </thead>
@@ -3519,7 +3509,7 @@
                 <h2 class="section-title member-section-title member-section-title--glitch">지갑관리</h2>
                 <p class="section-desc member-section-desc">포인트 충전 신청이 들어온 가맹점에 TRC20 입금 지갑 주소를 발급합니다.</p>
             </div>
-            <h4 class="wallet-mgmt-subtitle">대기 중인 요청</h4>
+            <h4 class="wallet-mgmt-subtitle" id="walletMgmtPendingSectionTitle">대기 중인 요청</h4>
             <div id="walletMgmtList" class="wallet-mgmt-list" aria-live="polite"></div>
             <h4 class="wallet-mgmt-subtitle">발급 처리 내역</h4>
             <div class="settlement-date-bar wallet-mgmt-history-toolbar">
@@ -3546,6 +3536,7 @@
                                 <th>발급일시</th>
                                 <th>상태</th>
                                 <th>지갑 주소</th>
+                                <th>가맹점 상태</th>
                                 <th>발급 관리자</th>
                             </tr>
                         </thead>
@@ -4211,6 +4202,187 @@
         var hqRevenueChartInstance = null;
         var selectedStoreId = null;
         var settlementTfootSnapshot = '';
+        var settlementLoadSeq = 0;
+
+        function settlementAggregateRows(rows) {
+            var o = { smsCount: 0, smsFee: 0, idDocCount: 0, idDocFee: 0, wonCount: 0, wonFee: 0, total: 0 };
+            if (!Array.isArray(rows)) return o;
+            rows.forEach(function (r) {
+                if (!r) return;
+                o.smsCount += Number(r.smsCount) || 0;
+                o.smsFee += Number(r.smsFee) || 0;
+                o.idDocCount += Number(r.idDocCount) || 0;
+                o.idDocFee += Number(r.idDocFee) || 0;
+                o.wonCount += Number(r.wonCount) || 0;
+                o.wonFee += Number(r.wonFee) || 0;
+                o.total += Number(r.total) || 0;
+            });
+            return o;
+        }
+
+        function settlementUnitDisplay(count, fee, priceFallback) {
+            if (!(Number(count) > 0)) return '—';
+            if (Number(fee) > 0) return formatStorePointUsdt(fee / Number(count));
+            if (priceFallback != null && !isNaN(Number(priceFallback))) return formatStorePointUsdt(priceFallback);
+            return '—';
+        }
+
+        function buildSettlementRowHtml(store, agg) {
+            var displayName =
+                store.name != null && String(store.name).trim() !== '' ? String(store.name) : String(store.id || '(미지정)');
+            var p = store.prices || {};
+            var integ = Number(p.integrated) > 0;
+            var smsU = integ
+                ? settlementUnitDisplay(agg.smsCount, agg.smsFee, p.integrated)
+                : settlementUnitDisplay(agg.smsCount, agg.smsFee, p.sms);
+            var idU = integ
+                ? settlementUnitDisplay(agg.idDocCount, agg.idDocFee, p.integrated)
+                : settlementUnitDisplay(agg.idDocCount, agg.idDocFee, p.idDoc);
+            var wonU = integ
+                ? settlementUnitDisplay(agg.wonCount, agg.wonFee, p.integrated)
+                : settlementUnitDisplay(agg.wonCount, agg.wonFee, p.account);
+            return (
+                '<tr>' +
+                '<td>' +
+                escapeHtml(displayName) +
+                '</td>' +
+                '<td>' +
+                Math.round(agg.smsCount).toLocaleString() +
+                '</td>' +
+                '<td>' +
+                smsU +
+                '</td>' +
+                '<td>' +
+                formatStorePointUsdt(agg.smsFee) +
+                '</td>' +
+                '<td>' +
+                Math.round(agg.idDocCount).toLocaleString() +
+                '</td>' +
+                '<td>' +
+                idU +
+                '</td>' +
+                '<td>' +
+                formatStorePointUsdt(agg.idDocFee) +
+                '</td>' +
+                '<td>' +
+                Math.round(agg.wonCount).toLocaleString() +
+                '</td>' +
+                '<td>' +
+                wonU +
+                '</td>' +
+                '<td>' +
+                formatStorePointUsdt(agg.wonFee) +
+                '</td>' +
+                '<td class="td-total-fee">' +
+                formatStorePointUsdt(agg.total) +
+                '</td>' +
+                '</tr>'
+            );
+        }
+
+        function renderSettlementTableFromStoresLifetime() {
+            var tbody = document.getElementById('settlementList');
+            if (!tbody) return;
+            var html = '';
+            (Array.isArray(stores) ? stores : []).forEach(function (s) {
+                if (!s) return;
+                var u = s.usage || {};
+                var sms = u.sms || {};
+                var idD = u.idDoc || {};
+                var acc = u.account || {};
+                var p = s.prices || {};
+                var integ = Number(p.integrated) > 0;
+                var smsC = Number(sms.count) || 0;
+                var idC = Number(idD.count) || 0;
+                var wonC = Number(acc.count) || 0;
+                var smsFee = Number(sms.amount) || 0;
+                var idFee = Number(idD.amount) || 0;
+                var accFee = Number(acc.amount) || 0;
+                var total = integ ? Number(s.totalAmount) || 0 : smsFee + idFee + accFee;
+                var agg = {
+                    smsCount: smsC,
+                    smsFee: smsFee,
+                    idDocCount: idC,
+                    idDocFee: idFee,
+                    wonCount: wonC,
+                    wonFee: accFee,
+                    total: total
+                };
+                html += buildSettlementRowHtml(s, agg);
+            });
+            tbody.innerHTML = html;
+            settlementTfootSnapshot = '';
+            syncSettlementTableRowSearchAttr();
+            applySettlementStoreFilter();
+        }
+
+        function loadSettlementStats() {
+            var seq = ++settlementLoadSeq;
+            var tbody = document.getElementById('settlementList');
+            if (!tbody) return;
+            initSettlementDateRange();
+            var fromEl = document.getElementById('settlementDateFrom');
+            var toEl = document.getElementById('settlementDateTo');
+            var from = fromEl && fromEl.value ? String(fromEl.value).trim() : '';
+            var to = toEl && toEl.value ? String(toEl.value).trim() : '';
+            var api = window.ADMIN_API_BASE || '';
+            if (!api) {
+                renderSettlementTableFromStoresLifetime();
+                return;
+            }
+            var list = Array.isArray(stores) ? stores : [];
+            if (list.length === 0) {
+                tbody.innerHTML = '';
+                settlementTfootSnapshot = '';
+                syncSettlementTableRowSearchAttr();
+                applySettlementStoreFilter();
+                return;
+            }
+            tbody.innerHTML =
+                '<tr><td colspan="11" style="text-align:center;padding:16px 8px;">기간별 수수료를 불러오는 중…</td></tr>';
+            Promise.all(
+                list.map(function (s) {
+                    if (!s) return Promise.resolve({ ok: false, store: null, data: null });
+                    var sid = s.id != null ? String(s.id) : '';
+                    var url =
+                        api +
+                        '/api/store-settlement?store=' +
+                        encodeURIComponent(sid) +
+                        '&from=' +
+                        encodeURIComponent(from) +
+                        '&to=' +
+                        encodeURIComponent(to);
+                    return fetch(url, { cache: 'no-store' })
+                        .then(function (r) {
+                            return r.text().then(function (t) {
+                                var data = null;
+                                try {
+                                    data = t && String(t).trim() ? JSON.parse(t) : null;
+                                } catch (eJ) {
+                                    data = null;
+                                }
+                                return { ok: r.ok, store: s, data: data };
+                            });
+                        })
+                        .catch(function () {
+                            return { ok: false, store: s, data: null };
+                        });
+                })
+            ).then(function (results) {
+                if (seq !== settlementLoadSeq) return;
+                var html = '';
+                results.forEach(function (res) {
+                    if (!res || !res.store) return;
+                    var rows = res.ok && res.data && Array.isArray(res.data.rows) ? res.data.rows : [];
+                    var agg = settlementAggregateRows(rows);
+                    html += buildSettlementRowHtml(res.store, agg);
+                });
+                tbody.innerHTML = html;
+                settlementTfootSnapshot = '';
+                syncSettlementTableRowSearchAttr();
+                applySettlementStoreFilter();
+            });
+        }
 
         function persistDashboardView(view) {
             try {
@@ -4279,6 +4451,9 @@
             }
             if (nextView === 'overview') {
                 setTimeout(function () { updateOverviewDashboard(); }, 0);
+            }
+            if (nextView === 'settlement') {
+                loadSettlementStats();
             }
             persistDashboardView(nextView);
         }
@@ -4357,11 +4532,13 @@
                     if (window.__hqRechargeToastTimer) clearTimeout(window.__hqRechargeToastTimer);
                     window.__hqRechargeToastTimer = setTimeout(function () {
                         toast.hidden = true;
+                        syncHqToastStackPositions();
                     }, 25000);
                 }
             }
             lastPointRechargePendingCount = n;
             pointRechargeSkipNotify = false;
+            syncHqToastStackPositions();
         }
 
         var lastWalletMgmtPendingCount = 0;
@@ -4389,6 +4566,35 @@
                 if (day.length < 2) day = '0' + day;
                 return y + '-' + m + '-' + day;
             } catch (e) { return ''; }
+        }
+
+        /** 발급 내역: 가맹점이 요청을 취소했는지, 수신했는지, 본사 거부인지 */
+        function walletMgmtMerchantStoreStatusLabel(row) {
+            if (!row || typeof row !== 'object') return '—';
+            var isCancel = row.issuanceOutcome === 'cancelled';
+            var isReject = row.issuanceOutcome === 'rejected';
+            var w = row.wallet != null ? String(row.wallet).trim() : '';
+            var isCompleted = row.issuanceOutcome === 'completed' || (!row.issuanceOutcome && w);
+            if (isCancel) return '신청 취소';
+            if (isReject) return '본사 거부';
+            if (isCompleted) return '발급 수신';
+            return '—';
+        }
+        function walletMgmtMerchantStoreStatusClass(row) {
+            if (!row || typeof row !== 'object') return 'td-wallet-hist-mstore--na';
+            var isCancel = row.issuanceOutcome === 'cancelled';
+            var isReject = row.issuanceOutcome === 'rejected';
+            var w = row.wallet != null ? String(row.wallet).trim() : '';
+            var isCompleted = row.issuanceOutcome === 'completed' || (!row.issuanceOutcome && w);
+            if (isCancel) return 'td-wallet-hist-mstore--cancel';
+            if (isReject) return 'td-wallet-hist-mstore--reject';
+            if (isCompleted) return 'td-wallet-hist-mstore--ok';
+            return 'td-wallet-hist-mstore--na';
+        }
+        function walletMgmtIssuedByDisplay(row) {
+            var adm = row && row.issuedByNickname != null ? String(row.issuedByNickname) : '';
+            if (row && row.issuanceOutcome === 'cancelled' && adm === '가맹점 취소') return '';
+            return adm;
         }
 
         function filterWalletMgmtHistoryRows(rows) {
@@ -4419,14 +4625,14 @@
                 var emptyMsg = walletMgmtHistoryCache.length
                     ? '조건에 맞는 내역이 없습니다.'
                     : '발급 처리 내역이 없습니다.';
-                tbody.innerHTML = '<tr class="wallet-mgmt-hist-empty"><td colspan="5">' + emptyMsg + '</td></tr>';
+                tbody.innerHTML = '<tr class="wallet-mgmt-hist-empty"><td colspan="6">' + emptyMsg + '</td></tr>';
                 return;
             }
             var html = '';
             list.forEach(function (row) {
                 var sn = row.storeName != null ? String(row.storeName) : '';
                 var sid = row.storeId != null ? String(row.storeId) : '';
-                var adm = row.issuedByNickname != null ? String(row.issuedByNickname) : '';
+                var admShow = walletMgmtIssuedByDisplay(row);
                 var w = row.wallet != null ? String(row.wallet) : '';
                 var isCancel = row.issuanceOutcome === 'cancelled';
                 var isReject = row.issuanceOutcome === 'rejected';
@@ -4436,6 +4642,8 @@
                     : isReject
                       ? 'td-wallet-hist-status--reject'
                       : 'td-wallet-hist-status--ok';
+                var mstoreLabel = walletMgmtMerchantStoreStatusLabel(row);
+                var mstoreCls = walletMgmtMerchantStoreStatusClass(row);
                 html += '<tr>';
                 html += '<td class="td-wallet-hist-name">' + hqEscHtml(sn || sid);
                 if (sid && sn !== sid) {
@@ -4445,7 +4653,8 @@
                 html += '<td class="td-wallet-hist-date">' + formatWalletCompletedAtLocal(row.completedAt) + '</td>';
                 html += '<td class="td-wallet-hist-status ' + statusCls + '">' + hqEscHtml(statusLabel) + '</td>';
                 html += '<td class="td-wallet-hist-addr">' + (isCancel || isReject ? '—' : hqEscHtml(w)) + '</td>';
-                html += '<td class="td-wallet-hist-admin">' + hqEscHtml(adm || '—') + '</td>';
+                html += '<td class="td-wallet-hist-mstore ' + mstoreCls + '">' + hqEscHtml(mstoreLabel) + '</td>';
+                html += '<td class="td-wallet-hist-admin">' + hqEscHtml(admShow || '—') + '</td>';
                 html += '</tr>';
             });
             tbody.innerHTML = html;
@@ -4483,12 +4692,39 @@
             }
         }
 
+        function syncHqToastStackPositions() {
+            var pt = document.getElementById('hqPointRechargeToast');
+            var wt = document.getElementById('hqWalletMgmtToast');
+            if (!wt) return;
+            var pointVisible = pt && !pt.hidden;
+            wt.classList.toggle('is-below-point-toast', pointVisible && !wt.hidden);
+        }
+
+        function syncWalletMgmtPendingBanner(n) {
+            var toast = document.getElementById('hqWalletMgmtToast');
+            if (!toast) return;
+            var cnt = typeof n === 'number' && n >= 0 ? n : 0;
+            if (cnt < 1) {
+                toast.hidden = true;
+                toast.textContent = '';
+                syncHqToastStackPositions();
+                return;
+            }
+            toast.hidden = false;
+            toast.textContent =
+                '지갑 주소 발급 요청 ' +
+                cnt +
+                '건이 접수되었습니다. 지갑관리 「대기 중인 요청」에서 확인하세요. — 클릭하면 이동';
+            syncHqToastStackPositions();
+        }
+
         function updateWalletMgmtBadgeFromCount(n) {
             var el = document.getElementById('walletMgmtPendingBadge');
             if (el) {
                 el.textContent = n > 99 ? '99+' : String(n);
                 el.classList.toggle('is-visible', n > 0);
             }
+            syncWalletMgmtPendingBanner(n);
             if (!walletMgmtSkipNotify && n > lastWalletMgmtPendingCount) {
                 try {
                     if (window.Notification && Notification.permission === 'granted') {
@@ -5054,7 +5290,7 @@
                 var st = pickPointLedgerStatus(r);
                 var signed;
                 if (r.kind === 'deposit') {
-                    if (st === '진행중' || st === '처리중' || st === '취소') {
+                    if (st === '진행중' || st === '처리중' || st === '취소' || st === '가맹점 취소') {
                         signed = 0;
                     } else {
                         signed = amt;
@@ -5339,10 +5575,45 @@
         function pointLedgerStatusLabelClass(label) {
             var t = label != null ? String(label).trim() : '';
             if (t === '완료') return 'point-ledger-status-label point-ledger-status-label--done';
-            if (t === '취소') return 'point-ledger-status-label point-ledger-status-label--cancel';
+            if (t === '취소' || t === '가맹점 취소') return 'point-ledger-status-label point-ledger-status-label--cancel';
             if (t === '대기' || t === '처리중' || t === '진행중') return 'point-ledger-status-label point-ledger-status-label--wait';
             if (t === '실패') return 'point-ledger-status-label point-ledger-status-label--fail';
             return 'point-ledger-status-label point-ledger-status-label--default';
+        }
+
+        /** 포인트 내역: 가맹점(충전) 관점 상태 — 지갑 주소 열 대체 */
+        function pointLedgerMerchantStoreStatusLabel(r) {
+            if (!r) return '—';
+            var st = (r.statusLabel != null ? String(r.statusLabel) : '완료').trim();
+            var kind = r.kind;
+            if (kind === 'deposit') {
+                if (st === '가맹점 취소') return '신청 취소';
+                if (st === '진행중' || st === '처리중') return '입금 대기';
+                if (st === '완료') return '입금 완료';
+                if (st === '취소') return '본사 취소';
+                if (st === '실패') return '실패';
+                if (st === '대기') return '대기';
+                return st || '—';
+            }
+            if (kind === 'grant') return '본사 지급';
+            if (kind === 'deduct') return '본사 차감';
+            return '—';
+        }
+        function pointLedgerMerchantStoreStatusClass(r) {
+            if (!r) return 'td-point-ledger-mstore--na';
+            var st = (r.statusLabel != null ? String(r.statusLabel) : '완료').trim();
+            var kind = r.kind;
+            if (kind === 'deposit') {
+                if (st === '가맹점 취소') return 'td-point-ledger-mstore--cancel';
+                if (st === '진행중' || st === '처리중') return 'td-point-ledger-mstore--wait';
+                if (st === '완료') return 'td-point-ledger-mstore--ok';
+                if (st === '취소') return 'td-point-ledger-mstore--hqcancel';
+                if (st === '실패') return 'td-point-ledger-mstore--fail';
+                if (st === '대기') return 'td-point-ledger-mstore--wait';
+                return 'td-point-ledger-mstore--na';
+            }
+            if (kind === 'grant' || kind === 'deduct') return 'td-point-ledger-mstore--hq';
+            return 'td-point-ledger-mstore--na';
         }
 
         function setPointLedgerEntryStatus(storeId, historyId, newStatus, entryKind) {
@@ -5419,7 +5690,7 @@
             if ((st === '진행중' || st === '처리중') && hidRaw) {
                 var h = '';
                 h += '<div class="point-ledger-pending-wrap" data-store-id="' + sidAttr + '" data-history-id="' + hidAttr + '" data-entry-kind="' + kindAttr + '">';
-                h += '<button type="button" class="point-ledger-pending-open" aria-expanded="false" aria-haspopup="true">진행중</button>';
+                h += '<button type="button" class="point-ledger-pending-open" aria-expanded="false" aria-haspopup="true">입금요청</button>';
                 h += '<div class="point-ledger-pending-choices point-ledger-pending-popover" hidden role="group" aria-label="처리 결과 선택">';
                 h += '<button type="button" class="point-ledger-pending-choice point-ledger-pending-choice--ok">확인</button>';
                 h += '<button type="button" class="point-ledger-pending-choice point-ledger-pending-choice--cancel">취소</button>';
@@ -5723,6 +5994,15 @@
                 var isDeposit = r.kind === 'deposit';
                 var kCls = isDeposit ? 'td-point-ledger-kind td-point-ledger-deposit' : (grant ? 'td-point-ledger-kind td-point-ledger-grant' : 'td-point-ledger-kind td-point-ledger-deduct');
                 var chCls = (grant || isDeposit) ? 'td-point-ledger-amt td-point-ledger-amt-grant' : 'td-point-ledger-amt td-point-ledger-amt-deduct';
+                var stPl = r.statusLabel != null ? String(r.statusLabel).trim() : '완료';
+                var hidForBlink = r.historyId != null ? String(r.historyId) : '';
+                if (
+                    isDeposit &&
+                    hidForBlink &&
+                    (stPl === '진행중' || stPl === '처리중')
+                ) {
+                    chCls += ' td-point-ledger-amt--deposit-pending-blink';
+                }
                 var kindLabel = isDeposit ? '충전' : (grant ? '지급' : '차감');
                 var ch = r._phChange != null ? r._phChange : 0;
                 var chStr = isDeposit && ch === 0
@@ -5730,7 +6010,8 @@
                     : ((ch >= 0 ? '+' : '') + formatStorePointUsdt(Math.abs(ch)) + ' USDT');
                 var beforeStr = r._phBefore != null ? formatStorePointUsdt(r._phBefore) + ' USDT' : '—';
                 var afterStr = r._phAfter != null ? formatStorePointUsdt(r._phAfter) + ' USDT' : '—';
-                var walletStr = (r.note != null ? String(r.note) : '').trim();
+                var mstoreLabel = pointLedgerMerchantStoreStatusLabel(r);
+                var mstoreCls = pointLedgerMerchantStoreStatusClass(r);
                 html += '<tr>';
                 html += '<td class="td-point-ledger-date">' + escapeHtml(formatStorePointHistoryDate(r.at)) + '</td>';
                 html += '<td>' + escapeHtml(r.storeName || '-') + '</td>';
@@ -5738,7 +6019,7 @@
                 html += '<td class="td-point-ledger-balance">' + escapeHtml(beforeStr) + '</td>';
                 html += '<td class="' + chCls + '">' + escapeHtml(chStr) + '</td>';
                 html += '<td class="td-point-ledger-balance">' + escapeHtml(afterStr) + '</td>';
-                html += '<td class="td-point-ledger-note">' + (walletStr ? escapeHtml(walletStr) : '<span class="td-point-ledger-dash">—</span>') + '</td>';
+                html += '<td class="td-point-ledger-mstore ' + mstoreCls + '">' + escapeHtml(mstoreLabel) + '</td>';
                 html += '<td class="td-point-ledger-status">' + renderPointLedgerStatusCellHtml(r) + '</td>';
                 html += '</tr>';
             });
@@ -6687,7 +6968,12 @@
                     amtStr = (ch > 0 ? '+' : '') + formatStorePointUsdt(Math.abs(ch));
                 }
                 var amtCls = (kind === 'deduct' || ch < 0) ? 'hq-ov-amt-neg' : 'hq-ov-amt-pos';
-                var stCls = (st === '진행중' || st === '처리중') ? 'hq-ov-st--hot' : (st === '취소' ? 'hq-ov-st--cancel' : 'hq-ov-st--ok');
+                var stCls =
+                    st === '진행중' || st === '처리중'
+                        ? 'hq-ov-st--hot'
+                        : st === '취소' || st === '가맹점 취소'
+                          ? 'hq-ov-st--cancel'
+                          : 'hq-ov-st--ok';
                 html += '<tr>';
                 html += '<td>' + escapeHtml(r.dateStr || formatStorePointHistoryDate(r.at)) + '</td>';
                 html += '<td>' + escapeHtml(r.storeName || '-') + '</td>';
@@ -7444,8 +7730,7 @@
                             updateSummary();
                             renderStoreListFromState();
                             renderAllMembersTable();
-                            syncSettlementTableRowSearchAttr();
-                            applySettlementStoreFilter();
+                            loadSettlementStats();
                             renderGlobalPointLedger();
                             updateOverviewRevenueChart();
                         }
@@ -7484,8 +7769,7 @@
                         updateSummary();
                         renderStoreListFromState();
                         renderAllMembersTable();
-                        syncSettlementTableRowSearchAttr();
-                        applySettlementStoreFilter();
+                        loadSettlementStats();
                         renderGlobalPointLedger();
                         updateOverviewRevenueChart();
                     });
@@ -7497,8 +7781,7 @@
                 updateSummary();
                 renderStoreListFromState();
                 renderAllMembersTable();
-                syncSettlementTableRowSearchAttr();
-                applySettlementStoreFilter();
+                loadSettlementStats();
                 renderGlobalPointLedger();
                 updateOverviewRevenueChart();
             }
@@ -7664,7 +7947,9 @@
             }
             if (btn && !btn.dataset.settlementBound) {
                 btn.dataset.settlementBound = '1';
-                btn.addEventListener('click', function () { applySettlementStoreFilter(); });
+                btn.addEventListener('click', function () {
+                    loadSettlementStats();
+                });
             }
         }
 
@@ -7675,7 +7960,27 @@
             toastBar.dataset.hqToastClickBound = '1';
             toastBar.addEventListener('click', function () {
                 toastBar.hidden = true;
+                syncHqToastStackPositions();
                 switchDashboardView('pointLedger');
+            });
+        }
+        var walletToastBar = document.getElementById('hqWalletMgmtToast');
+        if (walletToastBar && !walletToastBar.dataset.hqToastClickBound) {
+            walletToastBar.dataset.hqToastClickBound = '1';
+            walletToastBar.addEventListener('click', function () {
+                switchDashboardView('walletMgmt');
+                setTimeout(function () {
+                    var sub = document.getElementById('walletMgmtPendingSectionTitle');
+                    var list = document.getElementById('walletMgmtList');
+                    var el = sub || list;
+                    if (el) {
+                        try {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        } catch (eSc) {
+                            el.scrollIntoView();
+                        }
+                    }
+                }, 80);
             });
         }
         syncHqAdminAddLevelSelect();
@@ -7806,8 +8111,6 @@
                 if (e.target === memberExportModal) closeMemberExportModal();
             });
         }
-        syncSettlementTableRowSearchAttr();
-        applySettlementStoreFilter();
         bindWalletMgmtUiOnce();
         refreshWalletMgmtBadge();
 

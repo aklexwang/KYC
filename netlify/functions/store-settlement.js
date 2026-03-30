@@ -28,10 +28,11 @@ exports.handler = async (event) => {
   if (event.httpMethod !== 'GET') return json(405, { error: 'Method not allowed' });
 
   const q = event.queryStringParameters || {};
-  const store = typeof q.store === 'string' ? q.store.trim() : '';
-  if (!store) {
+  const rawStore = q.store;
+  if (rawStore === undefined || rawStore === null) {
     return json(400, { error: 'store query required' });
   }
+  const store = typeof rawStore === 'string' ? rawStore.trim() : String(rawStore).trim();
   const from = typeof q.from === 'string' ? q.from.trim() : '';
   const to = typeof q.to === 'string' ? q.to.trim() : '';
 

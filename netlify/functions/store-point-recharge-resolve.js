@@ -85,6 +85,8 @@ exports.handler = async (event) => {
   const storeId = typeof body.storeId === 'string' ? body.storeId.trim() : '';
   const historyId = typeof body.historyId === 'string' ? body.historyId.trim() : '';
   const decision = typeof body.decision === 'string' ? body.decision.trim().toLowerCase() : '';
+  const cancelSource =
+    typeof body.cancelSource === 'string' ? body.cancelSource.trim().toLowerCase() : '';
 
   if (!storeId || !historyId) {
     return {
@@ -143,7 +145,7 @@ exports.handler = async (event) => {
     }
 
     if (decision === 'cancel') {
-      entry.status = '취소';
+      entry.status = cancelSource === 'merchant' ? '가맹점 취소' : '취소';
       hist[idx] = entry;
     } else {
       const nextBal = Math.round((bal + amountOk) * 2) / 2;

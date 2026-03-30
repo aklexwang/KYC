@@ -184,6 +184,12 @@ function sendLambdaResult(res, result) {
 }
 
 server.listen(PORT, '127.0.0.1', () => {
-  console.log('[KYC local] http://127.0.0.1:' + PORT + '/admin-headquarters.html');
+  const base = 'http://127.0.0.1:' + PORT;
+  console.log('[KYC local] 본사 어드민  ' + base + '/admin-headquarters.html');
+  console.log('[KYC local] 가맹점 어드민 ' + base + '/admin-store.html');
   console.log('[KYC local] API 프록시 · KYC_LOCAL_FALLBACK=' + (process.env.KYC_LOCAL_FALLBACK || '(없음)'));
+  if (['1', 'true', 'yes', 'on'].includes(String(process.env.KYC_LOCAL_FALLBACK || '').toLowerCase())) {
+    console.log('[KYC local] 로그인 테스트: 본사 admin / 111111 · 가맹점 STORE_001 / 111111 (.kyc-local-store.json)');
+  }
+  console.log('[KYC local] HTML은 위 주소로 열 것 (file:// 로 열면 /api 로그인 불가)');
 });

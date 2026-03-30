@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="128" height="128" aria-hidden="true">
+  <title>© DÌ</title>
+  <defs>
+    <radialGradient id="modalRechargeBurstGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e0e7ff" stop-opacity="0.55"/>
+      <stop offset="40%" stop-color="#3b82f6" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="50" cy="50" r="41" fill="url(#modalRechargeBurstGlow)" opacity="0.85"/>
+  <g fill="none" stroke-linecap="round" stroke-width="1.2">
+    <line x1="50" y1="50" x2="88" y2="50" stroke="#c7d2fe"/>
+    <line x1="50" y1="50" x2="86.14" y2="61.74" stroke="#93c5fd"/>
+    <line x1="50" y1="50" x2="80.74" y2="72.34" stroke="#a5b4fc"/>
+    <line x1="50" y1="50" x2="72.34" y2="80.74" stroke="#fca5a5"/>
+    <line x1="50" y1="50" x2="61.74" y2="86.14" stroke="#c7d2fe"/>
+    <line x1="50" y1="50" x2="50" y2="88" stroke="#93c5fd"/>
+    <line x1="50" y1="50" x2="38.26" y2="86.14" stroke="#a5b4fc"/>
+    <line x1="50" y1="50" x2="27.66" y2="80.74" stroke="#fca5a5"/>
+    <line x1="50" y1="50" x2="19.26" y2="72.34" stroke="#c7d2fe"/>
+    <line x1="50" y1="50" x2="13.86" y2="61.74" stroke="#93c5fd"/>
+    <line x1="50" y1="50" x2="12" y2="50" stroke="#a5b4fc"/>
+    <line x1="50" y1="50" x2="13.86" y2="38.26" stroke="#fca5a5"/>
+    <line x1="50" y1="50" x2="19.26" y2="27.66" stroke="#c7d2fe"/>
+    <line x1="50" y1="50" x2="27.66" y2="19.26" stroke="#93c5fd"/>
+    <line x1="50" y1="50" x2="38.26" y2="13.86" stroke="#a5b4fc"/>
+    <line x1="50" y1="50" x2="50" y2="12" stroke="#fca5a5"/>
+    <line x1="50" y1="50" x2="61.74" y2="13.86" stroke="#c7d2fe"/>
+    <line x1="50" y1="50" x2="72.34" y2="19.26" stroke="#93c5fd"/>
+    <line x1="50" y1="50" x2="80.74" y2="27.66" stroke="#a5b4fc"/>
+    <line x1="50" y1="50" x2="86.14" y2="38.26" stroke="#fca5a5"/>
+  </g>
+  <g fill="none" stroke-linecap="round" stroke-width="0.75" opacity="0.72">
+    <line x1="50" y1="50" x2="74" y2="50" stroke="#e0e7ff"/>
+    <line x1="50" y1="50" x2="69.42" y2="64.11" stroke="#93c5fd"/>
+    <line x1="50" y1="50" x2="57.42" y2="72.94" stroke="#a5b4fc"/>
+    <line x1="50" y1="50" x2="42.58" y2="72.94" stroke="#fca5a5"/>
+    <line x1="50" y1="50" x2="30.58" y2="64.11" stroke="#e0e7ff"/>
+    <line x1="50" y1="50" x2="26" y2="50" stroke="#93c5fd"/>
+    <line x1="50" y1="50" x2="30.58" y2="35.89" stroke="#a5b4fc"/>
+    <line x1="50" y1="50" x2="42.58" y2="27.06" stroke="#fca5a5"/>
+    <line x1="50" y1="50" x2="57.42" y2="27.06" stroke="#e0e7ff"/>
+    <line x1="50" y1="50" x2="69.42" y2="35.89" stroke="#93c5fd"/>
+  </g>
+  <circle cx="50" cy="50" r="3.2" fill="#f8fafc" stroke="#93c5fd" stroke-width="0.6"/>
+</svg>
