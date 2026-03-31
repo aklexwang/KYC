@@ -1102,7 +1102,8 @@
             max-width: 920px;
         }
         #section-settings .settings-desc { color: rgba(255,255,255,0.72); margin: 0 0 18px 0; line-height: 1.55; }
-        #section-settings .settings-usdt-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+        /* 최소 보유 ↔ 최소 충전 그룹 사이 약 5cm 간격 */
+        #section-settings .settings-usdt-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 5cm; }
         #section-settings .settings-usdt-row label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.88); }
         #section-settings .settings-usdt-group {
             display: inline-flex;
@@ -1120,6 +1121,9 @@
             font-size: 15px;
         }
         #section-settings .settings-usdt-row + .settings-usdt-row { margin-top: 14px; }
+        @media (max-width: 900px) {
+            #section-settings .settings-usdt-row { gap: 12px 24px; }
+        }
         @media (max-width: 860px) {
             #section-settings .settings-usdt-group {
                 width: 100%;
@@ -1361,6 +1365,17 @@
             font-family: inherit;
         }
         .btn-settlement-query:hover { opacity: 0.92; }
+        /* 수수료 통계: 가로 스크롤은 유지하되 스크롤바 트랙 UI만 숨김 (포인트 내역과 동일) */
+        #section-settlement .table-scroll {
+            overflow-x: auto;
+            overflow-y: visible;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        #section-settlement .table-scroll::-webkit-scrollbar {
+            display: none;
+            height: 0;
+        }
         .table--settlement { min-width: 1280px; }
         /* 정산표: 구간별 연한 배경 (가맹명 / 문자인증 / 신분증 인증 / 1원인증 / 합계) */
         .table--settlement thead tr:first-child th:nth-child(1) { background: rgba(255, 255, 255, 0.07) !important; }
@@ -1677,6 +1692,18 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 14px;
             padding: 16px 18px;
+        }
+        /* 대기 요청 카드: 발급 내역 「완료」(#86efac)과 겹치지 않도록 앰버 톤으로 구분 */
+        #walletMgmtList .wallet-mgmt-card.wallet-mgmt-card--row {
+            background: linear-gradient(145deg, rgba(251, 191, 36, 0.14) 0%, rgba(20, 31, 51, 0.97) 42%, rgba(15, 23, 42, 0.98) 100%);
+            border: 1px solid rgba(251, 191, 36, 0.42);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+        #walletMgmtList .wallet-mgmt-card.wallet-mgmt-card--row .wallet-mgmt-card-title {
+            color: #fde68a;
+        }
+        #walletMgmtList .wallet-mgmt-card.wallet-mgmt-card--row .wallet-mgmt-inline-label {
+            color: #fbbf24;
         }
         .wallet-mgmt-card--row {
             display: flex;
@@ -3525,7 +3552,7 @@
                     </button>
                 </div>
                 <button type="button" class="btn-settlement-query" id="btnWalletMgmtHistSearch">검색</button>
-                <button type="button" class="btn-settlement-query wallet-mgmt-hist-reset" id="btnWalletMgmtHistReset">초기화</button>
+                <button type="button" class="btn-settlement-query wallet-mgmt-hist-reset" id="btnWalletMgmtHistReset" onclick="if (window.resetWalletMgmtHistoryToolbar) window.resetWalletMgmtHistoryToolbar(event);">초기화</button>
             </div>
             <div class="table-wrap">
                 <div class="table-scroll">
@@ -4660,33 +4687,73 @@
             tbody.innerHTML = html;
         }
 
-        function initWalletMgmtHistToolbarOnce() {
-            var sec = document.getElementById('section-wallet-mgmt');
-            if (!sec || sec.dataset.walletHistToolbarBound) return;
-            sec.dataset.walletHistToolbarBound = '1';
-            var search = document.getElementById('btnWalletMgmtHistSearch');
-            var reset = document.getElementById('btnWalletMgmtHistReset');
-            var nameInp = document.getElementById('walletMgmtHistName');
-            function applyHistFilter() {
-                renderWalletMgmtHistoryTable(filterWalletMgmtHistoryRows(walletMgmtHistoryCache));
-            }
-            if (search) search.addEventListener('click', applyHistFilter);
-            if (reset) reset.addEventListener('click', function () {
-                if (nameInp) nameInp.value = '';
+        /** 발급일 범위 트리거 문구를 hidden 값과 맞춤 (초기화·저장소 연동용) */
+        function refreshWalletMgmtHistoryDrpLabel() {
+            var wrap = document.querySelector(
+                '#section-wallet-mgmt .wallet-mgmt-history-toolbar .drp-wrap[data-drp-from="walletMgmtHistDateFrom"]'
+            );
+            if (!wrap) return;
+            var lbl = wrap.querySelector('.drp-label');
+            var ph = wrap.getAttribute('data-drp-placeholder') || '연도-월-일 ~ 연도-월-일';
+            if (lbl) {
                 var df = document.getElementById('walletMgmtHistDateFrom');
                 var dt = document.getElementById('walletMgmtHistDateTo');
-                if (df) df.value = '';
-                if (dt) dt.value = '';
-                try {
-                    if (window.DateRangePicker && window.DateRangePicker.refreshAll) window.DateRangePicker.refreshAll();
-                } catch (eD) {}
-                applyHistFilter();
-            });
-            if (nameInp) {
+                var f = df && df.value ? String(df.value).trim() : '';
+                var t = dt && dt.value ? String(dt.value).trim() : '';
+                if (f && t) lbl.textContent = f + ' ~ ' + t;
+                else if (f || t) lbl.textContent = (f || '—') + ' ~ ' + (t || '—');
+                else lbl.textContent = ph;
+            }
+            try {
+                if (window.DateRangePicker && window.DateRangePicker.refreshAll) window.DateRangePicker.refreshAll();
+            } catch (eD) {}
+        }
+
+        /** 지갑 발급 내역: 검색(필터 적용 후 표시) */
+        function applyWalletMgmtHistorySearch() {
+            var tbody = document.getElementById('walletMgmtHistBody');
+            if (tbody) tbody.removeAttribute('data-cleared');
+            renderWalletMgmtHistoryTable(filterWalletMgmtHistoryRows(walletMgmtHistoryCache));
+        }
+
+        /**
+         * 지갑 발급 내역: 초기화 — 필터 입력만 비우고 표는 비움(데이터 안 보임). 〈검색〉으로 다시 표시.
+         * 인라인 onclick + 전역으로 두어 다른 스크립트/초기화 순서와 무관하게 동작하게 함.
+         */
+        function resetWalletMgmtHistoryToolbar(evt) {
+            if (evt && evt.preventDefault) evt.preventDefault();
+            if (evt && evt.stopPropagation) evt.stopPropagation();
+            var nameInp = document.getElementById('walletMgmtHistName');
+            if (nameInp) nameInp.value = '';
+            var df = document.getElementById('walletMgmtHistDateFrom');
+            var dt = document.getElementById('walletMgmtHistDateTo');
+            if (df) df.value = '';
+            if (dt) dt.value = '';
+            refreshWalletMgmtHistoryDrpLabel();
+            var tbody = document.getElementById('walletMgmtHistBody');
+            if (tbody) {
+                tbody.setAttribute('data-cleared', '1');
+                tbody.innerHTML =
+                    '<tr class="wallet-mgmt-hist-empty"><td colspan="6" style="text-align:center;padding:16px 8px;color:rgba(255,255,255,0.7);">필터를 초기화했습니다. 〈검색〉을 누르면 전체 내역을 다시 표시합니다.</td></tr>';
+            }
+        }
+        window.resetWalletMgmtHistoryToolbar = resetWalletMgmtHistoryToolbar;
+
+        function initWalletMgmtHistToolbarOnce() {
+            var search = document.getElementById('btnWalletMgmtHistSearch');
+            var nameInp = document.getElementById('walletMgmtHistName');
+            if (!search && !nameInp) return;
+            if (search && !search.dataset.walletHistToolbarBound) {
+                search.dataset.walletHistToolbarBound = '1';
+                search.addEventListener('click', applyWalletMgmtHistorySearch);
+            }
+            /* 초기화는 버튼 인라인 onclick만 사용 (중복 호출·이벤트 순서 문제 방지) */
+            if (nameInp && !nameInp.dataset.walletHistToolbarBound) {
+                nameInp.dataset.walletHistToolbarBound = '1';
                 nameInp.addEventListener('keydown', function (e) {
                     if (e.key === 'Enter') {
                         e.preventDefault();
-                        applyHistFilter();
+                        applyWalletMgmtHistorySearch();
                     }
                 });
             }
@@ -4792,7 +4859,7 @@
                         });
                         root.innerHTML = html;
                     }
-                    renderWalletMgmtHistoryTable(filterWalletMgmtHistoryRows(walletMgmtHistoryCache));
+                    applyWalletMgmtHistorySearch();
                 })
                 .catch(function () {
                     root.innerHTML = '<p class="wallet-mgmt-empty">목록을 불러오지 못했습니다.</p>';
@@ -4803,7 +4870,6 @@
             var sec = document.getElementById('section-wallet-mgmt');
             if (!sec || sec.dataset.walletMgmtBound) return;
             sec.dataset.walletMgmtBound = '1';
-            initWalletMgmtHistToolbarOnce();
             sec.addEventListener('click', function (e) {
                 var btnCancel = e.target.closest('.btn-wallet-mgmt-cancel');
                 if (btnCancel) {
@@ -8111,6 +8177,7 @@
                 if (e.target === memberExportModal) closeMemberExportModal();
             });
         }
+        initWalletMgmtHistToolbarOnce();
         bindWalletMgmtUiOnce();
         refreshWalletMgmtBadge();
 

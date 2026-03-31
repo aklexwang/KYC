@@ -4,7 +4,7 @@
  * - https://docs.didit.me/standalone-apis/face-match
  *
  * JSON(base64): selfieImageBase64, idFrontImageBase64
- * Env: DIDIT_API_KEY
+ * Env: DIDIT_API_KEY. Optional: DIDIT_KYC_MOCK=1 — 로컬에서 키 없이 통과 응답.
  * Optional: DIDIT_PASSIVE_LIVENESS_DECLINE_THRESHOLD (기본 30, 미만이면 거절)
  *           DIDIT_FACE_MATCH_DECLINE_THRESHOLD (기본 70, 미만이면 거절)
  */
@@ -87,12 +87,8 @@ exports.handler = async (event) => {
   }
 
   const apiKey = process.env.DIDIT_API_KEY;
-  if (!apiKey) {
-    return json(503, {
-      error: 'not_configured',
-      message: 'Set DIDIT_API_KEY in Netlify environment variables.',
-    });
-  }
+  const kycMock =
+    process.env.DIDIT_KYC_MOCK === '1' || String(process.env.DIDIT_KYC_MOCK || '').toLowerCase() === 'true';
 
   let body;
   try {
@@ -123,6 +119,27 @@ exports.handler = async (event) => {
   const maxBytes = 5 * 1024 * 1024;
   if (selfie.buf.length > maxBytes || idFront.buf.length > maxBytes) {
     return json(400, { error: 'image_too_large', message: '이미지당 최대 5MB입니다.' });
+  }
+
+  if (!apiKey && kycMock) {
+    return json(200, {
+      success: true,
+      stage: null,
+      livenessScore: 95,
+      faceScore: 95,
+      requestIdLiveness: 'mock_lv_' + Date.now().toString(36),
+      requestIdFaceMatch: 'mock_fm_' + Date.now().toString(36),
+      message: null,
+      mock: true,
+    });
+  }
+
+  if (!apiKey) {
+    return json(503, {
+      error: 'not_configured',
+      message:
+        'Set DIDIT_API_KEY in Netlify environment variables (or DIDIT_KYC_MOCK=1 for local dev only).',
+    });
   }
 
   const liveThresh = String(process.env.DIDIT_PASSIVE_LIVENESS_DECLINE_THRESHOLD || '30').trim() || '30';

@@ -3,7 +3,7 @@
  * https://docs.didit.me/standalone-apis/id-verification
  *
  * JSON(base64) 수신 → multipart로 Didit에 전달. 의존성 없음.
- * Env: DIDIT_API_KEY
+ * Env: DIDIT_API_KEY. Optional: DIDIT_KYC_MOCK=1 — 로컬에서 키 없이 승인 응답(실서비스에서는 끌 것).
  */
 
 const DIDIT_ID_URL = 'https://verification.didit.me/v3/id-verification/';
@@ -86,12 +86,8 @@ exports.handler = async (event) => {
   }
 
   const apiKey = process.env.DIDIT_API_KEY;
-  if (!apiKey) {
-    return json(503, {
-      error: 'not_configured',
-      message: 'Set DIDIT_API_KEY in Netlify environment variables.',
-    });
-  }
+  const kycMock =
+    process.env.DIDIT_KYC_MOCK === '1' || String(process.env.DIDIT_KYC_MOCK || '').toLowerCase() === 'true';
 
   let body;
   try {
@@ -120,6 +116,24 @@ exports.handler = async (event) => {
   }
   if (front.buf.length > 5 * 1024 * 1024) {
     return json(400, { error: 'image_too_large', message: '파일당 최대 5MB입니다.' });
+  }
+
+  if (!apiKey && kycMock) {
+    return json(200, {
+      success: true,
+      status: 'Approved',
+      requestId: 'mock_id_' + Date.now().toString(36),
+      idVerification: { status: 'Approved', warnings: [] },
+      mock: true,
+    });
+  }
+
+  if (!apiKey) {
+    return json(503, {
+      error: 'not_configured',
+      message:
+        'Set DIDIT_API_KEY in Netlify environment variables (or DIDIT_KYC_MOCK=1 for local dev only).',
+    });
   }
 
   const parts = [

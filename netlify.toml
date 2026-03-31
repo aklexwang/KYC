@@ -53,6 +53,18 @@
   force = true
 
 [[redirects]]
+  from = "/api/send-otp"
+  to = "/.netlify/functions/send-otp"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/verify-otp"
+  to = "/.netlify/functions/verify-otp"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/kyc-blacklist"
   to = "/.netlify/functions/kyc-blacklist"
   status = 200

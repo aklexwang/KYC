@@ -43,6 +43,8 @@ const API_MAP = {
   '/api/store-allowed-ips': 'store-allowed-ips.js',
   '/api/store-sms-per-phone-limit': 'store-sms-per-phone-limit.js',
   '/api/check-phone-used': 'check-phone-used.js',
+  '/api/send-otp': 'send-otp.js',
+  '/api/verify-otp': 'verify-otp.js',
   '/api/kyc-blacklist': 'kyc-blacklist.js',
   '/api/usage-prices': 'usage-prices.js',
   '/api/store-login': 'store-login.js',

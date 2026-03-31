@@ -794,6 +794,28 @@
         .view-steps .field-row label { flex: 0 0 min(90px, 24vw); }
         .btn-onwon { flex-shrink: 0; display: block; width: 100%; padding: 16px; background: #1A2F4A; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: auto; }
         .btn-onwon:active { opacity: 0.9; }
+        .btn-onwon:disabled { opacity: 0.45; cursor: not-allowed; }
+        /* 계좌 증빙(주소 증명) 업로드 */
+        .account-doc-title { font-size: 19px; font-weight: 700; color: #1a1a1a; margin: 0 0 8px 0; letter-spacing: -0.02em; }
+        .account-doc-hint { font-size: 14px; color: #6D84A1; margin: 0 0 16px 0; line-height: 1.5; }
+        .account-doc-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+        .account-doc-option {
+            display: flex; align-items: flex-start; gap: 10px; padding: 14px 14px; border-radius: 12px; border: 1.5px solid #E5E5EA;
+            background: #fff; cursor: pointer; font-size: 15px; color: #1a1a1a; text-align: left; line-height: 1.45;
+        }
+        .account-doc-option.account-doc-option--selected { border-color: #1863FD; background: #f0f6ff; }
+        .account-doc-option input { margin-top: 3px; accent-color: #1863FD; }
+        .account-doc-note { font-size: 12px; color: #8E8E93; margin: 0 0 16px 0; }
+        .account-doc-upload-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .account-doc-file-input { position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none; }
+        .account-doc-file-btn {
+            padding: 12px 18px; border-radius: 10px; border: 1px solid #1863FD; background: #fff; color: #1863FD;
+            font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer;
+        }
+        .account-doc-file-btn:active { opacity: 0.9; }
+        .account-doc-file-name { font-size: 13px; color: #5c5c5c; word-break: break-all; flex: 1; min-width: 0; }
+        .account-doc-error { display: none; font-size: 13px; color: #C62828; margin: 8px 0 0 0; padding: 10px 12px; border-radius: 8px; background: #FFEBEE; }
+        .account-doc-error.show { display: block; }
         /* 1원인증 확인 화면 (사진 스타일) */
         .view-account-verify .step-item:not(.active) { background: #DCE7F5; }
         .view-account-verify .step-item:not(.active):not(.step-done) .step-num { background: #EDF3FC; color: #2E4D71; border-color: #1863FD; }
@@ -1206,7 +1228,7 @@
             <div class="view-body">
                 <div class="scroll-area">
                     <h1 class="heading">고객확인을 시작합니다.</h1>
-                    <p class="subtext">인증을 위해 본인 명의의 휴대폰, 신분증, 은행 계좌를 준비해 주세요.</p>
+                    <p class="subtext">인증을 위해 본인 명의의 휴대폰, 신분증, 계좌 관련 서류(통장·거래내역 등)를 준비해 주세요.</p>
                     <div class="card-illustration">
                         <div class="card-box">
                             <div class="card-avatar">
@@ -1240,7 +1262,7 @@
                             <span class="agree-label">고유식별정보 처리 동의 <span class="required">(필수)</span></span>
                         </div>
                     </div>
-                    <p class="disclaimer">금융실명법 및 개인정보보호법에 따라 ① 휴대폰 본인인증, ② 신분증과 본인 일치 여부 확인, ③ 1원인증에 필요한 최소한의 정보만 수집합니다.</p>
+                    <p class="disclaimer">금융실명법 및 개인정보보호법에 따라 ① 휴대폰 본인인증, ② 신분증과 본인 일치 여부 확인, ③ 계좌 관련 증빙 제출에 필요한 최소한의 정보만 수집합니다.</p>
                     <p class="disclaimer">수집된 정보는 본인 확인 목적으로만 이용된 후 별도 저장 없이 안전하게 즉시 파기되며, 동의하지 않으실 경우 서비스 이용이 불가합니다.</p>
                     <p class="disclaimer">정보 제공을 거부하거나 허위 정보를 제공할 경우 고객확인 및 서비스 이용이 제한될 수 있습니다.</p>
                 </div>
@@ -1430,7 +1452,7 @@
                         </div>
                         <div class="step-item">
                             <div class="step-num">3</div>
-                            <div class="step-label">1원인증</div>
+                            <div class="step-label">계좌인증</div>
                         </div>
                     </div>
                     <h2 class="basicinfo-title">기본정보를 입력해 주세요.</h2>
@@ -1510,7 +1532,7 @@
                         </div>
                         <div class="step-item">
                             <div class="step-num">3</div>
-                            <div class="step-label">1원인증</div>
+                            <div class="step-label">계좌인증</div>
                         </div>
                     </div>
                     <h2 class="id-doc-type-title">어떤 신분증을 사용하시나요?</h2>
@@ -1565,7 +1587,7 @@
                         </div>
                         <div class="step-item">
                             <div class="step-num">3</div>
-                            <div class="step-label">1원인증</div>
+                            <div class="step-label">계좌인증</div>
                         </div>
                     </div>
                     <div class="identity-flow-head">
@@ -1646,7 +1668,7 @@
             </div>
         </div>
 
-        <!-- 5. 인증 단계 화면 (1원인증 입력) -->
+        <!-- 5. 계좌 입력 → 1원 인증 -->
         <div id="view-steps" class="view view-steps">
             <nav class="nav-bar">
                 <button type="button" class="nav-back js-back" aria-label="뒤로">
@@ -1667,59 +1689,40 @@
                         </div>
                         <div class="step-item active">
                             <div class="step-num">3</div>
-                            <div class="step-label">1원인증</div>
+                            <div class="step-label">계좌인증</div>
                         </div>
                     </div>
                     <div class="account-header">
-                        <p class="line1">본인 명의로 개설된</p>
-                        <p class="line2">계좌정보를 입력해 주세요.</p>
+                        <p class="line1">본인 명의 계좌를 확인하기 위해</p>
+                        <p class="line2">계좌 정보를 입력해 주세요</p>
                     </div>
-                    <div class="group field-group">
-                        <div class="group-inner">
-                            <div class="field-row">
-                                <label for="accountBank">금융기관<span class="required">*</span></label>
-                                <select id="accountBank" required>
-                                    <option value="">선택하세요</option>
-                                    <option value="kb">국민은행</option>
-                                    <option value="shinhan">신한은행</option>
-                                    <option value="woori">우리은행</option>
-                                    <option value="hana">하나은행</option>
-                                    <option value="nh">농협은행</option>
-                                    <option value="ibk">기업은행</option>
-                                    <option value="kakao">카카오뱅크</option>
-                                    <option value="kbank">케이뱅크</option>
-                                </select>
-                            </div>
-                            <div class="field-row">
-                                <label for="accountNumber">계좌번호<span class="required">*</span></label>
-                                <input type="text" id="accountNumber" placeholder="계좌번호 입력" inputmode="numeric" autocomplete="off">
-                            </div>
-                            <div class="field-row">
-                                <label for="accountHolder">예금주<span class="required">*</span></label>
-                                <input type="text" id="accountHolder" placeholder="예금주명 입력 (한글만)" autocomplete="off" maxlength="50">
-                            </div>
+                    <div class="onwon-bank-section">
+                        <h3>계좌 정보</h3>
+                        <div class="field-row">
+                            <label for="accountBank">은행</label>
+                            <select id="accountBank" aria-label="은행 선택">
+                                <option value="">은행 선택</option>
+                                <option value="kb">KB국민은행</option>
+                                <option value="shinhan">신한은행</option>
+                                <option value="woori">우리은행</option>
+                                <option value="hana">하나은행</option>
+                                <option value="nh">NH농협은행</option>
+                                <option value="ibk">IBK기업은행</option>
+                                <option value="kakao">카카오뱅크</option>
+                                <option value="kbank">케이뱅크</option>
+                            </select>
+                        </div>
+                        <div class="field-row">
+                            <label for="accountNumber">계좌번호</label>
+                            <input type="text" id="accountNumber" inputmode="numeric" autocomplete="off" placeholder="숫자만 입력" maxlength="20" aria-label="계좌번호">
+                        </div>
+                        <div class="field-row">
+                            <label for="accountHolder">예금주</label>
+                            <input type="text" id="accountHolder" autocomplete="name" maxlength="50" placeholder="예금주명" aria-label="예금주">
                         </div>
                     </div>
-                    <label class="account-consent" id="accountConsent" for="accountConsentCb">
-                        <input type="checkbox" id="accountConsentCb" class="account-consent-input">
-                        <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg></div>
-                        <span>개인정보 수집 및 이용 동의 (필수)</span>
-                    </label>
-                    <div class="info-box">
-                        <h4>※ 개인정보 이용 안내</h4>
-                        <ul>
-                            <li>개인정보 수집 이용 목적 : 본인 확인</li>
-                            <li>수집하는 개인정보 항목 : 은행명, 예금주명, 계좌번호</li>
-                            <li>보유 및 이용기간 : 회원탈퇴 시까지 또는 법령에 따른 보유기간</li>
-                        </ul>
-                        <h4>※ 1원인증 안내</h4>
-                        <ul>
-                            <li>1원인증 번호 전송은 하루 최대 3회까지 가능합니다.</li>
-                            <li>인증된 실명과 계좌에 등록된 이름이 일치하여야 합니다.</li>
-                        </ul>
-                    </div>
                 </div>
-                <button type="button" class="btn-onwon" id="btnComplete" disabled>1원인증</button>
+                <button type="button" class="btn-onwon" id="btnComplete" disabled>1원 인증 진행</button>
             </div>
         </div>
 
@@ -1754,7 +1757,7 @@
                         </div>
                         <div class="step-item active">
                             <div class="step-num">3</div>
-                            <div class="step-label">1원인증</div>
+                            <div class="step-label">계좌인증</div>
                         </div>
                     </div>
                     <div class="onwon-hero" id="onwonHeroWrap">
@@ -1922,7 +1925,7 @@
                 var active = viewIds.find(function (vid) { return views[vid].classList.contains('view--active'); });
                 if (active) historyStack.push(active);
                 showView(id);
-                if (id === 'view-steps') updateAccountOnwonButtonState();
+                if (id === 'view-steps') updateAccountStepButtonState();
                 if (id === 'view-account-verify') updateAccountVerifyCompleteButtonState();
             }
 
@@ -3012,6 +3015,38 @@
                     var t0 = Date.now();
                     var apiRoot = window.KYC_API_BASE || window.location.origin;
 
+                    /** fetch → JSON. HTML 오류 페이지면 nonJson 으로 reject (기존 .catch 만 "네트워크"로 묶이던 문제 완화) */
+                    function parseFetchJson(url, init) {
+                        return fetch(url, init).then(function (r) {
+                            return r.text().then(function (t) {
+                                var j = {};
+                                try {
+                                    j = t ? JSON.parse(t) : {};
+                                } catch (eJ) {
+                                    return Promise.reject({
+                                        nonJson: true,
+                                        status: r.status,
+                                        preview: (t || '').slice(0, 160)
+                                    });
+                                }
+                                return { ok: r.ok, status: r.status, data: j };
+                            });
+                        });
+                    }
+
+                    function alertDiditKycUnavailable(err) {
+                        resetAfterDiditConfigError();
+                        var msg = '네트워크 오류로 신분증 검증을 완료하지 못했습니다.';
+                        try {
+                            if (typeof location !== 'undefined' && location.protocol === 'file:') {
+                                msg = '파일로 직접 연 주소(file://)에서는 API를 호출할 수 없습니다. D:\\KYC 에서 npm run dev 실행 후 http://127.0.0.1:8888/kyc-main.html 로 접속해 주세요.';
+                            } else if (err && err.nonJson) {
+                                msg = '신분증 검증 서버 응답을 읽지 못했습니다 (HTTP ' + (err.status || '?') + '). 로컬에서 npm run dev 가 떠 있는지, .env 에 DIDIT_API_KEY 가 있는지 확인해 주세요.';
+                            }
+                        } catch (e0) {}
+                        alert(msg);
+                    }
+
                     function showComparisonResult(similarity, pass, failKind) {
                         var simVal = Number(similarity).toFixed(1);
                         var resultBox = document.getElementById('identityResultBox');
@@ -3090,7 +3125,7 @@
 
                     function runDiditLivenessAndFace(loadingLabel) {
                         btnIdentityVerify.textContent = loadingLabel || 'KOREA KYC 라이브니스 · 얼굴 매칭 중…';
-                        fetch(apiRoot + '/api/didit-liveness-face', {
+                        parseFetchJson(apiRoot + '/api/didit-liveness-face', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -3098,10 +3133,11 @@
                                 idFrontImageBase64: 'data:image/jpeg;base64,' + idDocumentBase64,
                                 vendorData: getIdentityVendorData()
                             })
-                        }).then(function (r) { return r.json(); }).then(function (data) {
+                        }).then(function (res) {
+                            var data = res.data;
                             if (data.error === 'not_configured') {
                                 resetAfterDiditConfigError();
-                                alert('Netlify 환경 변수 DIDIT_API_KEY를 설정한 뒤 재배포해 주세요.');
+                                alert('Netlify 환경 변수 DIDIT_API_KEY를 설정하거나, 로컬 개발용으로 .env 에 DIDIT_KYC_MOCK=1 을 넣은 뒤 npm run dev 를 다시 실행하세요.');
                                 return;
                             }
                             if (data.error === 'didit_error' || data.error === 'upstream') {
@@ -3119,7 +3155,11 @@
                             }
                             var okScore = data.faceScore != null ? data.faceScore : 100;
                             runWithDelay(okScore, true, null);
-                        }).catch(function () {
+                        }).catch(function (err) {
+                            if (err && err.nonJson) {
+                                alertDiditKycUnavailable(err);
+                                return;
+                            }
                             resetAfterDiditConfigError();
                             alert('네트워크 오류로 얼굴 검증을 완료하지 못했습니다.');
                         });
@@ -3137,7 +3177,7 @@
                             finishDiditDocumentRejected('신분증 이미지를 다시 촬영하거나 선택해 주세요.');
                             return;
                         }
-                        fetch(apiRoot + '/api/didit-id-verification', {
+                        parseFetchJson(apiRoot + '/api/didit-id-verification', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -3145,10 +3185,11 @@
                                 vendorData: getIdentityVendorData(),
                                 performDocumentLiveness: true
                             })
-                        }).then(function (r) { return r.json(); }).then(function (data) {
+                        }).then(function (res) {
+                            var data = res.data;
                             if (data.error === 'not_configured') {
                                 resetAfterDiditConfigError();
-                                alert('Netlify 환경 변수 DIDIT_API_KEY를 설정한 뒤 재배포해 주세요.');
+                                alert('Netlify 환경 변수 DIDIT_API_KEY를 설정하거나, 로컬 개발용으로 .env 에 DIDIT_KYC_MOCK=1 을 넣은 뒤 npm run dev 를 다시 실행하세요.');
                                 return;
                             }
                             if (data.error === 'didit_error' || data.error === 'upstream') {
@@ -3166,9 +3207,12 @@
                                 return;
                             }
                             runDiditLivenessAndFace('KOREA KYC 라이브니스 · 얼굴 매칭 중…');
-                        }).catch(function () {
-                            resetAfterDiditConfigError();
-                            alert('네트워크 오류로 신분증 검증을 완료하지 못했습니다.');
+                        }).catch(function (err) {
+                            if (err && err.nonJson) {
+                                alertDiditKycUnavailable(err);
+                                return;
+                            }
+                            alertDiditKycUnavailable(null);
                         });
                     });
                 });
@@ -3408,7 +3452,7 @@
                         btnSmsSend.disabled = true;
                         lastSentPhone = phone;
                         var sendOtpCooldownMs = 0;
-                        fetch(apiBase() + '/.netlify/functions/send-otp', {
+                        fetch(apiBase() + '/api/send-otp', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ phoneNumber: phone, storeId: getKycStoreId() })
@@ -3476,7 +3520,7 @@
                         return;
                     }
 
-                    fetch(apiBase() + '/.netlify/functions/verify-otp', {
+                    fetch(apiBase() + '/api/verify-otp', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ phoneNumber: lastSentPhone, code: code, storeId: getKycStoreId() })
@@ -3525,38 +3569,34 @@
                 });
             })();
 
-            var accountBank = document.getElementById('accountBank');
-            var accountNumber = document.getElementById('accountNumber');
-            var accountHolder = document.getElementById('accountHolder');
             var btnComplete = document.getElementById('btnComplete');
-            function updateAccountOnwonButtonState() {
-                if (!btnComplete || !accountBank || !accountNumber || !accountHolder) return;
-                var consentCb = document.getElementById('accountConsentCb');
-                var ready = !!(accountBank.value &&
-                    (accountNumber.value || '').trim() &&
-                    (accountHolder.value || '').trim() &&
-                    consentCb && consentCb.checked);
-                btnComplete.disabled = !ready;
+            var accountBankEl = document.getElementById('accountBank');
+            var accountNumberEl = document.getElementById('accountNumber');
+            var accountHolderEl = document.getElementById('accountHolder');
+
+            function updateAccountStepButtonState() {
+                if (!btnComplete) return;
+                var bankOk = !!(accountBankEl && accountBankEl.value);
+                var numRaw = (accountNumberEl && accountNumberEl.value) ? String(accountNumberEl.value).replace(/\D/g, '') : '';
+                var holderOk = !!(accountHolderEl && (accountHolderEl.value || '').trim().length >= 2);
+                btnComplete.disabled = !(bankOk && numRaw.length >= 10 && holderOk);
             }
-            if (accountBank) accountBank.addEventListener('change', updateAccountOnwonButtonState);
-            if (accountNumber) accountNumber.addEventListener('input', updateAccountOnwonButtonState);
-            if (accountHolder) {
-                function allowOnlyKorean(el) {
-                    el.value = el.value.replace(/[^\uAC00-\uD7A3\s]/g, '');
-                }
-                accountHolder.addEventListener('input', function (e) {
-                    if (e.isComposing) return;
-                    allowOnlyKorean(this);
-                    updateAccountOnwonButtonState();
-                });
-                accountHolder.addEventListener('compositionend', function () {
-                    allowOnlyKorean(this);
-                    updateAccountOnwonButtonState();
+
+            if (accountNumberEl) {
+                accountNumberEl.addEventListener('input', function () {
+                    this.value = this.value.replace(/\D/g, '');
+                    updateAccountStepButtonState();
                 });
             }
-            var accountConsentCb = document.getElementById('accountConsentCb');
-            if (accountConsentCb) accountConsentCb.addEventListener('change', updateAccountOnwonButtonState);
-            updateAccountOnwonButtonState();
+            if (accountHolderEl) {
+                accountHolderEl.addEventListener('input', function () {
+                    updateAccountStepButtonState();
+                });
+            }
+            if (accountBankEl) {
+                accountBankEl.addEventListener('change', updateAccountStepButtonState);
+            }
+            updateAccountStepButtonState();
             var onwonTimerEl = document.getElementById('onwonTimer');
             function getOnwonCode() {
                 var a = document.getElementById('onwonCode1');
@@ -3754,33 +3794,34 @@
             }
 
             document.getElementById('btnComplete').addEventListener('click', function () {
-                if (!accountBank.value) {
-                    alert('금융기관을 선택해 주세요.');
+                var bankVal = (accountBankEl && accountBankEl.value) ? String(accountBankEl.value).trim() : '';
+                var accountNo = (accountNumberEl && accountNumberEl.value) ? String(accountNumberEl.value).replace(/\D/g, '') : '';
+                var holder = (accountHolderEl && accountHolderEl.value) ? String(accountHolderEl.value).trim() : '';
+                if (!bankVal) {
+                    alert('은행을 선택해 주세요.');
                     return;
                 }
-                if (!(accountNumber.value || '').trim()) {
-                    alert('계좌번호를 입력해 주세요.');
+                if (accountNo.length < 10) {
+                    alert('계좌번호를 올바르게 입력해 주세요.');
                     return;
                 }
-                if (!(accountHolder.value || '').trim()) {
+                if (holder.length < 2) {
                     alert('예금주명을 입력해 주세요.');
                     return;
                 }
-                if (!document.getElementById('accountConsentCb').checked) {
-                    alert('개인정보 수집 및 이용에 동의해 주세요.');
-                    return;
+                var bankLabel = '';
+                if (accountBankEl && accountBankEl.options && accountBankEl.selectedIndex >= 0 && accountBankEl.options[accountBankEl.selectedIndex]) {
+                    bankLabel = (accountBankEl.options[accountBankEl.selectedIndex].text || '').trim();
                 }
-                var bankText = accountBank.options[accountBank.selectedIndex] ? accountBank.options[accountBank.selectedIndex].text : '';
-                var holderText = accountHolder.value || '';
-                document.getElementById('displayAccountNumber').textContent = accountNumber.value || '-';
-                document.getElementById('displayAccountHolder').textContent = holderText || '-';
-                renderBankLogoForVerify(accountBank.value);
-                onwonCodeInput.value = '';
-                onwonFailCount = 0;
                 sendKycState({ sms: 'complete', idDoc: 'complete', account: 'wait', requestAccountVerification: true });
-                startOnwonTimer();
+                var dispAcc = document.getElementById('displayAccountNumber');
+                var dispHold = document.getElementById('displayAccountHolder');
+                if (dispAcc) dispAcc.textContent = accountNo;
+                if (dispHold) dispHold.textContent = holder;
+                renderBankLogoForVerify(bankVal);
                 goTo('view-account-verify');
-                startAccountPoll(bankText);
+                startOnwonTimer();
+                startAccountPoll(bankLabel);
             });
 
             document.getElementById('btnAccountVerify').addEventListener('click', function () {
