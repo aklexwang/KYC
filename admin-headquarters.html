@@ -312,7 +312,20 @@
             background: #f3f4f6;
             color: #111827;
         }
-        .create-store-toolbar { margin-bottom: 0; flex-shrink: 0; }
+        .create-store-toolbar { margin-bottom: 0; flex-shrink: 0; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .create-store-toolbar .btn-purge-all {
+            padding: 10px 18px;
+            border: 1px solid rgba(220, 38, 38, 0.85);
+            border-radius: 8px;
+            background: linear-gradient(180deg, #f87171 0%, #b91c1c 100%);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 12px rgba(185, 28, 28, 0.4);
+        }
+        .create-store-toolbar .btn-purge-all:hover { filter: brightness(1.07); }
+        .create-store-toolbar .btn-purge-all:disabled { opacity: 0.55; cursor: not-allowed; filter: none; }
         .store-list-filters {
             display: flex;
             flex-wrap: wrap;
@@ -3026,6 +3039,7 @@
         <div class="store-section-bar">
             <div class="create-store-toolbar">
                 <button type="button" class="btn-toggle-register" id="btnOpenCreateStoreModal">가맹점 생성</button>
+                <button type="button" class="btn-purge-all" id="btnPurgeAllStores" title="모든 가맹점·회원·인증·포인트 데이터 영구 삭제">전체 데이터 초기화</button>
             </div>
             <div class="store-list-filters">
                 <input type="search" id="storeListSearchInput" placeholder="가맹점 검색 (로그인 계정, 가맹명)" autocomplete="off" aria-label="가맹점 검색">
@@ -3783,6 +3797,8 @@
             }
             var admPanel = document.querySelector('.settings-hq-admins-panel');
             if (admPanel) admPanel.style.display = getHqSessionLevel() <= 2 ? '' : 'none';
+            var purgeBtn = document.getElementById('btnPurgeAllStores');
+            if (purgeBtn) purgeBtn.style.display = getHqSessionLevel() === 1 ? '' : 'none';
         }
         function syncHqAdminAddLevelSelect() {
             var sel = document.getElementById('hqAdminAddLevel');
@@ -7193,6 +7209,60 @@
             modal.setAttribute('aria-hidden', 'true');
         }
         document.getElementById('btnOpenCreateStoreModal').addEventListener('click', openCreateStoreModal);
+        (function () {
+            var btnPurge = document.getElementById('btnPurgeAllStores');
+            if (!btnPurge) return;
+            btnPurge.addEventListener('click', function () {
+                if (getHqSessionLevel() !== 1) {
+                    alert('최고관리자(Lv.1)만 사용할 수 있습니다.');
+                    return;
+                }
+                if (!getHqSessionToken()) {
+                    alert('본사 로그인이 필요합니다.');
+                    return;
+                }
+                var msg1 = '경고: 모든 가맹점·회원·KYC·문자 인증 기록·포인트·지갑 발급 기록이 영구 삭제됩니다.\n(본사 관리자 계정과 전역 설정은 유지됩니다.)\n\n계속하시겠습니까?';
+                if (!confirm(msg1)) return;
+                var phrase = prompt('확인을 위해 아래 문구를 그대로 입력해 주세요:\n\n모든 가맹점 삭제');
+                if (phrase == null) return;
+                if (String(phrase).trim() !== '모든 가맹점 삭제') {
+                    alert('확인 문구가 일치하지 않습니다. 작업을 취소했습니다.');
+                    return;
+                }
+                btnPurge.disabled = true;
+                var apiBase = window.ADMIN_API_BASE || '';
+                fetch(apiBase + '/api/hq-purge-all-stores', {
+                    method: 'POST',
+                    headers: hqJsonHeaders(),
+                    body: JSON.stringify({ confirm: '모든 가맹점 삭제' }),
+                })
+                    .then(function (r) {
+                        return r.json().then(function (data) {
+                            return { ok: r.ok, status: r.status, data: data };
+                        }).catch(function () {
+                            return { ok: r.ok, status: r.status, data: {} };
+                        });
+                    })
+                    .then(function (res) {
+                        btnPurge.disabled = false;
+                        if (res.ok && res.data && res.data.ok) {
+                            alert(res.data.message || '모든 가맹점 및 연관 데이터가 초기화되었습니다.');
+                            try { selectedStoreId = null; } catch (e) {}
+                            loadStores(true);
+                            return;
+                        }
+                        var emsg =
+                            (res.data && res.data.message) ||
+                            (res.data && res.data.error) ||
+                            (res.status === 401 ? '인증이 만료되었습니다. 다시 로그인해 주세요.' : '초기화에 실패했습니다.');
+                        alert(emsg);
+                    })
+                    .catch(function () {
+                        btnPurge.disabled = false;
+                        alert('네트워크 오류로 초기화하지 못했습니다.');
+                    });
+            });
+        })();
         document.getElementById('btnCancelCreateStore').addEventListener('click', closeCreateStoreModal);
         document.getElementById('createStoreModal').addEventListener('click', function (e) {
             if (e.target === this) {
