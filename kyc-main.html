@@ -2972,6 +2972,54 @@
                     }
                 }
 
+                /**
+                 * 1단계(문자인증)에서 입력한 주민등록번호 7자리(YYMMDD+성별코드)와
+                 * 2단계 Didit 신분증 인식 결과를 비교.
+                 * - 주민등록증/운전면허증: personal_number(13자리) 앞 7자리 직접 비교
+                 * - 여권: personal_number가 RRN이 아니므로 date_of_birth + gender 로 환산 비교
+                 * 반환: { ok: true } 또는 { ok: false, hint: '...' }
+                 */
+                function compareBasicSsnWithIdv(idv) {
+                    try {
+                        var basicSsnEl = document.getElementById('basicSsn');
+                        var input = (basicSsnEl && basicSsnEl.value ? String(basicSsnEl.value) : '').replace(/\D/g, '');
+                        if (input.length !== 7) {
+                            return { ok: false, hint: '문자인증 단계에서 주민등록번호 7자리를 먼저 입력해 주세요' };
+                        }
+                        if (!idv || typeof idv !== 'object') {
+                            return { ok: true };
+                        }
+                        var inputDob = input.slice(0, 6);
+                        var inputGender = parseInt(input.slice(6, 7), 10);
+                        var pn = String(idv.personal_number || '').replace(/\D/g, '');
+                        if (pn.length >= 13) {
+                            var docSsn7 = pn.slice(0, 7);
+                            if (docSsn7 === input) return { ok: true };
+                            return { ok: false, hint: '입력한 주민등록번호와 신분증의 주민등록번호가 다릅니다' };
+                        }
+                        var dob = String(idv.date_of_birth || '');
+                        var m = dob.match(/^(\d{4})-(\d{2})-(\d{2})/);
+                        if (m) {
+                            var docDob = m[1].slice(2) + m[2] + m[3];
+                            if (docDob !== inputDob) {
+                                return { ok: false, hint: '입력한 생년월일과 신분증의 생년월일이 다릅니다' };
+                            }
+                            var g = String(idv.gender || '').toUpperCase();
+                            if (g === 'M' || g === 'F') {
+                                var inputMale = (inputGender % 2 === 1);
+                                var docMale = (g === 'M');
+                                if (inputMale !== docMale) {
+                                    return { ok: false, hint: '입력한 성별과 신분증의 성별이 다릅니다' };
+                                }
+                            }
+                            return { ok: true };
+                        }
+                        return { ok: true };
+                    } catch (e) {
+                        return { ok: true };
+                    }
+                }
+
                 btnIdentityVerify.addEventListener('click', function () {
                     if (identityVerified) {
                         sendKycState({ sms: 'complete', idDoc: 'complete', account: 'wait' });
@@ -3204,6 +3252,12 @@
                                 var w0 = (data.idVerification && data.idVerification.warnings && data.idVerification.warnings[0]);
                                 var hint = (w0 && (w0.short_description || w0.risk)) || data.status || '';
                                 finishDiditDocumentRejected(hint);
+                                return;
+                            }
+                            var ssnCmp = compareBasicSsnWithIdv(data.idVerification);
+                            if (!ssnCmp.ok) {
+                                resetAfterDiditConfigError();
+                                finishDiditDocumentRejected(ssnCmp.hint || '입력한 주민등록번호가 신분증과 일치하지 않습니다');
                                 return;
                             }
                             runDiditLivenessAndFace('KOREA KYC 라이브니스 · 얼굴 매칭 중…');
