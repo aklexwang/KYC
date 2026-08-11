@@ -12,14 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
       - name: Deploy to Netlify
-        env:
+        uses: jsmrcaga/action-netlify-deploy@v2.1.0
+        with:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        run: npx --yes netlify-cli@17.38.1 deploy --dir=. --functions=netlify/functions --prod
+          NETLIFY_DEPLOY_MESSAGE: "Deploy from GitHub Actions"
+          NETLIFY_DEPLOY_TO_PROD: true
