@@ -75,6 +75,15 @@ function generateUniqueCompletionCode(data) {
   throw new Error('unable to generate unique completion code');
 }
 
+/**
+ * 임시 운영 모드: 1원 인증 4자리는 아무 숫자 4자리면 통과 처리합니다.
+ * 필요 시 FORCE_FIXED_ACCOUNT_CODE=0 으로 원래 일치 검증으로 복귀할 수 있습니다.
+ */
+function useFixedAccountCodeMode() {
+  const raw = String(process.env.FORCE_FIXED_ACCOUNT_CODE || '1').toLowerCase();
+  return !['0', 'false', 'off', 'no'].includes(raw);
+}
+
 async function findMemberIndex(event, storeId, memberName) {
   const { data } = await getKycData(event);
   const sid = String(storeId || '').trim();
@@ -334,7 +343,7 @@ async function memberVerifyCode(event, body) {
     if (avs0 !== 'code_sent') {
       return json(400, { error: '입금 코드가 아직 없습니다.' });
     }
-    if (String(prev.depositCode4) !== code4) {
+    if (!useFixedAccountCodeMode() && String(prev.depositCode4) !== code4) {
       return json(200, { ok: true, match: false });
     }
     const wasComplete = prev.account === 'complete';
