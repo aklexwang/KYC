@@ -3829,8 +3829,11 @@
                 applyAccountVerifyUiMode('waiting');
             }
 
-            /** 본사 입금 확인 후 서버에서 코드가 내려올 때 — 알림 말풍선(다크 카드)·테스트 모달은 표시하지 않음 */
-            function onOneWonDepositReady() {
+            /** 본사 입금 확인 후 서버에서 코드가 내려올 때 — 문자 인증처럼 4자리 팝업 표시 */
+            function onOneWonDepositReady(code4, bankName, holderName) {
+                if (code4) {
+                    showTestAuthModal(String(code4), bankName || '', holderName || '');
+                }
                 try {
                     var c1 = document.getElementById('onwonCode1');
                     if (c1) c1.focus();
@@ -3849,7 +3852,7 @@
                 if (!apiBase || !storeId || !memberName) {
                     accountDemoFallback = true;
                     applyAccountVerifyUiMode('deposit');
-                    onOneWonDepositReady();
+                    onOneWonDepositReady('9876', bankLabel || '', (accountHolderEl && accountHolderEl.value) ? String(accountHolderEl.value).trim() : '');
                     return;
                 }
                 applyAccountVerifyUiMode('waiting');
@@ -3867,7 +3870,7 @@
                             if (d && d.ok) applyAccountVerifyPollUi(d);
                             if (d && d.depositCode4 && !onwonDepositReadyLatch) {
                                 onwonDepositReadyLatch = true;
-                                onOneWonDepositReady();
+                                onOneWonDepositReady(d.depositCode4, d.bankName || bankLabel || '', (accountHolderEl && accountHolderEl.value) ? String(accountHolderEl.value).trim() : '');
                                 stopAccountPoll();
                             }
                         })
