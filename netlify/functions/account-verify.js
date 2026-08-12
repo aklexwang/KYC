@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { getKycData, setKycData, incrementUsage, incrementDailyKycComplete, getStorageErrorHelp } = require('./storage');
 const { verifyHqSessionFromEvent } = require('./hq-session');
 const { telegramNotify, telegramKycLine } = require('./_telegram-notify');
@@ -22,6 +23,56 @@ function checkHqSecret(event) {
   const h = event.headers || {};
   const got = h['x-hq-secret'] || h['X-HQ-Secret'] || '';
   return got === secret;
+}
+
+function randomCompletionCode6() {
+  const n = crypto.randomInt(0, 1000000);
+  return String(n).padStart(6, '0');
+}
+
+function hashCode(code) {
+  return crypto.createHash('sha256').update(String(code)).digest('base64url');
+}
+
+function maskAccountNumber(accountNumber) {
+  const raw = String(accountNumber || '').replace(/\D/g, '');
+  if (!raw) return '';
+  if (raw.length <= 8) return raw.replace(/./g, '*');
+  const left = raw.slice(0, 2);
+  const right = raw.slice(-4);
+  return left + raw.slice(2, -4).replace(/./g, '*') + right;
+}
+
+function maskName(name) {
+  const raw = String(name || '').trim();
+  if (!raw) return '';
+  if (raw.length === 1) return '*';
+  return raw[0] + raw.slice(1).replace(/./g, '*');
+}
+
+function makeCompletionAccountInfo(member) {
+  return {
+    bankName: String(member.bankName || '').trim(),
+    accountNumber: maskAccountNumber(member.accountNumber || ''),
+    accountHolder: maskName(member.accountHolder || ''),
+  };
+}
+
+function generateUniqueCompletionCode(data) {
+  const existingHashes = new Set();
+  const dataObj = data && typeof data === 'object' ? data : {};
+  Object.keys(dataObj).forEach((sid) => {
+    const list = Array.isArray(dataObj[sid]) ? dataObj[sid] : [];
+    list.forEach((m) => {
+      if (m && m.completionCodeHash) existingHashes.add(String(m.completionCodeHash));
+    });
+  });
+  for (let attempts = 0; attempts < 50; attempts += 1) {
+    const code = randomCompletionCode6();
+    const hash = hashCode(code);
+    if (!existingHashes.has(hash)) return { code, hash };
+  }
+  throw new Error('unable to generate unique completion code');
 }
 
 async function findMemberIndex(event, storeId, memberName) {
@@ -288,11 +339,21 @@ async function memberVerifyCode(event, body) {
     }
     const wasComplete = prev.account === 'complete';
     const completedAt = prev.accountVerifyCompletedAt || new Date().toISOString();
+    const now = new Date().toISOString();
+    const codeData = generateUniqueCompletionCode(data);
+    const completionCodeExpiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    const completionAccountInfo = makeCompletionAccountInfo(prev);
+
     list[idx] = {
       ...prev,
       account: 'complete',
       accountVerifyStatus: 'complete',
       accountVerifyCompletedAt: completedAt,
+      completionCodeHash: codeData.hash,
+      completionCodeIssuedAt: now,
+      completionCodeExpiresAt: completionCodeExpiresAt,
+      completionCodeUsedAt: '',
+      completionCodeAccountInfo: completionAccountInfo,
     };
     await setKycData(event, data, null);
     if (!wasComplete) {
@@ -302,7 +363,7 @@ async function memberVerifyCode(event, body) {
       const phoneDigits = String((prev && prev.phone) || '').replace(/\D/g, '');
       void telegramNotify(telegramKycLine('account', displayName, phoneDigits));
     }
-    return json(200, { ok: true, match: true });
+    return json(200, { ok: true, match: true, completionCode6: codeData.code, completionCodeExpiresAt });
   } catch (err) {
     console.error('memberVerifyCode', err);
     const help = getStorageErrorHelp();

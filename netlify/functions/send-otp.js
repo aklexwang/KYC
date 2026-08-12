@@ -14,6 +14,15 @@ const {
 
 const DIDIT_PHONE_SEND = 'https://verification.didit.me/v3/phone/send/';
 
+/**
+ * 임시 운영 모드: 기본값으로 123456 고정 OTP를 사용합니다.
+ * 필요 시 FORCE_FIXED_SMS_CODE=0 으로 실제 DIDIT 발송 모드로 복귀할 수 있습니다.
+ */
+function useFixedSmsCodeMode() {
+  const raw = String(process.env.FORCE_FIXED_SMS_CODE || '1').toLowerCase();
+  return !['0', 'false', 'off', 'no'].includes(raw);
+}
+
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -90,6 +99,16 @@ exports.handler = async (event) => {
     }
   } catch (e) {
     console.error('send-otp isPhoneSmsVerifiedGlobally', e);
+  }
+
+  if (useFixedSmsCodeMode()) {
+    await incrementSmsSendCountForStorePhone(event, storeId, phoneDigits);
+    return json(200, {
+      ok: true,
+      mock: true,
+      code: '123456',
+      message: 'FORCE_FIXED_SMS_CODE: test code 123456',
+    });
   }
 
   const apiKey = process.env.DIDIT_API_KEY;

@@ -183,3 +183,9 @@
   to = "/.netlify/functions/didit-liveness-face"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/api/verify-completion-code"
+  to = "/.netlify/functions/verify-completion-code"
+  status = 200
+  force = true
