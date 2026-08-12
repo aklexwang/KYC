@@ -1819,6 +1819,11 @@
                 </div>
                 <h1 class="complete-title">고객확인이 완료되었습니다</h1>
                 <p class="complete-desc">본인인증이 정상적으로 완료되었습니다.<br>서비스를 이용해 주세요.</p>
+                <div id="completionCodeWrap" class="complete-code-wrap" hidden>
+                    <p class="complete-code-label">인증 완료 코드</p>
+                    <p id="completionCodeValue" class="complete-code-value">------</p>
+                    <p id="completionCodeExpire" class="complete-code-expire"></p>
+                </div>
                 <button type="button" class="btn-done" id="btnDone">KYC 인증 완료</button>
             </div>
         </div>
@@ -1930,6 +1935,7 @@
                     updateAccountStepButtonState();
                 }
                 if (id === 'view-account-verify') updateAccountVerifyCompleteButtonState();
+                if (id === 'view-complete') hydrateCompletionCodeFromSession();
             }
 
             function getKycStoreId() {
@@ -1945,10 +1951,56 @@
             var FIXED_COMPANY_BADGE_TEXT = 'Government-grade security';
 
             var KYC_SESSION_MEMBER_NAME_KEY = 'kyc_member_name';
+            var KYC_SESSION_COMPLETION_CODE_KEY = 'kyc_completion_code6';
+            var KYC_SESSION_COMPLETION_CODE_EXPIRES_KEY = 'kyc_completion_code_expires_at';
+
+            function formatCompletionExpireText(iso) {
+                if (!iso) return '';
+                var dt = new Date(iso);
+                if (isNaN(dt.getTime())) return '';
+                var h = dt.getHours();
+                var m = dt.getMinutes();
+                var mm = (m < 10 ? '0' : '') + m;
+                return '유효시간: ' + h + ':' + mm + ' 까지';
+            }
+
+            function renderCompletionCode(code6, expiresAt) {
+                var wrapEl = document.getElementById('completionCodeWrap');
+                var valueEl = document.getElementById('completionCodeValue');
+                var expireEl = document.getElementById('completionCodeExpire');
+                if (!wrapEl || !valueEl || !expireEl) return;
+                var code = String(code6 || '').replace(/\D/g, '').slice(0, 6);
+                if (code.length !== 6) {
+                    wrapEl.hidden = true;
+                    valueEl.textContent = '------';
+                    expireEl.textContent = '';
+                    return;
+                }
+                wrapEl.hidden = false;
+                valueEl.textContent = code;
+                expireEl.textContent = formatCompletionExpireText(expiresAt);
+            }
+
+            function hydrateCompletionCodeFromSession() {
+                var code = '';
+                var expiresAt = '';
+                try {
+                    code = String(sessionStorage.getItem(KYC_SESSION_COMPLETION_CODE_KEY) || '');
+                    expiresAt = String(sessionStorage.getItem(KYC_SESSION_COMPLETION_CODE_EXPIRES_KEY) || '');
+                } catch (e) {
+                    code = '';
+                    expiresAt = '';
+                }
+                renderCompletionCode(code, expiresAt);
+            }
 
             function goToKycFirstScreen() {
                 historyStack.length = 0;
-                try { sessionStorage.removeItem(KYC_SESSION_MEMBER_NAME_KEY); } catch (eRm) {}
+                try {
+                    sessionStorage.removeItem(KYC_SESSION_MEMBER_NAME_KEY);
+                    sessionStorage.removeItem(KYC_SESSION_COMPLETION_CODE_KEY);
+                    sessionStorage.removeItem(KYC_SESSION_COMPLETION_CODE_EXPIRES_KEY);
+                } catch (eRm) {}
                 showView('view-company');
                 var nameEl = document.getElementById('companyStoreName');
                 if (nameEl) nameEl.textContent = FIXED_COMPANY_BADGE_TEXT;
@@ -3956,14 +4008,23 @@
                         goToSuspendedView();
                     } else showWrongAuthModal(3 - onwonFailCount);
                 }
-                function successStep() {
+                function successStep(payload) {
                     if (onwonTimerInterval) clearInterval(onwonTimerInterval);
                     stopAccountPoll();
+                    var code6 = payload && payload.completionCode6 ? String(payload.completionCode6) : '';
+                    var expiresAt = payload && payload.completionCodeExpiresAt ? String(payload.completionCodeExpiresAt) : '';
+                    try {
+                        if (code6) {
+                            sessionStorage.setItem(KYC_SESSION_COMPLETION_CODE_KEY, code6);
+                            sessionStorage.setItem(KYC_SESSION_COMPLETION_CODE_EXPIRES_KEY, expiresAt || '');
+                        }
+                    } catch (eStoreCode) {}
+                    renderCompletionCode(code6, expiresAt);
                     sendKycState({ sms: 'complete', idDoc: 'complete', account: 'complete' });
                     goTo('view-complete');
                 }
                 if (accountDemoFallback) {
-                    if (code === '9876') successStep();
+                    if (code === '9876') successStep({ completionCode6: '000000' });
                     else failStep();
                     return;
                 }
@@ -3972,7 +4033,7 @@
                 var memberName = (nameEl && nameEl.value) ? nameEl.value.trim() : '';
                 var storeId = getKycStoreId();
                 if (!apiBase || !storeId || !memberName) {
-                    if (code === '9876') successStep();
+                    if (code === '9876') successStep({ completionCode6: '000000' });
                     else failStep();
                     return;
                 }
@@ -3988,11 +4049,11 @@
                 })
                     .then(function (r) { return r.json(); })
                     .then(function (data) {
-                        if (data && data.match === true) successStep();
+                        if (data && data.match === true) successStep(data);
                         else failStep();
                     })
                     .catch(function () {
-                        if (code === '9876') successStep();
+                        if (code === '9876') successStep({ completionCode6: '000000' });
                         else failStep();
                     });
             });
