@@ -1925,7 +1925,10 @@
                 var active = viewIds.find(function (vid) { return views[vid].classList.contains('view--active'); });
                 if (active) historyStack.push(active);
                 showView(id);
-                if (id === 'view-steps') updateAccountStepButtonState();
+                if (id === 'view-steps') {
+                    prefillAccountHolderFromMemberName();
+                    updateAccountStepButtonState();
+                }
                 if (id === 'view-account-verify') updateAccountVerifyCompleteButtonState();
             }
 
@@ -3664,6 +3667,27 @@
             var accountBankEl = document.getElementById('accountBank');
             var accountNumberEl = document.getElementById('accountNumber');
             var accountHolderEl = document.getElementById('accountHolder');
+
+            function getResolvedMemberNameForKyc() {
+                var nameFromInput = '';
+                var nameEl = document.getElementById('basicName');
+                if (nameEl && nameEl.value) nameFromInput = String(nameEl.value).trim();
+                if (nameFromInput) return nameFromInput;
+                try {
+                    return String(sessionStorage.getItem(KYC_SESSION_MEMBER_NAME_KEY) || '').trim();
+                } catch (e) {
+                    return '';
+                }
+            }
+
+            function prefillAccountHolderFromMemberName() {
+                if (!accountHolderEl) return;
+                var current = String(accountHolderEl.value || '').trim();
+                if (current) return;
+                var resolved = getResolvedMemberNameForKyc();
+                if (!resolved) return;
+                accountHolderEl.value = resolved;
+            }
 
             function updateAccountStepButtonState() {
                 if (!btnComplete) return;
