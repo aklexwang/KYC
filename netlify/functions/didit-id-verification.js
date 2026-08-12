@@ -7,6 +7,15 @@
  */
 
 const DIDIT_ID_URL = 'https://verification.didit.me/v3/id-verification/';
+
+/**
+ * 임시 운영 모드: 기본값으로 ID 검증을 mock 승인 처리합니다.
+ * 필요 시 FORCE_FIXED_KYC_MOCK=0 으로 실제 DIDIT 호출 모드로 복귀할 수 있습니다.
+ */
+function useFixedKycMockMode() {
+  const raw = String(process.env.FORCE_FIXED_KYC_MOCK || '1').toLowerCase();
+  return !['0', 'false', 'off', 'no'].includes(raw);
+}
 /** Didit 전 단계 검증. 고해상도 촬영 전에도 일부 단말에서 작은 JPEG 가능 — 기본 20KB, env DIDIT_MIN_ID_IMAGE_BYTES로 조정 */
 const MIN_IMAGE_BYTES = (() => {
   const n = parseInt(process.env.DIDIT_MIN_ID_IMAGE_BYTES || '', 10);
@@ -118,7 +127,7 @@ exports.handler = async (event) => {
     return json(400, { error: 'image_too_large', message: '파일당 최대 5MB입니다.' });
   }
 
-  if (!apiKey && kycMock) {
+  if (useFixedKycMockMode() || (!apiKey && kycMock)) {
     return json(200, {
       success: true,
       status: 'Approved',

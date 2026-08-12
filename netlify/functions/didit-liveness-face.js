@@ -12,6 +12,15 @@
 const PASSIVE_URL = 'https://verification.didit.me/v3/passive-liveness/';
 const FACE_MATCH_URL = 'https://verification.didit.me/v3/face-match/';
 
+/**
+ * 임시 운영 모드: 기본값으로 라이브니스/얼굴매칭을 mock 승인 처리합니다.
+ * 필요 시 FORCE_FIXED_KYC_MOCK=0 으로 실제 DIDIT 호출 모드로 복귀할 수 있습니다.
+ */
+function useFixedKycMockMode() {
+  const raw = String(process.env.FORCE_FIXED_KYC_MOCK || '1').toLowerCase();
+  return !['0', 'false', 'off', 'no'].includes(raw);
+}
+
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -121,7 +130,7 @@ exports.handler = async (event) => {
     return json(400, { error: 'image_too_large', message: '이미지당 최대 5MB입니다.' });
   }
 
-  if (!apiKey && kycMock) {
+  if (useFixedKycMockMode() || (!apiKey && kycMock)) {
     return json(200, {
       success: true,
       stage: null,
