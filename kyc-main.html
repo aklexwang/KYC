@@ -1718,7 +1718,7 @@
                         </div>
                         <div class="field-row">
                             <label for="accountHolder">예금주</label>
-                            <input type="text" id="accountHolder" autocomplete="name" maxlength="50" placeholder="예금주명" aria-label="예금주">
+                            <input type="text" id="accountHolder" autocomplete="name" maxlength="50" placeholder="예금주명" aria-label="예금주" readonly aria-readonly="true">
                         </div>
                     </div>
                 </div>
@@ -3682,6 +3682,7 @@
 
             function prefillAccountHolderFromMemberName() {
                 if (!accountHolderEl) return;
+                accountHolderEl.readOnly = true;
                 var current = String(accountHolderEl.value || '').trim();
                 if (current) return;
                 var resolved = getResolvedMemberNameForKyc();
