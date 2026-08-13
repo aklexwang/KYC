@@ -3,6 +3,10 @@ const { getKycData, setKycData, incrementUsage, incrementDailyKycComplete, getSt
 const { verifyHqSessionFromEvent } = require('./hq-session');
 const { telegramNotify, telegramKycLine } = require('./_telegram-notify');
 
+const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
+const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
+const USE_UPSTASH = !!(UPSTASH_URL && UPSTASH_TOKEN);
+
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -73,6 +77,46 @@ function generateUniqueCompletionCode(data) {
     if (!existingHashes.has(hash)) return { code, hash };
   }
   throw new Error('unable to generate unique completion code');
+}
+
+async function upstashPipeline(commands) {
+  const res = await fetch(UPSTASH_URL + '/pipeline', {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer ' + UPSTASH_TOKEN,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(commands),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error('upstash_pipeline_http_' + String(res.status));
+  }
+  if (json && json.error) {
+    throw new Error(String(json.error));
+  }
+  return Array.isArray(json) ? json : [];
+}
+
+async function saveCompletionCodeToUpstash(code6, payload, ttlSec) {
+  if (!USE_UPSTASH) {
+    throw new Error('upstash_not_configured');
+  }
+  const key = 'kyc:completion:code:' + String(code6);
+  const body = JSON.stringify(payload);
+  const rows = await upstashPipeline([
+    ['SET', key, body, 'EX', String(ttlSec), 'NX'],
+  ]);
+  return !!(rows && rows[0] && rows[0].result === 'OK');
+}
+
+async function issueCompletionCodeToUpstash(data, payload, ttlSec) {
+  for (let attempts = 0; attempts < 50; attempts += 1) {
+    const candidate = generateUniqueCompletionCode(data);
+    const saved = await saveCompletionCodeToUpstash(candidate.code, payload, ttlSec);
+    if (saved) return candidate;
+  }
+  throw new Error('completion_code_collision_retry_exhausted');
 }
 
 /**
@@ -349,9 +393,20 @@ async function memberVerifyCode(event, body) {
     const wasComplete = prev.account === 'complete';
     const completedAt = prev.accountVerifyCompletedAt || new Date().toISOString();
     const now = new Date().toISOString();
-    const codeData = generateUniqueCompletionCode(data);
-    const completionCodeExpiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    const completionCodeTtlSec = 10 * 60;
+    const completionCodeExpiresAt = new Date(Date.now() + completionCodeTtlSec * 1000).toISOString();
     const completionAccountInfo = makeCompletionAccountInfo(prev);
+    const codePayload = {
+      user: {
+        storeId,
+        memberName,
+        phone: String((prev && prev.phone) || '').replace(/\D/g, ''),
+      },
+      kycComplete: true,
+      createdAt: now,
+      accountInfo: completionAccountInfo,
+    };
+    const codeData = await issueCompletionCodeToUpstash(data, codePayload, completionCodeTtlSec);
 
     list[idx] = {
       ...prev,

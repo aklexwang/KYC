@@ -4024,7 +4024,7 @@
                     goTo('view-complete');
                 }
                 if (accountDemoFallback) {
-                    if (code === '9876') successStep({ completionCode6: '000000' });
+                    if (code === '9876') successStep({});
                     else failStep();
                     return;
                 }
@@ -4033,7 +4033,7 @@
                 var memberName = (nameEl && nameEl.value) ? nameEl.value.trim() : '';
                 var storeId = getKycStoreId();
                 if (!apiBase || !storeId || !memberName) {
-                    if (code === '9876') successStep({ completionCode6: '000000' });
+                    if (code === '9876') successStep({});
                     else failStep();
                     return;
                 }
@@ -4053,7 +4053,7 @@
                         else failStep();
                     })
                     .catch(function () {
-                        if (code === '9876') successStep({ completionCode6: '000000' });
+                        if (code === '9876') successStep({});
                         else failStep();
                     });
             });
